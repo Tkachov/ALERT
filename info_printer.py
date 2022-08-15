@@ -101,7 +101,7 @@ def print_info(model_header, dat1):
 								print "    [!] #{} bad index: {}".format(j, e.index)
 								had_warnings = True
 							if e.always1 != 1:
-								print "    [!} #{} always1 == {}".format(j, e.always1)
+								print "    [!] #{} always1 == {}".format(j, e.always1)
 								had_warnings = True
 						if had_warnings:
 							print ""
@@ -109,14 +109,30 @@ def print_info(model_header, dat1):
 						print "{:08X} | Archives Map | {:6} entries".format(section_header.tag, len(section.archives))
 					elif section_header.tag == dat1lib.SECTION_ASSET_IDS:
 						print "{:08X} | Asset IDs    | {:6} entries".format(section_header.tag, len(section.ids))
+						"""
+						for aid in section.ids:
+							if aid == 9767039763554194594: # 9223475264534229424: # 9223384287010557067:
+								print "!!! found !!!"
+								break
+						"""
 					elif section_header.tag == dat1lib.SECTION_KEY_ASSETS:
 						print "{:08X} | Key Assets   | {:6} entries".format(section_header.tag, len(section.ids))
 					elif section_header.tag == dat1lib.SECTION_OFFSET_ENTRIES:
 						print "{:08X} | Offsets      | {:6} entries".format(section_header.tag, len(section.entries))
+						"""
+						files_per_archive = {}
+						for e in section.entries:
+							files_per_archive[e.archive_index] = files_per_archive.get(e.archive_index, 0) + 1
+						print files_per_archive
+						"""
 					elif section_header.tag == dat1lib.SECTION_SPAN_ENTRIES:
 						print "{:08X} | Spans        | {:6} entries".format(section_header.tag, len(section.entries))
+						"""
+						for e in section.entries:
+							print e.asset_index, e.count
+						"""
 
-def extract_secion(dat1, extraction_dir):
+def extract_section(dat1, extraction_dir):
 	sections = dat1.header.sections
 	sections_count = len(sections)
 

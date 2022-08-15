@@ -10,6 +10,7 @@ import struct
 import dat1lib
 import dat1lib.utils
 import info_printer
+import mod_toc
 
 class ModelHeader(object):
 	def __init__(self, f):
@@ -45,16 +46,21 @@ def main():
 
 	magic, = struct.unpack("<I", f.read(4))
 	f.seek(0)
-	if magic == 0x77AF12AF:
+	if magic == 0x77AF12AF or magic == 0x891F77AF:
 		# compressed toc
 		is_model = False
-		print "compressed toc detected"
+		is_toc = (magic == 0x77AF12AF)
+		print "compressed {} detected".format("toc" if is_toc else "dag")
 
 		f.seek(4)
 		size, = struct.unpack("<I", f.read(4))
+		if not is_toc:
+			f.read(4) # unknown 4 bytes
 		dec = zlib.decompressobj(0)
 		data = dec.decompress(f.read())
 		f.close()
+
+		print "real decompressed size = {}".format(len(data))
 
 		f = io.BytesIO(data)
 		if len(data) != size:
@@ -71,6 +77,7 @@ def main():
 	f.close()
 
 	info_printer.print_info(model_header, dat1)
-	info_printer.extract_secion(dat1, extraction_dir)
+	# info_printer.extract_section(dat1, extraction_dir)
+	mod_toc.do_mod(dat1, "toc.mod")
 
 main()
