@@ -3,6 +3,10 @@ import os
 import os.path
 import re
 
+import zlib
+import io
+import struct
+
 import dat1lib
 import dat1lib.utils
 import info_printer
@@ -38,6 +42,24 @@ def handle_args():
 
 def main():
 	f, is_model, extraction_dir = handle_args()
+
+	magic, = struct.unpack("<I", f.read(4))
+	f.seek(0)
+	if magic == 0x77AF12AF:
+		# compressed toc
+		is_model = False
+		print "compressed toc detected"
+
+		f.seek(4)
+		size, = struct.unpack("<I", f.read(4))
+		dec = zlib.decompressobj(0)
+		data = dec.decompress(f.read())
+		f.close()
+
+		f = io.BytesIO(data)
+		if len(data) != size:
+			print "[!] Actual decompressed size {} isn't equal to one written in the file {}".format(len(data), size)
+		print ""
 
 	model_header = None
 	offset = 0

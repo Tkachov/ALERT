@@ -25,6 +25,7 @@ def print_table(arr, fmt, entries_per_line):
 
 DEBUG_PRINTS = True
 DEBUG_PRINT_SECTIONS = True
+DEBUG_PRINT_SECTIONS_VERBOSE = True
 
 def true_or_none(x):
 	return (x is None or x)
@@ -83,6 +84,38 @@ def print_info(model_header, dat1):
 		for i, section_header in enumerate(dat1.header.sections):
 			print "- {:<2} {:08X}  {:8}  {:8}  {:8}".format(i, section_header.tag, section_header.offset, section_header.size, section_header.offset + section_header.size - 1)
 
+		if true_or_none(DEBUG_PRINT_SECTIONS_VERBOSE):
+			first_section = True
+			for i, section_header in enumerate(dat1.header.sections):
+				section = dat1.sections[i]
+				if section is not None:
+					if first_section:
+						print ""
+						first_section = False
+
+					if section_header.tag == dat1lib.SECTION_SIZE_ENTRIES:
+						print "{:08X} | Size Entries | {:6} entries".format(section_header.tag, len(section.entries))
+						had_warnings = False
+						for j, e in enumerate(section.entries):
+							if j != e.index:
+								print "    [!] #{} bad index: {}".format(j, e.index)
+								had_warnings = True
+							if e.always1 != 1:
+								print "    [!} #{} always1 == {}".format(j, e.always1)
+								had_warnings = True
+						if had_warnings:
+							print ""
+					elif section_header.tag == dat1lib.SECTION_ARCHIVES_MAP:
+						print "{:08X} | Archives Map | {:6} entries".format(section_header.tag, len(section.archives))
+					elif section_header.tag == dat1lib.SECTION_ASSET_IDS:
+						print "{:08X} | Asset IDs    | {:6} entries".format(section_header.tag, len(section.ids))
+					elif section_header.tag == dat1lib.SECTION_KEY_ASSETS:
+						print "{:08X} | Key Assets   | {:6} entries".format(section_header.tag, len(section.ids))
+					elif section_header.tag == dat1lib.SECTION_OFFSET_ENTRIES:
+						print "{:08X} | Offsets      | {:6} entries".format(section_header.tag, len(section.entries))
+					elif section_header.tag == dat1lib.SECTION_SPAN_ENTRIES:
+						print "{:08X} | Spans        | {:6} entries".format(section_header.tag, len(section.entries))
+
 def extract_secion(dat1, extraction_dir):
 	sections = dat1.header.sections
 	sections_count = len(sections)
@@ -127,5 +160,5 @@ def extract_secion(dat1, extraction_dir):
 		print fn
 		
 		f = open(fn, "wb")
-		f.write(dat1.sections_data[i])
+		f.write(dat1._sections_data[i])
 		f.close()
