@@ -154,6 +154,13 @@ KNOWN_SECTIONS = {
 	SECTION_MOD: SectionMod
 }
 
+RECALCULATE_PRESERVE_PADDING = 0
+RECALCULATE_ORIGINAL_ORDER = 1
+RECALCULATE_STRAIGHTFORWARD_ORDER = 2
+
+PAD_TO = 16
+EXTRA_PAD = 0
+
 class DAT1(object):
 	def __init__(self, f, offset = 0):
 		f.seek(offset)
@@ -161,6 +168,8 @@ class DAT1(object):
 		self.sections = []
 		self._sections_data = []
 		self._sections_map = {}
+
+		self._recalc_strat = RECALCULATE_ORIGINAL_ORDER
 
 		self._strings_map = {}
 		self._raw_strings_data = None
@@ -170,7 +179,7 @@ class DAT1(object):
 			for s in self.header.sections:
 				if min_offset is None or min_offset > s.offset:
 					min_offset = s.offset
-			self._raw_strings_data = f.read(min_offset - f.tell())
+			self._raw_strings_data = f.read(offset + min_offset - f.tell())
 		else:
 			self._raw_strings_data = f.read()
 		#print len(self._raw_strings_data)
@@ -237,30 +246,39 @@ class DAT1(object):
 
 		self.recalculate_section_headers()
 
+	def set_recalculation_strategy(self, strat):
+		self._recalc_strat = strat
+
 	def recalculate_section_headers(self):
 		offset_to_first_section = 16 + 12 * len(self.header.sections) + len(self._raw_strings_data)
 		sections_order = [s.tag for s in self.header.sections]
-		"""
-		print sections_order
-		for s in self.header.sections:
-			print s.tag, s.offset
-		"""
 
-		self.header.sections = sorted(self.header.sections, key=lambda x: x.offset)
+		if self._recalc_strat == RECALCULATE_PRESERVE_PADDING or self._recalc_strat == RECALCULATE_ORIGINAL_ORDER:
+			self.header.sections = sorted(self.header.sections, key=lambda x: x.offset)
+		else:
+			self.header.sections = sorted(self.header.sections, key=lambda x: x.tag)
+
+		original_padding = []
+		if self._recalc_strat == RECALCULATE_PRESERVE_PADDING:
+			for i in xrange(len(self.header.sections)):
+				if i == 0:
+					original_padding += [self.header.sections[i].offset - offset_to_first_section]
+				else:
+					original_padding += [self.header.sections[i].offset - (self.header.sections[i-1].offset + self.header.sections[i-1].size)]
 
 		start = offset_to_first_section
-		for s in self.header.sections:
+		for i, s in enumerate(self.header.sections):
+			if self._recalc_strat == RECALCULATE_PRESERVE_PADDING:
+				start += original_padding[i]
+			else:
+				start += EXTRA_PAD
+				if start % PAD_TO != 0:
+					start += PAD_TO - (start % PAD_TO)
 			s.offset = start
 			start += len(self._sections_data[self._sections_map[s.tag]])
-			if start % 16 != 0:
-				start += 16 - (start % 16)
 
 		self.header.size = start
 		self.header.sections = sorted(self.header.sections, key=lambda x: sections_order.index(x.tag))
-		"""
-		for s in self.header.sections:
-			print s.tag, s.offset
-		"""
 
 	def save(self, out):
 		#print self.header.size
@@ -274,19 +292,16 @@ class DAT1(object):
 
 		out.write(self._raw_strings_data)
 
-		"""
-		for s in self._sections_data:
-			out.write(s)
-		"""
-		cur_offset = 16 + 12 * len(self.header.sections) + len(self._raw_strings_data)	
+		cur_offset = 16 + 12 * len(self.header.sections) + len(self._raw_strings_data)
 		sorted_sections = [(s.tag, s.offset) for s in h.sections]
 		sorted_sections = sorted(sorted_sections, key=lambda x: x[1])
 		for s in sorted_sections:
+			if cur_offset < s[1]:
+				padding = s[1] - cur_offset
+				out.write('\0' * padding)
+				cur_offset += padding
+
 			ndx = self._sections_map[s[0]]
 			data = self._sections_data[ndx]
 			out.write(data)
 			cur_offset += len(data)
-			if cur_offset % 16 != 0:
-				padding = 16 - (cur_offset % 16)
-				out.write('\0' * padding)
-				cur_offset += padding
