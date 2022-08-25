@@ -11,53 +11,6 @@ import shutil
 import hashlib
 import dat1lib
 
-MAGIC = 0x30444F4D # "MOD0"
-
-def calculate_hash(f):
-	BUF_SIZE = 65536
-	sha1 = hashlib.sha1()
-
-	f.seek(0)
-	while True:
-		data = f.read(BUF_SIZE)
-		if not data:
-			break
-		sha1.update(data)
-
-	return sha1.hexdigest()
-
-def pretty_info(info):
-	try:
-		if info["mod_format_version"] == 1:
-			return "{} v. {}".format(info["name"], info["mod_version"])
-
-		# try working with unsupported version
-		name = info.get("name", None)
-		version = info.get("mod_version", None)
-
-		if name is not None:
-			result = "{}".format(name)
-			if version is not None:
-				result += " v. {}".format(version)
-
-		return result
-	except:
-		pass
-	
-	return "<unsupported or corrupted mod>"
-
-def get_mods_list(info):
-	try:
-		if info["format_version"] == 1:
-			return info["mods_list"]
-
-		# try working with unsupported version
-		return info["mods_list"]
-	except:
-		pass
-	
-	return []
-
 def read_toc(fn):
 	try:
 		f = open(fn, "rb")
@@ -185,10 +138,6 @@ def main():
 
 	info = {
 		"mod_format_version": 1,
-		"mod_version": "1.0.0",
-		"author": "Tkachov",
-		"name": "Repacked Model",
-		"description": "",
 		"patch": [
 			["R", 9767039763554194594, 0, len(data)]
 		]

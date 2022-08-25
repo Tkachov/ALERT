@@ -132,49 +132,5 @@ def print_info(model_header, dat1):
 							print e.asset_index, e.count
 						"""
 
-def extract_section(dat1, extraction_dir):
-	sections = dat1.header.sections
-	sections_count = len(sections)
-
-	if sections_count <= 0:
-		return
-
-	print ""
-	print "Which section do you want to extract? (0-{} or A for all)".format(sections_count-1)
-	option = raw_input("> ")
-	
-	extract_range = None
-	if option is not None and len(str(option)) >= 1:
-		if str(option).upper()[0] == 'A':
-			extract_range = xrange(sections_count)
-		else:
-			try:
-				option = int(option)
-				if option >= 0 and option < sections_count:
-					extract_range = xrange(option, option + 1)
-			except:
-				pass
-
-	if extract_range is None:
-		print "[!] Bad option {}.".format(repr(option))
-		return
-
-	print ""
-	if len(extract_range) > 1:
-		print "Extracting sections from {} to {}...".format(extract_range[0], extract_range[-1])
-	else:
-		print "Extracting section #{}...".format(extract_range[0])
-
-	try:
-		os.makedirs(extraction_dir)
-	except:
-		pass
-
-	for i in extract_range:
-		section = sections[i]
-		fn = extraction_dir + "/{:02}_{:08X}.section".format(i, section.tag)
-		print fn
-		
-		f = open(fn, "wb")
-		f.write(dat1._sections_data[i])
-		f.close()
+if __name__ == "__main__":
+	print "info()"
