@@ -4,6 +4,14 @@ import string
 import os
 import os.path
 
+import sys
+import os
+import os.path
+import re
+
+import dat1lib
+import dat1lib.utils
+
 import dat1lib
 
 def print_table(arr, fmt, entries_per_line):
@@ -132,5 +140,29 @@ def print_info(model_header, dat1):
 							print e.asset_index, e.count
 						"""
 
+def main(argv):
+	if len(argv) < 2:
+		print "Usage:"
+		print "$ {} <filename>".format(argv[0])
+		print ""
+		print "Read the file (could be 'toc', 'dag', '.model' or any '1TAD')"
+		print "and print as much info about it as possible"
+		return
+
+	#
+
+	fn = argv[1]
+	f = None
+	try:
+		f = open(fn, "rb")
+	except:
+		print "[!] Couldn't open '{}'".format(fn)
+		return
+
+	is_model = (".model" in fn)
+	
+	model_header, dat1 = dat1lib.read(f, is_model)
+	print_info(model_header, dat1)
+
 if __name__ == "__main__":
-	print "info()"
+	main(sys.argv)	

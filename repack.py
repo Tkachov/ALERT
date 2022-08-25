@@ -17,24 +17,26 @@ class ModelHeader(object):
 
 ###
 
-def handle_args():
-	if len(sys.argv) < 2:
+def main(argv):
+	if len(argv) < 2:
 		print "Usage:"
-		print "{} <filename>".format(sys.argv[0])
-		sys.exit()
+		print "$ {} <filename>".format(argv[0])
+		print ""
+		print "Read the .model and save it as .model.repacked"
+		print "Resulting file should work in game as usual"
+		return
 
-	fn = sys.argv[1]
+	#
+
+	fn = argv[1]
 	f = None
 	try:
 		f = open(fn, "rb")
 	except:
-		print "Couldn't open '{}'!".format(fn)
-		sys.exit()
+		print "[!] Couldn't open '{}'".format(fn)
+		return
 
-	return f
-
-def main():
-	f = handle_args()
+	#
 
 	model_header = ModelHeader(f)
 	offset = 36
@@ -45,7 +47,7 @@ def main():
 	dat1.set_recalculation_strategy(dat1lib.RECALCULATE_ORIGINAL_ORDER)
 	dat1.recalculate_section_headers()
 
-	f = open(sys.argv[1] + ".repacked", "wb")
+	f = open(fn + ".repacked", "wb")
 	f.write(struct.pack("<I", model_header.magic))
 
 	offset_to_indexbuf = 0
@@ -60,4 +62,5 @@ def main():
 	dat1.save(f)
 	f.close()
 
-main()
+if __name__ == "__main__":
+	main(sys.argv)

@@ -1,36 +1,42 @@
 import sys
-import os
-import os.path
-import re
 
-import dat1lib
-import dat1lib.utils
-import info_printer
+import info
+import repack
+import inject
+import install
 
-###
-
-def handle_args():
-	if len(sys.argv) < 2:
+def main(argv):
+	if len(argv) < 2:
 		print "Usage:"
-		print "{} <filename> [directory to extract to]".format(sys.argv[0])
-		sys.exit()
+		print "$ {} [script] [args]".format(argv[0])
+		print ""
+		print "Scripts:"
+		print "  info    \t Print as much info about a file as possible"
+		print "  repack  \t Read the .model and save it as .model.repacked"
+		print "  inject  \t Save the .model as hero.mod and add it to 'toc'"
+		print "  install \t Install all MOD0 mods on top of 'toc.orig'"
+		print ""
+		print "Default script is 'info'"
+		return
 
-	fn = sys.argv[1]
-	f = None
-	try:
-		f = open(fn, "rb")
-	except:
-		print "Couldn't open '{}'!".format(fn)
-		sys.exit()
+	#
 
-	is_model = (".model" in fn)
+	scripts = {
+		"info": info.main,
+		"repack": repack.main,
+		"inject": inject.main,
+		"install": install.main
+	}
 
-	return (f, is_model)
+	if argv[1] in scripts:
+		name = argv[1]
+		entry_point = scripts[name]
+		entry_point([name] + argv[2:])
+		return
 
-def main():
-	f, is_model = handle_args()
-	model_header, dat1 = dat1lib.read(f, is_model)
-	info_printer.print_info(model_header, dat1)
+	#
+
+	info.main(argv)
 
 if __name__ == "__main__":
-	main()
+	main(sys.argv)
