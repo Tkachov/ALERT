@@ -36,3 +36,10 @@ class ArchivesSection(dat1lib.types.sections.Section):
 			of.write(e.filename)
 		of.seek(0)
 		return of.read()
+
+	def get_short_suffix(self):
+		return "archives ({})".format(len(self.archives))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | Archives Map | {:6} entries".format(self.TAG, len(self.archives))

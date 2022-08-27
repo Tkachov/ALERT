@@ -18,7 +18,7 @@ class TOC(object):
 		if len(data) != self.size:
 			print "[!] Actual decompressed size {} isn't equal to one written in the file {}".format(len(data), self.size)
 
-		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(data))
+		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(data), self)
 
 	def save(self, f):
 		of = io.BytesIO(bytes())
@@ -32,3 +32,13 @@ class TOC(object):
 		
 		f.write(struct.pack("<II", self.magic, len(uncompressed)))
 		f.write(compressed)
+
+	def print_info(self, config):
+		print "-------"
+		print "TOC {:08X}".format(self.magic)
+		if self.magic != self.MAGIC:
+			print "[!] Unknown magic, should be {}".format(self.MAGIC)
+		print "-------"
+		print ""
+
+		self.dat1.print_info(config)

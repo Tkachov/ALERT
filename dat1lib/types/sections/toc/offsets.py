@@ -23,3 +23,17 @@ class OffsetsSection(dat1lib.types.sections.Section):
 			of.write(struct.pack("<II", e.archive_index, e.offset))
 		of.seek(0)
 		return of.read()
+
+	def get_short_suffix(self):
+		return "offsets ({})".format(len(self.entries))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | Offsets      | {:6} entries".format(self.TAG, len(self.entries))
+
+		"""
+		files_per_archive = {}
+		for e in self.entries:
+			files_per_archive[e.archive_index] = files_per_archive.get(e.archive_index, 0) + 1
+		print files_per_archive
+		"""

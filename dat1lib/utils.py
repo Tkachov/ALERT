@@ -15,3 +15,27 @@ def read_struct_array(f, size_fmt, struct_fmt):
 
 def read_class_array(f, size_fmt, struct_class):
 	return read_class_N_array(f, read_struct(f, size_fmt)[0], struct_class)
+
+###
+
+def print_table(arr, fmt, entries_per_line):
+	s = ""
+	cnt = 0
+	for x in arr:
+		if s == "":
+			s = "-"
+		s += fmt.format(x)
+		cnt += 1
+		if cnt == entries_per_line:
+			print s
+			s = ""
+			cnt = 0
+	if s != "":
+		print s
+
+def format_bytes(bytes_arr):
+	return " ".join(["{:02X}".format(x) for x in bytes_arr])
+
+def treat_as_bytes(num_bytes, strct):
+	bts = struct.unpack("<" + ("B" * num_bytes), strct)
+	return format_bytes(bts)

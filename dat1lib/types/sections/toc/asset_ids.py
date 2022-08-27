@@ -19,3 +19,10 @@ class AssetIdsSection(dat1lib.types.sections.Section):
 			of.write(struct.pack("<Q", aid))
 		of.seek(0)
 		return of.read()
+
+	def get_short_suffix(self):
+		return "asset ids ({})".format(len(self.ids))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | Asset IDs    | {:6} entries".format(self.TAG, len(self.ids))

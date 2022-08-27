@@ -33,7 +33,9 @@ class DAT1Header(object):
 class DAT1(object):
 	MAGIC = 0x44415431
 
-	def __init__(self, f):
+	def __init__(self, f, outer_obj=None):
+		self._outer = outer_obj
+
 		self.header = DAT1Header(f)
 		self.sections = []
 		self._sections_data = []
@@ -167,3 +169,84 @@ class DAT1(object):
 			data = self._sections_data[ndx]
 			out.write(data)
 			cur_offset += len(data)
+
+	def print_info(self, config):
+		self._print_header()
+		self._print_sections(config)
+
+	def _print_header(self):
+		UNK1_KNOWN_VALUES = {
+			0x98906B9F: "model",
+			0x2A077A51: "dag",
+			0x51B8E006: "toc"
+		}
+
+		suffix = ""
+		unk1 = self.header.unk1
+		if unk1 in UNK1_KNOWN_VALUES:
+			suffix = " ({})".format(UNK1_KNOWN_VALUES[unk1])
+
+		print "-------"
+		print "DAT1 {:08X}{}".format(self.header.unk1, suffix)
+		if self.header.magic != self.MAGIC:
+			print "[!] Unknown magic, should be {}".format(self.MAGIC)
+		print "-------"
+
+	def _print_sections(self, config):
+		if not config.get("sections", True):
+			return
+
+		sections = self.header.sections
+
+		print ""
+		print "Sections: {}".format(len(sections))
+
+		if len(sections) > 0:
+			sections_types = set([0 if s is None else s.TYPE for s in self.sections])
+			multiple_types = len(sections_types) > 1
+
+			print "-------------------------------------------"
+			#######  12 12345678  12345678  12345678  12345678
+			print "  #  `tag`       offset      size   ends at"
+			print "-------------------------------------------"
+			for i, section_header in enumerate(sections):
+				suffix = self._make_short_section_suffix(config, multiple_types, section_header, self.sections[i])
+				print "- {:<2} {:08X}  {:8}  {:8}  {:8}{}".format(i, section_header.tag, section_header.offset, section_header.size, section_header.offset + section_header.size - 1, suffix)
+
+			self._print_sections_verbose(config)
+
+	def _make_short_section_suffix(self, config, is_multitype, section_header, section):
+		if not config.get("sections_suffixes", True):
+			return ""
+
+		if section is None:
+			return ""
+
+		suffix = " -- "
+		if is_multitype:
+			suffix += section.TYPE
+
+			try:
+				suffix += self._outer._get_suffix_type(section_header, section)
+			except:
+				pass
+
+			suffix += ": "
+
+		suffix += section.get_short_suffix()
+		return suffix
+
+	def _print_sections_verbose(self, config):
+		if not config.get("sections_verbose", True):
+			return
+
+		first_section = True
+		for section in self.sections:
+			if section is None:
+				continue
+
+			if first_section:
+				print ""
+				first_section = False
+
+			section.print_verbose(config)
