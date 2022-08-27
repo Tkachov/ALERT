@@ -10,7 +10,13 @@ import os.path
 import re
 
 import dat1lib
+import dat1lib.types.dag
+import dat1lib.types.dat1
+import dat1lib.types.model
+import dat1lib.types.toc
 import dat1lib.utils
+
+import dat1lib.types.sections.toc.archives
 
 import dat1lib
 
@@ -31,7 +37,6 @@ def print_table(arr, fmt, entries_per_line):
 
 ####
 
-DEBUG_PRINTS = True
 DEBUG_PRINT_SECTIONS = True
 DEBUG_PRINT_SECTIONS_VERBOSE = True
 
@@ -41,23 +46,38 @@ def true_or_none(x):
 def format_bytes(bytes_arr):
 	return " ".join(["{:02X}".format(x) for x in bytes_arr])
 
-def print_as_bytes(num_bytes, strct):
+def treat_as_bytes(num_bytes, strct):
 	bts = struct.unpack("<" + ("B" * num_bytes), strct)
 	return format_bytes(bts)
 
-def print_info(model_header, dat1):
-	if not DEBUG_PRINTS:
+def print_info(obj):
+	if isinstance(obj, dat1lib.types.model.Model):
+		print "-------"
+		print "Model {:08X}".format(obj.magic)
+		if obj.magic != dat1lib.types.model.Model.MAGIC:
+			print "[!] Unknown magic, should be {}".format(dat1lib.types.model.Model.MAGIC)
+		print ""
+		print "Streaming part:"
+		print "- offset = {}".format(obj.offset_to_stream_sections)
+		print "- size   = {}".format(obj.stream_sections_size)
+		if False:
+			print ""
+			print treat_as_bytes(12, obj.unk[:12])
+			print treat_as_bytes(12, obj.unk[12:])
+		print "-------"
+		print ""
+
+		print_info(obj.dat1)
 		return
 
-	if model_header is not None:
+	if isinstance(obj, dat1lib.types.toc.TOC):
 		print "-------"
-		print "Model {:08X}".format(model_header.magic)
-		if model_header.magic != 0x98906B9F:
-			print "[!] Unknown magic, should be 0x98906B9F"
-		print ""
-		print_table(model_header.data, " {:08X}", 4)
+		# TODO: toc
 		print "-------"
 		print ""
+
+		print_info(obj.dat1)
+		return
 
 	####
 
@@ -69,11 +89,11 @@ def print_info(model_header, dat1):
 		0x2A077A51: "dag",
 		0x51B8E006: "toc"
 	}
-	if dat1.header.unk1 in UNK1_KNOWN_VALUES:
-		suffix = " ({})".format(UNK1_KNOWN_VALUES[dat1.header.unk1])
+	if obj.header.unk1 in UNK1_KNOWN_VALUES:
+		suffix = " ({})".format(UNK1_KNOWN_VALUES[obj.header.unk1])
 
-	print "DAT1 {:08X}{}".format(dat1.header.unk1, suffix)
-	if dat1.header.magic != 0x44415431:
+	print "DAT1 {:08X}{}".format(obj.header.unk1, suffix)
+	if obj.header.magic != 0x44415431:
 		print "[!] Unknown magic, should be 0x44415431"
 	print "-------"
 
@@ -82,26 +102,26 @@ def print_info(model_header, dat1):
 	if true_or_none(DEBUG_PRINT_SECTIONS):
 		print ""
 	
-	print "Sections: {}".format(len(dat1.header.sections))
+	print "Sections: {}".format(len(obj.header.sections))
 
-	if true_or_none(DEBUG_PRINT_SECTIONS) and len(dat1.header.sections) > 0:
+	if true_or_none(DEBUG_PRINT_SECTIONS) and len(obj.header.sections) > 0:
 		print "-------------------------------------------"
 		#######  12 12345678  12345678  12345678  12345678
 		print "  #  `tag`       offset      size   ends at"
 		print "-------------------------------------------"
-		for i, section_header in enumerate(dat1.header.sections):
+		for i, section_header in enumerate(obj.header.sections):
 			print "- {:<2} {:08X}  {:8}  {:8}  {:8}".format(i, section_header.tag, section_header.offset, section_header.size, section_header.offset + section_header.size - 1)
 
 		if true_or_none(DEBUG_PRINT_SECTIONS_VERBOSE):
 			first_section = True
-			for i, section_header in enumerate(dat1.header.sections):
-				section = dat1.sections[i]
+			for i, section_header in enumerate(obj.header.sections):
+				section = obj.sections[i]
 				if section is not None:
 					if first_section:
 						print ""
 						first_section = False
 
-					if section_header.tag == dat1lib.SECTION_SIZE_ENTRIES:
+					if False and section_header.tag == dat1lib.SECTION_SIZE_ENTRIES:
 						print "{:08X} | Size Entries | {:6} entries".format(section_header.tag, len(section.entries))
 						had_warnings = False
 						for j, e in enumerate(section.entries):
@@ -113,9 +133,9 @@ def print_info(model_header, dat1):
 								had_warnings = True
 						if had_warnings:
 							print ""
-					elif section_header.tag == dat1lib.SECTION_ARCHIVES_MAP:
+					elif section_header.tag == dat1lib.types.sections.toc.archives.ArchivesSection.TAG:
 						print "{:08X} | Archives Map | {:6} entries".format(section_header.tag, len(section.archives))
-					elif section_header.tag == dat1lib.SECTION_ASSET_IDS:
+					elif False and section_header.tag == dat1lib.SECTION_ASSET_IDS:
 						print "{:08X} | Asset IDs    | {:6} entries".format(section_header.tag, len(section.ids))
 						"""
 						for aid in section.ids:
@@ -123,9 +143,9 @@ def print_info(model_header, dat1):
 								print "!!! found !!!"
 								break
 						"""
-					elif section_header.tag == dat1lib.SECTION_KEY_ASSETS:
+					elif False and section_header.tag == dat1lib.SECTION_KEY_ASSETS:
 						print "{:08X} | Key Assets   | {:6} entries".format(section_header.tag, len(section.ids))
-					elif section_header.tag == dat1lib.SECTION_OFFSET_ENTRIES:
+					elif False and section_header.tag == dat1lib.SECTION_OFFSET_ENTRIES:
 						print "{:08X} | Offsets      | {:6} entries".format(section_header.tag, len(section.entries))
 						"""
 						files_per_archive = {}
@@ -133,7 +153,7 @@ def print_info(model_header, dat1):
 							files_per_archive[e.archive_index] = files_per_archive.get(e.archive_index, 0) + 1
 						print files_per_archive
 						"""
-					elif section_header.tag == dat1lib.SECTION_SPAN_ENTRIES:
+					elif False and section_header.tag == dat1lib.SECTION_SPAN_ENTRIES:
 						print "{:08X} | Spans        | {:6} entries".format(section_header.tag, len(section.entries))
 						"""
 						for e in section.entries:
@@ -152,17 +172,22 @@ def main(argv):
 	#
 
 	fn = argv[1]
-	f = None
+	obj = None
 	try:
-		f = open(fn, "rb")
-	except:
+		with open(fn, "rb") as f:
+			obj = dat1lib.read(f)
+	except Exception as e:
 		print "[!] Couldn't open '{}'".format(fn)
+		print e
 		return
 
-	is_model = (".model" in fn)
+	#
 	
-	model_header, dat1 = dat1lib.read(f, is_model)
-	print_info(model_header, dat1)
+	if obj is None:
+		print "[!] Couldn't comprehend '{}'".format(fn)
+		return
+	
+	print_info(obj)
 
 if __name__ == "__main__":
 	main(sys.argv)	

@@ -10,28 +10,29 @@ import sys
 import shutil
 import hashlib
 import dat1lib
+import dat1lib.types.toc
+import dat1lib.types.sections.toc.archives
+import dat1lib.types.sections.toc.asset_ids
+import dat1lib.types.sections.toc.mod0
+import dat1lib.types.sections.toc.offsets
+import dat1lib.types.sections.toc.sizes
+
+SECTION_ARCHIVES_MAP = dat1lib.types.sections.toc.archives.ArchivesSection.TAG
+SECTION_ASSET_IDS = dat1lib.types.sections.toc.asset_ids.AssetIdsSection.TAG
+SECTION_MOD = dat1lib.types.sections.toc.mod0.Mod0Section.TAG
+SECTION_OFFSET_ENTRIES = dat1lib.types.sections.toc.offsets.OffsetsSection.TAG
+SECTION_SIZE_ENTRIES = dat1lib.types.sections.toc.sizes.SizesSection.TAG
 
 def read_toc(fn):
 	try:
-		f = open(fn, "rb")
-		magic, size = struct.unpack("<II", f.read(8))
-		dec = zlib.decompressobj(0)
-		data = dec.decompress(f.read())
-		f.close()
+		with open(fn, "rb") as f:
+			toc = dat1lib.read(f)
 
-		if magic != 0x77AF12AF:
-			print "[!] non-toc magic: {:8X}".format(magic)
+		if not isinstance(toc, dat1lib.types.toc.TOC):
+			print "[!] Not a toc"
 			return (False, None)
 
-		f = io.BytesIO(data)
-		if len(data) != size:
-			print "[!] Actual decompressed size {} isn't equal to one written in the file {}".format(len(data), size)
-			return (False, None)
-
-		dat1 = dat1lib.DAT1(f, 0)
-		f.close()
-
-		return (True, dat1)
+		return (True, toc)
 	except Exception as e:
 		print "[!] Exception:", e
 		return (False, None)
@@ -40,23 +41,23 @@ def read_toc(fn):
 	return (False, None)
 
 def new_archive(toc, fn):
-	s = toc.get_section(dat1lib.SECTION_ARCHIVES_MAP)
+	s = toc.dat1.get_section(SECTION_ARCHIVES_MAP)
 	new_archive_index = 0
 	for a in s.archives:
 		if a.install_bucket != 0:
 			break
 		new_archive_index += 1
 
-	s.archives = s.archives[:new_archive_index] + [dat1lib.ArchiveFileEntry.make(0, 10000 + new_archive_index, fn)] + s.archives[new_archive_index:]
-	toc.refresh_section_data(dat1lib.SECTION_ARCHIVES_MAP)
+	s.archives = s.archives[:new_archive_index] + [dat1lib.types.sections.toc.archives.ArchiveFileEntry.make(0, 10000 + new_archive_index, fn)] + s.archives[new_archive_index:]
+	toc.dat1.refresh_section_data(SECTION_ARCHIVES_MAP)
 
 	return new_archive_index
 
 def apply_mod_patch(toc, mod_info, archive_index):
 	try:
-		assets = toc.get_section(dat1lib.SECTION_ASSET_IDS)
-		sizes = toc.get_section(dat1lib.SECTION_SIZE_ENTRIES)
-		offsets = toc.get_section(dat1lib.SECTION_OFFSET_ENTRIES)
+		assets = toc.dat1.get_section(SECTION_ASSET_IDS)
+		sizes = toc.dat1.get_section(SECTION_SIZE_ENTRIES)
+		offsets = toc.dat1.get_section(SECTION_OFFSET_ENTRIES)
 
 		def find_asset_index(needle): # linear search =\
 			for i, aid in enumerate(assets.ids):
@@ -84,8 +85,8 @@ def apply_mod_patch(toc, mod_info, archive_index):
 					offsets.entries[asset_index].archive_index = archive_index
 					offsets.entries[asset_index].offset = archive_offset
 
-			toc.refresh_section_data(dat1lib.SECTION_SIZE_ENTRIES)
-			toc.refresh_section_data(dat1lib.SECTION_OFFSET_ENTRIES)
+			toc.dat1.refresh_section_data(SECTION_SIZE_ENTRIES)
+			toc.dat1.refresh_section_data(SECTION_OFFSET_ENTRIES)
 
 			return True
 	except:
@@ -94,19 +95,8 @@ def apply_mod_patch(toc, mod_info, archive_index):
 	return False
 
 def save_toc(toc, fn):
-	of = io.BytesIO(bytes())
-	toc.save(of)
-	of.seek(0)
-	uncompressed = of.read()
-
-	c = zlib.compressobj()
-	compressed = c.compress(uncompressed)
-	compressed += c.flush()
-
-	f = open(fn, "wb")
-	f.write(struct.pack("<II", 0x77AF12AF, len(uncompressed)))
-	f.write(compressed)
-	f.close()
+	with open(fn, "wb") as f:
+		toc.save(f)
 
 SPIDERMAN_BODY = 9767039763554194594
 

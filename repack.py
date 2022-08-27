@@ -1,19 +1,8 @@
-import struct
-import math
-import string
-import os
-import os.path
-import json
-import io
-import zlib
 import sys
 
 import dat1lib
-
-class ModelHeader(object):
-	def __init__(self, f):
-		self.magic, = dat1lib.utils.read_struct(f, "<I")
-		self.data = list(dat1lib.utils.read_struct(f, "<" + "I"*8))
+import dat1lib.types.dat1
+import dat1lib.types.model
 
 ###
 
@@ -29,38 +18,32 @@ def main(argv):
 	#
 
 	fn = argv[1]
-	f = None
+	model = None
 	try:
-		f = open(fn, "rb")
-	except:
+		with open(fn, "rb") as f:
+			model = dat1lib.read(f)
+	except Exception as e:
 		print "[!] Couldn't open '{}'".format(fn)
+		print e
+		return
+
+	#
+	
+	if model is None:
+		print "[!] Couldn't comprehend '{}'".format(fn)
+		return
+
+	if not isinstance(model, dat1lib.types.model.Model): # TODO: should 'repack' only work on models?
+		print "[!] Not a model"
 		return
 
 	#
 
-	model_header = ModelHeader(f)
-	offset = 36
-	
-	dat1 = dat1lib.DAT1(f, offset)
-	f.close()
+	model.dat1.set_recalculation_strategy(dat1lib.types.dat1.RECALCULATE_ORIGINAL_ORDER)
+	model.dat1.recalculate_section_headers()
 
-	dat1.set_recalculation_strategy(dat1lib.RECALCULATE_ORIGINAL_ORDER)
-	dat1.recalculate_section_headers()
-
-	f = open(fn + ".repacked", "wb")
-	f.write(struct.pack("<I", model_header.magic))
-
-	offset_to_indexbuf = 0
-	for s in dat1.header.sections:
-		if s.tag == 0x0859863D:
-			offset_to_indexbuf = s.offset
-
-	model_header.data[0] = offset_to_indexbuf
-	model_header.data[1] = dat1.header.size - offset_to_indexbuf
-
-	f.write(struct.pack("<" + "I"*8, *model_header.data))
-	dat1.save(f)
-	f.close()
+	with open(fn + ".repacked", "wb") as f:
+		model.save(f)
 
 if __name__ == "__main__":
 	main(sys.argv)
