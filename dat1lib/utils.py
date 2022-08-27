@@ -16,6 +16,10 @@ def read_struct_array(f, size_fmt, struct_fmt):
 def read_class_array(f, size_fmt, struct_class):
 	return read_class_N_array(f, read_struct(f, size_fmt)[0], struct_class)
 
+def read_struct_N_array_data(data, N, fmt):
+	sz = struct.calcsize(fmt)
+	return [struct.unpack(fmt, data[i*sz:(i+1)*sz])[0] for i in xrange(N)]
+
 ###
 
 def print_table(arr, fmt, entries_per_line):
