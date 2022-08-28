@@ -43,3 +43,17 @@ def format_bytes(bytes_arr):
 def treat_as_bytes(num_bytes, strct):
 	bts = struct.unpack("<" + ("B" * num_bytes), strct)
 	return format_bytes(bts)
+
+def print_bytes_formatted(bytes_arr, prefix="", columns=4, bytes_per_column=4):
+	N = len(bytes_arr)
+	i = 0
+	while i < N:
+		line = prefix
+		for j in xrange(columns):
+			if i >= N:
+				break
+
+			line += format_bytes(bytes_arr[i:i+bytes_per_column])
+			line += "  "
+			i += bytes_per_column
+		print line

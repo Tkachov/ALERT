@@ -224,14 +224,18 @@ class DAT1(object):
 		if section is None:
 			return ""
 
+		secondary_type = None
+		try:
+			secondary_type = self._outer._get_suffix_type(section_header, section)
+		except:
+			pass
+
 		suffix = " -- "
-		if is_multitype:
+		if is_multitype or (secondary_type is not None and secondary_type != ""):
 			suffix += section.TYPE
 
-			try:
-				suffix += self._outer._get_suffix_type(section_header, section)
-			except:
-				pass
+			if secondary_type is not None and secondary_type != "":
+				suffix += secondary_type
 
 			suffix += ": "
 
@@ -242,9 +246,27 @@ class DAT1(object):
 		if not config.get("sections_verbose", True):
 			return
 
+		order = xrange(len(self.sections))
+		if config.get("sections_verbose_offset_sorted", True):
+			order = [(i, s.offset) for i, s in enumerate(self.header.sections)]
+			order = sorted(order, key=lambda x: x[1])
+			order = [x[0] for x in order]
+
 		first_section = True
-		for section in self.sections:
+		for ndx in order:
+			section = self.sections[ndx]
 			if section is None:
+				if config.get("sections_verbose_unknown", False):
+					if first_section:
+						print ""
+						first_section = False
+
+					##### "{:08X} | ............ | {:6} ..."
+					print "{:08X} | Unknown      | {:6} bytes".format(self.header.sections[ndx].tag, len(self._sections_data[ndx]))
+					if len(self._sections_data[ndx]) < config.get("sections_verbose_unknown_bytes_limit", 1024):
+						utils.print_bytes_formatted([ord(c) for c in self._sections_data[ndx]], " "*11)
+						print ""
+
 				continue
 
 			if first_section:

@@ -49,20 +49,140 @@ class x811902D7_Section(dat1lib.types.sections.Section):
 
 ###
 
+class xDCC88A19_Section(dat1lib.types.sections.Section):
+	TAG = 0xDCC88A19
+	TYPE = 'model'
+
+	def __init__(self, data):
+		dat1lib.types.sections.Section.__init__(self, data)
+
+		ENTRY_SIZE = 16
+		count = len(data)//ENTRY_SIZE
+		self.vectors = [struct.unpack("<ffff", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+
+	def get_short_suffix(self):
+		return "vectors? ({})".format(len(self.vectors))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | Vectors?     | {:6} vectors".format(self.TAG, len(self.vectors))
+
+###
+
+class xDF9FDF12_Section(dat1lib.types.sections.Section):
+	TAG = 0xDF9FDF12
+	TYPE = 'model'
+
+	def __init__(self, data):
+		dat1lib.types.sections.Section.__init__(self, data)
+
+		ENTRY_SIZE = 16
+		count = len(data)//ENTRY_SIZE
+		self.entries = [struct.unpack("<IIII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		# (0, 70, 0, 2)
+
+	def get_short_suffix(self):
+		return "0-70-0-2? ({})".format(len(self.entries))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | 0-70-0-2?    | {:6} tuples".format(self.TAG, len(self.entries))
+
+###
+
+class xB7380E8C_Section(dat1lib.types.sections.Section):
+	TAG = 0xB7380E8C
+	TYPE = 'model'
+
+	def __init__(self, data):
+		dat1lib.types.sections.Section.__init__(self, data)
+
+		# some unique numbers from 0, but with some gaps
+		# for example, 146 numbers from 0 up to 220
+		self.indexes = utils.read_struct_N_array_data(data, len(data)//2, "<H")
+
+	def get_short_suffix(self):
+		return "indexes? ({})".format(len(self.indexes))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | Some Indexes | {:6} indexes".format(self.TAG, len(self.indexes))
+
+###
+
+class xC5354B60_Section(dat1lib.types.sections.Section): # aka model_mirror_ids
+	TAG = 0xC5354B60
+	TYPE = 'model'
+
+	def __init__(self, data):
+		dat1lib.types.sections.Section.__init__(self, data)
+
+		# some offset-like numbers in "mostly" increasing order
+		# (sometimes value returns back to a smaller number and continues to increase)
+		self.offsets = utils.read_struct_N_array_data(data, len(data)//4, "<I")
+
+	def get_short_suffix(self):
+		return "offsets? ({})".format(len(self.offsets))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | Some Offsets | {:6} offsets".format(self.TAG, len(self.offsets))
+
+###
+
+class x283D0383_Section(dat1lib.types.sections.Section): # aka model_built
+	TAG = 0x283D0383
+	TYPE = 'model'
+
+	def __init__(self, data):
+		dat1lib.types.sections.Section.__init__(self, data)
+
+		# 0x283D0383 seems to be some model info that has things like bounding box and global model scaling?
+		# (global scaling is that number that is likely 0.00024. Int vertex positions are converted to floats and multiplied by this.
+		self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
+
+	def get_short_suffix(self):
+		return "model_built? ({})".format(len(self.values))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | model_built? | {:6} shorts".format(self.TAG, len(self.values))
+
+###
+
+class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
+	TAG = 0x3250BB80
+	TYPE = 'model'
+
+	def __init__(self, data):
+		dat1lib.types.sections.Section.__init__(self, data)
+
+		ENTRY_SIZE = 8
+		count = len(data) // 4 // ENTRY_SIZE
+		self.pairs = [struct.unpack("<II", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count * 2)]
+		# ?, 0
+
+		ENTRY_SIZE = 16
+		data2 = data[count * ENTRY_SIZE:]
+		self.quadruples = [struct.unpack("<IIII", data2[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		# ?, ?, ?, 0
+
+	def get_short_suffix(self):
+		return "model_material? ({})".format(len(self.quadruples))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | Materials?   | {:6} structs".format(self.TAG, len(self.quadruples))
+
+		print ""
+		#######........ | 12  12345678  12345678  12345678  12345678  12345678  12345678  12345678  12345678
+		print "           #         a1        a2        b1        b2        c1        c2        c3        c4"
+		print "         ------------------------------------------------------------------------------------"
+		for i, q in enumerate(self.quadruples):
+			print "         - {:<2}  {:8}  {:8}  {:8}  {:8}  {:08X}  {:08X}  {:08X}  {:8}".format(i, self.pairs[i*2][0], self.pairs[i*2][1], self.pairs[i*2+1][0], self.pairs[i*2+1][1], q[0], q[1], q[2], q[3])
+		print ""
+
 """
-typedef struct
-{
-    uint key;
-    uint value;
-} MapUintUintEntry <read=ReadMapUintUintEntry>;
-
-string ReadMapUintUintEntry(MapUintUintEntry& e)
-{
-    string s;
-    SPrintf(s, "%u -> %u", e.key, e.value);
-    return s;
-}
-
 typedef struct
 {
     uint hash;
@@ -150,43 +270,6 @@ string ReadVector4f(Vector4f& v)
         } Joint;
 
         Joint joints[count] <bgcolor=cLtPurple>;
-    }
-
-    // model_built
-    else if (tag == 0x283D0383)
-    {
-        // 0x283D0383 seems to be some model info that has things like bounding box and global model scaling?
-        // (global scaling is that number that is likely 0.00024. Int vertex positions are converted to floats
-        // and multiplied by this.
-
-        local uint count = size / 2;
-        SPrintf(name, "model_built (%d shorts)", count);
-        short values[count] <bgcolor=cLtPurple>;
-    }
-
-    // model_material
-    else if (tag == 0x3250BB80)
-    {
-        local uint count = size / 8 / 4;
-        SPrintf(name, "model_material (%d structs)", count);
-
-        typedef struct
-        {
-            uint unkU00;
-            uint unkU04; // 0
-        } MaterialPair;
-
-        MaterialPair pairs[count * 2] <bgcolor=cLtPurple>;
-
-        typedef struct
-        {
-            uint unkU00;
-            uint unkU04;
-            uint unkU08;
-            uint unkU0C; // 0
-        } MaterialQuadruple;
-
-        MaterialQuadruple quadruples[count] <bgcolor=cDkPurple>;
     }
 
     // ?
@@ -300,22 +383,6 @@ string ReadVector4f(Vector4f& v)
         SPrintf(name, "Vertexes? (%d shorts)", size/2);
         short vertexData[size / 2];
     }
-    // Not really figured out
-    else if (tag == 0xB7380E8C)
-    {
-        // some unique numbers from 0, but with some gaps
-        // for example, 146 numbers from 0 up to 220
-        SPrintf(name, "Some Indexes? (%d shorts)", size/2);
-        short data[size / 2];
-    }
-    // Not really figured out; "model_mirror_ids"
-    else if (tag == 0xC5354B60)
-    {
-        // some offset-like numbers in "mostly" increasing order
-        // (sometimes value returns back to a smaller number and continues to increase)
-        SPrintf(name, "Offsets (%d items) / model_mirror_ids?", size/4);
-        uint offsets[size/4];
-    }
     // Not really figured out; "model_skin_batch"
     else if (tag == 0xC61B1FF5)
     {
@@ -337,37 +404,4 @@ string ReadVector4f(Vector4f& v)
         SkinRelated rest[(size - 16) / 16];
         SPrintf(name, "model_skin_batch? (%d items)", (size-16)/16);
     }
-    // ?
-    else if (tag == 0xDCC88A19)
-    {
-        // scaling info?
-        local uint count1 = size/16;
-        Vector4f vectors[count1] <bgcolor=cLtPurple>;
-        SPrintf(name, "DCC88A19 (%d vectors)", count1);
-    }
-    // ?
-    else if (tag == 0xDF9FDF12)
-    {
-        typedef struct
-        {
-            uint a, b, c, d; // 0, 70, 0, 2
-        } UnknownStructDF9FDF12;
-
-        local uint count = size/16;
-        UnknownStructDF9FDF12 structs[count] <bgcolor=cLtPurple>;
-        SPrintf(name, "DF9FDF12 (%d structs)", count);
-    }
-    // Joints map (hash -> index)
-    else if (tag == JOINTS_MAP)
-    {
-        local uint count = size / 8;
-        SPrintf(name, "Joints Map (%d items)", count);
-        MapUintUintEntry map[count];
-    }
-    // Havok data
-    else if (tag == HAVOK_SECTION)
-    {
-        name = "Havok Data";
-        HavokData data(size);
-    }  
 """
