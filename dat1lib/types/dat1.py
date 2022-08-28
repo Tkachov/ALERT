@@ -139,7 +139,9 @@ class DAT1(object):
 				if start % PAD_TO != 0:
 					start += PAD_TO - (start % PAD_TO)
 			s.offset = start
-			start += len(self._sections_data[self._sections_map[s.tag]])
+			sz = len(self._sections_data[self._sections_map[s.tag]])
+			s.size = sz
+			start += sz
 
 		self.header.size = start
 		self.header.sections = sorted(self.header.sections, key=lambda x: sections_order.index(x.tag))
