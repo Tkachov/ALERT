@@ -5,8 +5,8 @@ class Mod0Section(dat1lib.types.sections.Section):
 	TAG = 0x30444F4D
 	TYPE = 'toc'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 		self.data = json.loads(data)
 
 	def __str__(self):

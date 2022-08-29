@@ -6,8 +6,8 @@ class BinkSection(dat1lib.types.sections.Section):
 	TAG = 0x53F25238
 	TYPE = 'soundbank'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 	def replace_data(self, data):
 		self._raw = data

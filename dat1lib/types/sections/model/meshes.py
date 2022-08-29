@@ -12,8 +12,8 @@ class MeshesSection(dat1lib.types.sections.Section): # aka model_subset
 	TAG = 0x78D9CBDE
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		ENTRY_SIZE = 64
 		count = len(data)//ENTRY_SIZE

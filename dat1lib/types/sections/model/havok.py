@@ -37,8 +37,8 @@ class HavokSection(dat1lib.types.sections.Section):
 	TAG = 0xEFD92E68
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		self.data = HavokData(io.BytesIO(data))
 

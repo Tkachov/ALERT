@@ -22,8 +22,8 @@ class ArchivesSection(dat1lib.types.sections.Section):
 	TAG = 0x398ABFF0
 	TYPE = 'toc'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		ENTRY_SIZE = 72
 		count = len(data)//ENTRY_SIZE

@@ -10,8 +10,8 @@ class SizesSection(dat1lib.types.sections.Section):
 	TAG = 0x65BCF461
 	TYPE = 'toc'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		ENTRY_SIZE = 12
 		count = len(data)//ENTRY_SIZE

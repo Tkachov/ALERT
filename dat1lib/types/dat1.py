@@ -65,7 +65,7 @@ class DAT1(object):
 
 			KNOWN_SECTIONS = dat1lib.types.sections.KNOWN_SECTIONS
 			if s.tag in KNOWN_SECTIONS:
-				self.sections += [KNOWN_SECTIONS[s.tag](self._sections_data[-1])]
+				self.sections += [KNOWN_SECTIONS[s.tag](self._sections_data[-1], self)]
 			else:
 				self.sections += [None]
 
@@ -79,9 +79,14 @@ class DAT1(object):
 					break
 
 				s = data[start:i]
+				self._strings_map[start] = s
 				start = i+1
 
 			i += 1
+
+	def get_string(self, offset):
+		offset -= 16 + 12 * len(self.header.sections)
+		return self._strings_map.get(offset, None)
 
 	def get_section(self, tag):
 		if tag not in self._sections_map:

@@ -6,8 +6,8 @@ class AssetIdsSection(dat1lib.types.sections.Section):
 	TAG = 0x506D7B8A
 	TYPE = 'toc'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		ENTRY_SIZE = 8
 		count = len(data)//ENTRY_SIZE

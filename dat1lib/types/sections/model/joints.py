@@ -6,8 +6,8 @@ class JointsMapSection(dat1lib.types.sections.UintUintMapSection): # aka model_j
 	TAG = 0xEE31971C
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.UintUintMapSection.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.UintUintMapSection.__init__(self, data, container)
 
 	def get_short_suffix(self):
 		return "joints map ({})".format(len(self._map))

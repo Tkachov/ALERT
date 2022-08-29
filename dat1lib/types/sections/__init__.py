@@ -6,8 +6,9 @@ class Section(object):
 	TAG = 0x0
 	TYPE = 'unknown'
 
-	def __init__(self, data):
+	def __init__(self, data, container):
 		self._raw = data
+		self._dat1 = container
 
 	def save(self):
 		return self._raw
@@ -15,8 +16,8 @@ class Section(object):
 ###
 
 class UintUintMapSection(Section):
-	def __init__(self, data):
-		Section.__init__(self, data)
+	def __init__(self, data, container):
+		Section.__init__(self, data, container)
 
 		ENTRY_SIZE = 8
 		count = len(data)//ENTRY_SIZE
@@ -32,7 +33,7 @@ class UintUintMapSection(Section):
 ###
 
 class StringsSection(Section):
-	def __init__(self, data):
-		Section.__init__(self, data)
+	def __init__(self, data, container):
+		Section.__init__(self, data, container)
 
 		self._strings = data.decode("utf-8").split('\x00')

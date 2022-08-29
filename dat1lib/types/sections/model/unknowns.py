@@ -11,8 +11,8 @@ class x7CA37DA0_Section(dat1lib.types.sections.Section):
 	TAG = 0x7CA37DA0
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		ENTRY_SIZE = 48
 		count = len(data)//ENTRY_SIZE
@@ -31,8 +31,8 @@ class x811902D7_Section(dat1lib.types.sections.Section):
 	TAG = 0x811902D7
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		size1, = struct.unpack("<I", data[:4])
 		self.uints = utils.read_struct_N_array_data(data[4:], size1/4 - 1, "<I")
@@ -53,8 +53,8 @@ class xDCC88A19_Section(dat1lib.types.sections.Section):
 	TAG = 0xDCC88A19
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -73,8 +73,8 @@ class xDF9FDF12_Section(dat1lib.types.sections.Section):
 	TAG = 0xDF9FDF12
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -94,8 +94,8 @@ class xB7380E8C_Section(dat1lib.types.sections.Section):
 	TAG = 0xB7380E8C
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		# some unique numbers from 0, but with some gaps
 		# for example, 146 numbers from 0 up to 220
@@ -114,8 +114,8 @@ class xC5354B60_Section(dat1lib.types.sections.Section): # aka model_mirror_ids
 	TAG = 0xC5354B60
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		# some offset-like numbers in "mostly" increasing order
 		# (sometimes value returns back to a smaller number and continues to increase)
@@ -134,8 +134,8 @@ class x283D0383_Section(dat1lib.types.sections.Section): # aka model_built
 	TAG = 0x283D0383
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		# 0x283D0383 seems to be some model info that has things like bounding box and global model scaling?
 		# (global scaling is that number that is likely 0.00024. Int vertex positions are converted to floats and multiplied by this.
@@ -154,13 +154,12 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 	TAG = 0x3250BB80
 	TYPE = 'model'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
-		ENTRY_SIZE = 8
-		count = len(data) // 4 // ENTRY_SIZE
-		self.pairs = [struct.unpack("<II", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count * 2)]
-		# ?, 0
+		ENTRY_SIZE = 16
+		count = len(data) // 2 // ENTRY_SIZE
+		self.string_offsets = [struct.unpack("<QQ", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]		
 
 		ENTRY_SIZE = 16
 		data2 = data[count * ENTRY_SIZE:]
@@ -168,18 +167,20 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 		# ?, ?, ?, 0
 
 	def get_short_suffix(self):
-		return "model_material? ({})".format(len(self.quadruples))
+		return "materials ({})".format(len(self.quadruples))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Materials?   | {:6} structs".format(self.TAG, len(self.quadruples))
+		print "{:08X} | Materials    | {:6} materials".format(self.TAG, len(self.quadruples))
 
-		print ""
-		#######........ | 12  12345678  12345678  12345678  12345678  12345678  12345678  12345678  12345678
-		print "           #         a1        a2        b1        b2        c1        c2        c3        c4"
-		print "         ------------------------------------------------------------------------------------"
 		for i, q in enumerate(self.quadruples):
-			print "         - {:<2}  {:8}  {:8}  {:8}  {:8}  {:08X}  {:08X}  {:08X}  {:8}".format(i, self.pairs[i*2][0], self.pairs[i*2][1], self.pairs[i*2+1][0], self.pairs[i*2+1][1], q[0], q[1], q[2], q[3])
+			matfile = self._dat1.get_string(self.string_offsets[i][0])
+			matname = self._dat1.get_string(self.string_offsets[i][1])
+
+			print ""
+			print "  - {:<2}  {}".format(i, matfile)
+			print "        {}".format(matname)
+			print "        {:08X}  {:08X}  {:08X}  {}".format(q[0], q[1], q[2], q[3])
 		print ""
 
 """
@@ -338,38 +339,6 @@ string ReadVector4f(Vector4f& v)
         }
     }
 
-    // Lookup tables (hash -> index)
-    else if (tag == LOCATORS_MAP)
-    {
-        local uint count = size / 8;
-        SPrintf(name, "Locators Map (%d items)", count);
-        MapUintUintEntry map[count];
-    }
-
-    // Some locator-related pairs
-    else if (tag == 0x9A434B29)
-    {
-        typedef struct
-        {
-            uint unk00;
-            uint unk04;
-        } LocatorPair;
-
-        local uint count = (size - 16) / 8;
-        SPrintf(name, "Locator-related? (%d items)", count);
-        uint sectionSize;
-        uint unkU04; // always 32?
-        uint unkU08; // small
-        uint unkU0C; // small, approx. *2 of unkU08
-        LocatorPair rest[count];
-    }
-    // List of locator definitions
-    else if (tag == LOCATORS_SECTION)
-    {
-        local uint count = size / 64;
-        SPrintf(name, "Locator Defs (%d items)", count);
-        LocatorDefinition locators[count];
-    }
     // Not really figured out; Vertexes data
     else if (tag == VERTEXES_SECTION)
     {
