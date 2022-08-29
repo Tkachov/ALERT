@@ -1,6 +1,7 @@
+import dat1lib.crc32 as crc32
+import dat1lib.crc64 as crc64
 import dat1lib.types.sections
 import dat1lib.utils as utils
-import dat1lib.hash as s_hash
 import io
 import struct
 
@@ -165,29 +166,32 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 
 		ENTRY_SIZE = 16
 		data2 = data[count * ENTRY_SIZE:]
-		self.quadruples = [struct.unpack("<QII", data2[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
-		# hash(matfile), ?, 0
+		self.triples = [struct.unpack("<QII", data2[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		# crc64(matfile), crc32(matname), ?
 
 	def get_short_suffix(self):
-		return "materials ({})".format(len(self.quadruples))
+		return "materials ({})".format(len(self.triples))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Materials    | {:6} materials".format(self.TAG, len(self.quadruples))
+		print "{:08X} | Materials    | {:6} materials".format(self.TAG, len(self.triples))
 
-		for i, q in enumerate(self.quadruples):
+		for i, q in enumerate(self.triples):
 			matfile = self._dat1.get_string(self.string_offsets[i][0])
 			matname = self._dat1.get_string(self.string_offsets[i][1])
 
 			print ""
-			print "  - {:<2}  {}".format(i, matfile)
-			print "        {}".format(matname)
-			print "        {:016X}  {:08X}  {}".format(q[0], q[1], q[2])
+			print "  - {:<2}  {:016X}  {}".format(i, q[0], matfile)
+			print "        {:<8}{:08X}  {}".format(q[2], q[1], matname)
 
 			if config.get("section_warnings", True):
-				real_hash = s_hash.hash(matfile)
+				real_hash = crc64.hash(matfile)
 				if real_hash != q[0]:
 					print "        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, q[0])
+
+				real_hash = crc32.hash(matname)
+				if real_hash != q[1]:
+					print "        [!] material name real hash {:08X} is not equal to one written in the struct {:08X}".format(real_hash, q[1])
 		print ""
 
 """

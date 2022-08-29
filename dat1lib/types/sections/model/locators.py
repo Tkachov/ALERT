@@ -1,3 +1,4 @@
+import dat1lib.crc32 as crc32
 import dat1lib.types.sections
 import io
 import struct
@@ -61,7 +62,7 @@ class LocatorsSection(dat1lib.types.sections.Section): # aka model_locator
 		for i, l in enumerate(self.locators):
 			name = self._dat1.get_string(l.string_offset)
 
-			print "         - {:<3}  {:08X}  {}{}  {:4}  {:4}".format(i, l.hash, name[:32], " "*(32 - len(name[:32])), l.parent, l.zero)
+			print "         - {:<3}  {:08X}  {:08X}  {}{}  {:4}  {:4}".format(i, l.hash, crc32.hash(name), name[:32], " "*(32 - len(name[:32])), l.joint, l.zero)
 			"""
 			if config.get("section_warnings", True):
 				real_hash = s_hash.hash(matfile)
