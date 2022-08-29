@@ -1,5 +1,6 @@
 import dat1lib.types.sections
 import dat1lib.utils as utils
+import dat1lib.hash as s_hash
 import io
 import struct
 
@@ -160,11 +161,12 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 		ENTRY_SIZE = 16
 		count = len(data) // 2 // ENTRY_SIZE
 		self.string_offsets = [struct.unpack("<QQ", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]		
+		# matfile, matname
 
 		ENTRY_SIZE = 16
 		data2 = data[count * ENTRY_SIZE:]
-		self.quadruples = [struct.unpack("<IIII", data2[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
-		# ?, ?, ?, 0
+		self.quadruples = [struct.unpack("<QII", data2[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		# hash(matfile), ?, 0
 
 	def get_short_suffix(self):
 		return "materials ({})".format(len(self.quadruples))
@@ -180,7 +182,12 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 			print ""
 			print "  - {:<2}  {}".format(i, matfile)
 			print "        {}".format(matname)
-			print "        {:08X}  {:08X}  {:08X}  {}".format(q[0], q[1], q[2], q[3])
+			print "        {:016X}  {:08X}  {}".format(q[0], q[1], q[2])
+
+			if config.get("section_warnings", True):
+				real_hash = s_hash.hash(matfile)
+				if real_hash != q[0]:
+					print "        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, q[0])
 		print ""
 
 """
