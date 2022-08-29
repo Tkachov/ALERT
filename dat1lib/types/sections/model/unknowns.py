@@ -191,18 +191,7 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 		print ""
 
 """
-typedef struct
-{
-    uint hash;
-    uint unk04; // increasing small number
-    int parent; // -1 if none
-    uint unk0C; // always 0
-    float m3x4[12];
-        // 1 0 0
-        // 0 1 0
-        // 0 0 1
-        // 0 0 0
-} LocatorDefinition;
+
 
 typedef struct
 {
