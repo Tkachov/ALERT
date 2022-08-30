@@ -22,6 +22,7 @@ class LocatorsMapSection(dat1lib.types.sections.UintUintMapSection): # aka model
 class LocatorDefinition(object):
 	def __init__(self, data):
 		self.hash, self.string_offset, self.joint, self.zero = struct.unpack("<IIiI", data[:16])
+		# hash = crc32(name, normalize=False), that is, without lower() (which, however, is used for material names)
 		# joint is -1 if none
 
 		self.matrix = [
@@ -57,18 +58,17 @@ class LocatorsSection(dat1lib.types.sections.Section): # aka model_locator
 
 		print ""
 		#######........ | 123  12345678  12345678901234567890123456789012  1234  1234
-		print "           #        hash  name                              jint  zero"
+		print "           #        hash  name                             joint  zero"
 		print "         -------------------------------------------------------------"
 		for i, l in enumerate(self.locators):
 			name = self._dat1.get_string(l.string_offset)
 
-			print "         - {:<3}  {:08X}  {:08X}  {}{}  {:4}  {:4}".format(i, l.hash, crc32.hash(name), name[:32], " "*(32 - len(name[:32])), l.joint, l.zero)
-			"""
+			print "         - {:<3}  {:08X}  {}{}  {:4}  {:4}".format(i, l.hash, name[:32], " "*(32 - len(name[:32])), l.joint, l.zero)
 			if config.get("section_warnings", True):
-				real_hash = s_hash.hash(matfile)
-				if real_hash != q[0]:
-					print "        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, q[0])
-			"""
+				nhsh = crc32.hash(name, False)
+				if nhsh != l.hash:
+					print "        [!] name real hash {:08X} is not equal to one written in the struct {:08X}".format(nhsh, l.hash)
+
 		print ""
 
 ###

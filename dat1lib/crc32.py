@@ -40,8 +40,9 @@ def crc32(data, crc):
 		crc = 0xFFFFFFFF & ((crc >> 8) ^ table[0xFF & (crc ^ ord(b))])
 	return crc
 
-def hash(data):
-	data = data.lower().replace('\\', '/')
+def hash(data, normalize=True):
+	if normalize:
+		data = data.lower().replace('\\', '/')
 
 	value = 0xEDB88320
 	value = crc32(data, value)
