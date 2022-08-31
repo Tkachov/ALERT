@@ -12,8 +12,8 @@ class x0E19E37F_Section(dat1lib.types.sections.Section):
 	TAG = 0x0E19E37F
 	TYPE = 'soundbank'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -39,8 +39,8 @@ class x3E8490A3_Section(dat1lib.types.sections.StringsSection):
 	TAG = 0x3E8490A3
 	TYPE = 'soundbank'
 
-	def __init__(self, data):
-		dat1lib.types.sections.StringsSection.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.StringsSection.__init__(self, data, container)
 
 	def get_short_suffix(self):
 		return "strings ({})".format(len(self._strings))
@@ -58,8 +58,8 @@ class x4765351A_Section(dat1lib.types.sections.Section):
 	TAG = 0x4765351A
 	TYPE = 'soundbank'
 
-	def __init__(self, data):
-		dat1lib.types.sections.Section.__init__(self, data)
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		self.a, self.b, self.bnk_section_size = struct.unpack("<HHI", data[:8])
 		self.rest = data[8:]

@@ -194,8 +194,65 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 					print "        [!] material name real hash {:08X} is not equal to one written in the struct {:08X}".format(real_hash, q[1])
 		print ""
 
-"""
+###
 
+class x6B855EED_Section(dat1lib.types.sections.Section):
+	TAG = 0x6B855EED
+	TYPE = 'model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# looks like a bunch of uints
+		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<I")
+
+	def get_short_suffix(self):
+		return "? ({})".format(len(self.values))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
+		print self.values[:32]
+
+class x5CBA9DE9_Section(dat1lib.types.sections.Section):
+	TAG = 0x5CBA9DE9
+	TYPE = 'model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+		
+		# - has the same byte size as 6B855EED
+		# - has a lot of 0s
+		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<I")
+
+	def get_short_suffix(self):
+		return "? ({})".format(len(self.values))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
+		print self.values[:32]
+
+###
+
+class x06EB7EFC_Section(dat1lib.types.sections.Section): # aka model_look
+	TAG = 0x06EB7EFC
+	TYPE = 'model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
+
+	def get_short_suffix(self):
+		return "model_look? ({})".format(len(self.values))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | model_look?  | {:6} shorts".format(self.TAG, len(self.values))
+		print self.values
+
+"""
 
 typedef struct
 {
@@ -210,14 +267,6 @@ string ReadVector4f(Vector4f& v)
 }
 
 ///
-
-    // model_look
-    if (tag == 0x6EB7EFC)
-    {
-        local uint count = size / 2;
-        SPrintf(name, "model_look (%d shorts)", count);
-        short values[count] <bgcolor=cLtPurple>;
-    }
     // Index buffer
     else if (tag == INDEXBUF_SECTION)
     {
@@ -252,25 +301,6 @@ string ReadVector4f(Vector4f& v)
         Quintuple quintuples[count] <bgcolor=cLtPurple>;
         
         // uint values[count] <bgcolor=cLtPurple>;
-    }
-
-    // model_joint
-    else if (tag == 0x15DF9D3B)
-    {
-        local uint count = size / 16;
-        SPrintf(name, "model_joint (%d structs)", count);
-
-        typedef struct
-        {
-            short parent; // -1
-            short index;
-            short unkS04; // some other index? usually 0, but sometimes some other small value (less than count of joints, if I'm not mistaken)
-            short unkS06; // size?
-            uint hash;
-            uint offset; // increasing in some non-regular increments, starts non-zero
-        } Joint;
-
-        Joint joints[count] <bgcolor=cLtPurple>;
     }
 
     // ?
@@ -312,16 +342,6 @@ string ReadVector4f(Vector4f& v)
         }
 
         SPrintf(name, "380A5744 (%d pairs, %d pairs, %d uints)", count, count2, count3);
-    }
-
-    // ?
-    else if (tag == 0x6B855EED)
-    {
-        // 6B855EED has the same byte size as 5CBA9DE9
-        // 6B855EED looks like a bunch of uints, 5CBA9DE9 has a lot of 0s
-        local uint count = size / 4;
-        SPrintf(name, "6B855EED (%d uints)", count);
-        uint values[count] <bgcolor=cLtPurple>;
     }
 
     // Not really figured out; seems to have a lot of matrices. Maybe bone related?
