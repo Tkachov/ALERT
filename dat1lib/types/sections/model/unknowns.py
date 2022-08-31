@@ -68,6 +68,7 @@ class xDCC88A19_Section(dat1lib.types.sections.Section):
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Vectors?     | {:6} vectors".format(self.TAG, len(self.vectors))
+		# TODO: print vec4f
 
 ###
 
@@ -252,145 +253,155 @@ class x06EB7EFC_Section(dat1lib.types.sections.Section): # aka model_look
 		print "{:08X} | model_look?  | {:6} shorts".format(self.TAG, len(self.values))
 		print self.values
 
-"""
+###
 
-typedef struct
-{
-    float x,y,z,w;
-} Vector4f <read=ReadVector4f>;
+class x0AD3A708_Section(dat1lib.types.sections.Section):
+	TAG = 0x0AD3A708
+	TYPE = 'model'
 
-string ReadVector4f(Vector4f& v)
-{
-    string s;
-    SPrintf(s, "(%1.3f %1.3f %1.3f %1.3f)", v.x, v.y, v.z, v.w);
-    return s;
-}
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
-///
-    // Index buffer
-    else if (tag == INDEXBUF_SECTION)
-    {
-        local uint count = size / 2;
-        SPrintf(name, "Index Buf (%d indexes)", count);
+		self.count, self.a, self.b, self.c = struct.unpack("<IIII", data[:16])
 
-        // Indices are weird in that instead of storing the indices directly, the indices are instead delta encoded.
-        // that is, each index is a sum of the current "delta index" and all the prior delta indices.
-        // For example, the true i(3) is actually di(0) + di(1) + di(2) + di(3).
-        short deltaIndexes[count] <bgcolor=cLtGreen>;
-    }
+		rest = data[16:]
+		ENTRY_SIZE = 20
+		self.quintuples = [struct.unpack("<IIIII", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(self.count)]
+		# ?, ?, ?, ?, offset-like (small, increasing by powers of 2 (I've seen 512, 128 or 64))
 
-    else if (tag == 0x0AD3A708)
-    {
-        // local uint count = size / 4;
-        uint count <bgcolor=cLtPurple>;
-        uint unkU04 <bgcolor=cLtPurple>;
-        uint unkU08 <bgcolor=cLtPurple>;
-        uint unkU0C <bgcolor=cLtPurple>;
+	def get_short_suffix(self):
+		return "? ({})".format(len(self.quintuples))
 
-        SPrintf(name, "0AD3A708 (%d quintuples)", count);
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | quintuples?  | {:6} quintuples".format(self.TAG, len(self.quintuples))
 
-        typedef struct
-        {
-            uint unk00;
-            uint unk04;
-            uint unk08;
-            uint unk0C;
-            uint offsetLike; // small, increasing by powers of 2 (I've seen 512, 128 or 64)
-        } Quintuple;
+		print "           {} {} {}".format(self.a, self.b, self.c)
+		print ""
+		#######........ | 123  12345678  12345678  12345678  12345678  123456
+		print "           #           a         b         c         d  offset"
+		print "         -----------------------------------------------------"
+		for i, l in enumerate(self.quintuples):
+			print "         - {:<3}  {:08X}  {:08X}  {:08X}  {:08X}  {:6}".format(i, l[0], l[1], l[2], l[3], l[4])
+		print ""
 
-        Quintuple quintuples[count] <bgcolor=cLtPurple>;
-        
-        // uint values[count] <bgcolor=cLtPurple>;
-    }
+###
 
-    // ?
-    else if (tag == 0x380A5744)
-    {
-        uint unk[16] <bgcolor=cLtPurple>;
+class xC61B1FF5_Section(dat1lib.types.sections.Section): # aka model_skin_batch
+	TAG = 0xC61B1FF5
+	TYPE = 'model'
 
-        typedef struct
-        {
-            uint unkU00;
-            int unkU04; // offset-like
-        } UnknownPair;
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
-        local uint count = 0;
-        local uint end = offset + size + modelOffset;
-        while (FTell() < end) {
-            ++count;
-            UnknownPair pair <bgcolor=cDkPurple>;
-            if (pair.unkU04 == -1) break;
-        }
+		self.a, self.b, self.c, self.data_len = struct.unpack("<IIII", data[:16])
 
-        typedef struct
-        {
-            uint unkU00;
-            uint unkU04; // not offset-like
-        } UnknownPair2;
+		rest = data[16:]
+		ENTRY_SIZE = 16
+		count = len(rest) // ENTRY_SIZE
+		self.entries = [struct.unpack("<IIHHHH", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		# offset-like/hash, 0, 0, uncompressedSizeLike, compressedSizeLike, compressedOffsetLike
 
-        local uint count2 = 0;
-        while (FTell() < end) {
-            ++count2;
-            UnknownPair2 pair2 <bgcolor=cLtPurple>;
-            if (pair2.unkU04 == (uint)-1) break;
-        }
+	def get_short_suffix(self):
+		return "model_skin_batch? ({})".format(len(self.entries))
 
-        local uint count3 = 0;
-        if (FTell() < end) {
-            count3 = (end - FTell())/4;
-            uint rest[count3] <bgcolor=cDkPurple>;
-        }
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | skin_batch?  | {:6} structs".format(self.TAG, len(self.entries))
 
-        SPrintf(name, "380A5744 (%d pairs, %d pairs, %d uints)", count, count2, count3);
-    }
+		print "           {} {} {}".format(self.a, self.b, self.c)
+		print ""
+		#######........ | 123  12345678  1234  1234  12345678  12345678  12345678
+		print "           #     offset?     ?     ?       sz1       sz2       off"
+		print "         -----------------------------------------------------------------"
+		for i, l in enumerate(self.entries):
+			print "         - {:<3}  {:8}  {:4}  {:4}  {:8}  {:8}  {:8}".format(i, l[0], l[1], l[2], l[3], l[4], l[5])
+		print ""
 
-    // Not really figured out; seems to have a lot of matrices. Maybe bone related?
-    else if (tag == 0x707F1B58)
-    {
-        SPrintf(name, "Matrixes?");
-        uint unkU00; // always 16?
-        uint sectionSize;
-        uint count1;
-        uint count2;
-        float rest[sectionSize / 4 - 5];
-        uint count3;
-        if (size > sectionSize) {
-            short indexes[(size - sectionSize)/2]; // unicode strings with \n??? (ends with \n\n)
-        }
-    }
+###
 
-    // Not really figured out; Vertexes data
-    else if (tag == VERTEXES_SECTION)
-    {
-        /*
-        local uint count = size / 16;
-        SPrintf(name, "Vertexes (%d verts)", count);
-        VertexOld vertexes[count];
-        */
+class x707F1B58_Section(dat1lib.types.sections.Section):
+	TAG = 0x707F1B58
+	TYPE = 'model'
 
-        // seems to be the vertex data densely packed as shorts
-        SPrintf(name, "Vertexes? (%d shorts)", size/2);
-        short vertexData[size / 2];
-    }
-    // Not really figured out; "model_skin_batch"
-    else if (tag == 0xC61B1FF5)
-    {
-        uint unkU00;
-        uint unkU04;
-        uint unkU08;
-        uint sectionSize;
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
 
-        typedef struct
-        {
-            uint realOffsetLike;
-            uint unkU04; // == 0
-            short unkU08; // == 0
-            short uncompressedSizeLike;
-            short compressedSizeLike;
-            short compressedOffsetLike;
-        } SkinRelated;
+		self.unknown, self.data_len, self.count0, self.count1, self.count2 = struct.unpack("<IIHHI", data[:16])
+		self.floats = utils.read_struct_N_array_data(data[16:], (self.data_len - 20)//4, "<f")
+		self.count3, = struct.unpack("<I", data[self.data_len-4:self.data_len])
+		self.shorts = []
+		if len(data) > self.data_len:
+			self.shorts = utils.read_struct_N_array_data(data[self.data_len:], (len(data)-self.data_len)//2, "<H")
+			# unicode strings with \n??? (ends with \n\n)
 
-        SkinRelated rest[(size - 16) / 16];
-        SPrintf(name, "model_skin_batch? (%d items)", (size-16)/16);
-    }
-"""
+	def get_short_suffix(self):
+		return "? ({}, {})".format(len(self.floats), len(self.shorts))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | Matrixes?    | {:6} floats, {:6} shorts".format(self.TAG, len(self.floats), len(self.shorts))
+		print "           {} {} {} {} {}".format(self.unknown, self.count0, self.count1, self.count2, self.count3)
+
+###
+
+class x380A5744_Section(dat1lib.types.sections.Section):
+	TAG = 0x380A5744
+	TYPE = 'model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		self.unknowns = struct.unpack("<" + "I"*16, data[:4*16])
+		offset = 4*16
+
+		self.pairs = []
+		# hash, offset within this section
+		while offset < len(data):
+			pair = struct.unpack("<Ii", data[offset:offset+8])
+			offset += 8
+			self.pairs += [pair]
+			if pair[1] == -1:
+				break
+
+		self.pairs2 = []
+		# hash, hash2 (some mapping, and usually if A->B, then B->A in this map as well)
+		while offset < len(data):
+			pair = struct.unpack("<II", data[offset:offset+8])
+			offset += 8
+			self.pairs2 += [pair]
+			if pair[1] == 4294967295: # (uint)-1
+				break
+
+		self.rest = []
+		if offset < len(data):
+			self.rest = utils.read_struct_N_array_data(data[offset:], (len(data)-offset)//4, "<I")
+
+	def get_short_suffix(self):
+		return "? ({}, {}, {})".format(len(self.pairs), len(self.pairs2), len(self.rest))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | ?            | {:6} pairs, {:6} pairs, {:6} uints".format(self.TAG, len(self.pairs), len(self.pairs2), len(self.rest))
+		
+		# print self.unknowns
+		utils.print_table(self.unknowns, " {:8}", 4)
+
+		print ""
+		#######........ | 123  12345678  12345678
+		print "           #         key     value"
+		print "         -------------------------"
+		for i, l in enumerate(self.pairs):
+			print "         - {:<3}  {:08X}  {}".format(i, l[0], l[1])
+
+		print ""
+
+		#######........ | 123  12345678  12345678  123
+		print "           #+        key     value  #  "
+		print "         ------------------------------"
+		for i, l in enumerate(self.pairs2):
+			print "         - {:<3}  {:08X}  {:08X}  {:<3}".format(i+len(self.pairs), l[0], l[1], i)
+
+		print ""
+
+		print self.rest[:32]
