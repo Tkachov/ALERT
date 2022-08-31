@@ -3,6 +3,33 @@ import dat1lib.utils as utils
 import io
 import struct
 
+"""
+TODO: support more extensions:
+
+- actor
+- animclip
+- animset
+- atmosphere
+- cinematic2
+- conduit
++ config
+- level
+- levellight
+- localization
+- material
+- materialgraph
++ model
+- movie
+- performanceclip
+- performanceset
++ soundbank
+- texture
+- visualeffect
+- wwiselookup
+- zone
+- zonelightbin
+"""
+
 class UnknownAsset(object):
 	def __init__(self, f):
 		self.magic, self.likely_is_dat1_size = struct.unpack("<II", f.read(8))

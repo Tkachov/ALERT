@@ -38,6 +38,16 @@ class StringsSection(Section):
 		Section.__init__(self, data, container)
 
 		self._strings = data.decode("utf-8").split('\x00')
+		self._strings_map = {}
+
+		offset = 0
+		for s in self._strings:
+			self._strings_map[offset] = s
+			offset += len(s) + 1
+
+	def get_string(self, offset):
+		print offset, self._strings_map
+		return self._strings_map.get(offset, None)
 
 ###
 
