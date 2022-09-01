@@ -10,11 +10,14 @@ class IndexesSection(dat1lib.types.sections.Section): # aka model_index
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
-		# Indices are weird in that instead of storing the indices directly, the indices are instead delta encoded.
-		# that is, each index is a sum of the current "delta index" and all the prior delta indices.
-		# For example, the true i(3) is actually di(0) + di(1) + di(2) + di(3).
+		self._delta_encoded = utils.read_struct_N_array_data(data, len(data)//2, "<h")
+		self.values = []
 
-		self.values = utils.read_struct_N_array_data(data, len(data)//2, "<h")
+		if len(self._delta_encoded) > 0:
+			self.values += [self._delta_encoded[0]]
+
+		for i in xrange(1, len(self._delta_encoded)):
+			self.values += [self.values[i-1] + self._delta_encoded[i]]
 
 	def get_short_suffix(self):
 		return "model_index ({})".format(len(self.values))
@@ -22,9 +25,12 @@ class IndexesSection(dat1lib.types.sections.Section): # aka model_index
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | model_index  | {:6} shorts".format(self.TAG, len(self.values))
-		print self.values[:32]
 
 ###
+
+class Vertex(object):
+	def __init__(self, data):
+		self.x, self.y, self.z, self.a, self.b, self.c = struct.unpack("<hhhHII", data)
 
 class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 	TAG = 0xA98BE69B
@@ -33,12 +39,66 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
-		self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
+		ENTRY_SIZE = 16
+		count = len(data)//ENTRY_SIZE
+		self.vertexes = [Vertex(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
 
 	def get_short_suffix(self):
-		return "vertexes ({})".format(len(self.values))
+		return "vertexes ({})".format(len(self.vertexes))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Vertexes     | {:6} shorts".format(self.TAG, len(self.values))
-		print self.values[:32]
+		print "{:08X} | Vertexes     | {:6} vertexes".format(self.TAG, len(self.vertexes))
+		print ""
+		#######........ | 123  12345678  12345678  12345678  12345678  12345678  12345678
+		print "           #           x         y         z         a         b         c"
+		print "         -----------------------------------------------------------------"
+		for i, l in enumerate(self.vertexes[:32]):
+			print "         - {:<3}  {:8}  {:8}  {:8}  {:8}  {:08X}  {:08X}".format(i, l.x, l.y, l.z, l.a, l.b, l.c)
+		print "..."
+		print ""
+
+###
+
+class x6B855EED_Section(dat1lib.types.sections.Section):
+	TAG = 0x6B855EED
+	TYPE = 'model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# same amount as vertexes
+		# looks like a bunch of uints
+		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<I")
+
+	def get_short_suffix(self):
+		return "? ({})".format(len(self.values))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
+		print self.values[:32], "...", self.values[-32:]
+		print ""
+
+class x5CBA9DE9_Section(dat1lib.types.sections.Section):
+	TAG = 0x5CBA9DE9
+	TYPE = 'model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+		
+		# same amount as vertexes
+		# has a lot of 0s
+		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<I")
+
+	def get_short_suffix(self):
+		return "? ({})".format(len(self.values))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
+		print self.values[:32], "...", self.values[-32:]
+		#s = set(self.values)
+		#print len(s), min(s), max(s)
+		print ""
+

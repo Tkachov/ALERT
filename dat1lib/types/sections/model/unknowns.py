@@ -91,6 +91,15 @@ class xDF9FDF12_Section(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | 0-70-0-2?    | {:6} tuples".format(self.TAG, len(self.entries))
 
+		if False:		
+			print ""
+			#######........ | 123  123456  123456  123456  123456
+			print "           #         0      70       0       2"
+			print "         -------------------------------------"
+			for i, l in enumerate(self.entries):
+				print "         - {:<3}  {:6}  {:6}  {:6}  {:6}".format(i, l[0], l[1], l[2], l[3])
+			print ""
+
 ###
 
 class xB7380E8C_Section(dat1lib.types.sections.Section):
@@ -150,6 +159,8 @@ class x283D0383_Section(dat1lib.types.sections.Section): # aka model_built
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | model_built? | {:6} shorts".format(self.TAG, len(self.values))
+		print self.values
+		print ""
 
 ###
 
@@ -197,45 +208,6 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 
 ###
 
-class x6B855EED_Section(dat1lib.types.sections.Section):
-	TAG = 0x6B855EED
-	TYPE = 'model'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# looks like a bunch of uints
-		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<I")
-
-	def get_short_suffix(self):
-		return "? ({})".format(len(self.values))
-
-	def print_verbose(self, config):
-		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
-		print self.values[:32]
-
-class x5CBA9DE9_Section(dat1lib.types.sections.Section):
-	TAG = 0x5CBA9DE9
-	TYPE = 'model'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-		
-		# - has the same byte size as 6B855EED
-		# - has a lot of 0s
-		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<I")
-
-	def get_short_suffix(self):
-		return "? ({})".format(len(self.values))
-
-	def print_verbose(self, config):
-		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
-		print self.values[:32]
-
-###
-
 class x06EB7EFC_Section(dat1lib.types.sections.Section): # aka model_look
 	TAG = 0x06EB7EFC
 	TYPE = 'model'
@@ -252,6 +224,7 @@ class x06EB7EFC_Section(dat1lib.types.sections.Section): # aka model_look
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | model_look?  | {:6} shorts".format(self.TAG, len(self.values))
 		print self.values
+		print ""
 
 ###
 
@@ -342,6 +315,7 @@ class x707F1B58_Section(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Matrixes?    | {:6} floats, {:6} shorts".format(self.TAG, len(self.floats), len(self.shorts))
 		print "           {} {} {} {} {}".format(self.unknown, self.count0, self.count1, self.count2, self.count3)
+		print ""
 
 ###
 
@@ -404,4 +378,26 @@ class x380A5744_Section(dat1lib.types.sections.Section):
 
 		print ""
 
-		print self.rest[:32]
+		print self.rest[:32], "..."
+		print ""
+
+###
+
+class x4CCEA4AD_Section(dat1lib.types.sections.Section):
+	TAG = 0x4CCEA4AD
+	TYPE = 'model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		self.values = [ord(c) for c in data] # usually an odd amount of bytes, WEIRD!
+
+	def get_short_suffix(self):
+		return "? ({})".format(len(self.values))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print "{:08X} | ?            | {:6} bytes".format(self.TAG, len(self.values))
+
+		print self.values
+		print ""

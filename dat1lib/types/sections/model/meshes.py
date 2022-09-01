@@ -34,3 +34,11 @@ class MeshesSection(dat1lib.types.sections.Section): # aka model_subset
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Mesh Defs    | {:6} meshes".format(self.TAG, len(self.meshes))
+
+		print ""
+		for i, l in enumerate(self.meshes):
+			print "         - {:<3}  {:08X}  {:08X}  {:08X}  {:08X}  {:08X}".format(i, *l.unknowns)
+			print "                {:8}  {:8}  {:8}  {:8}".format(l.vertexStart, l.indexStart, l.indexCount, l.vertexCount)
+			print "                {:8}  {:8}  {:8}".format(*l.unknowns2[:3])
+			print "                {:08X}  {:08X}  {:8}  {:08X}".format(*l.unknowns2[3:])
+			print ""
