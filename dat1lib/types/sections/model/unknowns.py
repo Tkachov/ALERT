@@ -193,17 +193,19 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 			matname = self._dat1.get_string(self.string_offsets[i][1])
 
 			print ""
-			print "  - {:<2}  {:016X}  {}".format(i, q[0], matfile)
-			print "        {:<8}{:08X}  {}".format(q[2], q[1], matname)
+			print "  - {:<2}  {:016X}  {}".format(i, q[0], matfile if matfile is not None else "<str at {}>".format(self.string_offsets[i][0]))
+			print "        {:<8}{:08X}  {}".format(q[2], q[1], matname if matname is not None else "<str at {}>".format(self.string_offsets[i][1]))
 
 			if config.get("section_warnings", True):
-				real_hash = crc64.hash(matfile)
-				if real_hash != q[0]:
-					print "        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, q[0])
+				if matfile is not None:
+					real_hash = crc64.hash(matfile)
+					if real_hash != q[0]:
+						print "        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, q[0])
 
-				real_hash = crc32.hash(matname)
-				if real_hash != q[1]:
-					print "        [!] material name real hash {:08X} is not equal to one written in the struct {:08X}".format(real_hash, q[1])
+				if matname is not None:
+					real_hash = crc32.hash(matname)
+					if real_hash != q[1]:
+						print "        [!] material name real hash {:08X} is not equal to one written in the struct {:08X}".format(real_hash, q[1])
 		print ""
 
 ###

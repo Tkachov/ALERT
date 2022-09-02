@@ -38,6 +38,8 @@ class StringsSection(Section):
 		Section.__init__(self, data, container)
 
 		self._strings = data.decode("utf-8").split('\x00')
+		if self._strings[-1] == "":
+			self._strings.pop()
 		self._strings_map = {}
 
 		offset = 0
