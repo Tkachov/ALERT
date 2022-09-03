@@ -1,3 +1,5 @@
+import dat1lib.crc32 as crc32
+import dat1lib.crc64 as crc64
 import io
 import struct
 
@@ -77,6 +79,20 @@ class SerializedSection(Section):
 		self.extras = []
 		while f.tell() < len(data):
 			self.extras += [self._deserialize(f)]
+
+	@classmethod
+	def make(cls, root, extras, container):
+		data = struct.pack("<IIII", 0, 0x03150044, 0, 0) # equivalent of {}
+		c = cls(data, container)
+		c.root = root
+		c.extras = extras
+		return c
+
+	def save(self):
+		self._serialize_self()
+		return self._raw
+
+	#
 
 	def _deserialize(self, f):
 		return self._deserialize_object(f)
@@ -170,3 +186,172 @@ class SerializedSection(Section):
 		r = f.tell() % a
 		if r != 0:
 			f.read(a - r)
+
+	#
+
+	def _serialize_self(self):
+		f = io.BytesIO(bytes())
+		self._serialize(f, self.root)
+		for e in self.extras:
+			self._serialize(f, e)
+		
+		f.seek(0)
+		self._raw = f.read()
+
+	def _serialize(self, f, obj):
+		self._serialize_object(f, obj)
+
+	def _serialize_object(self, f, obj):
+		if type(obj) != dict:
+			print "[!] Serialization error: object expected, got '{}'".format(type(obj))
+			return
+
+		children = obj.items()
+		string_offsets = [self._dat1.add_string(k) for k, v in children]
+
+		f2 = io.BytesIO(bytes())
+
+		def get_int_type(mn, mx):
+			RANGES = [
+				(self.NT_UINT8, 0, 255),
+				(self.NT_UINT16, 0, 65535),
+				(self.NT_UINT32, 0, 2**32 - 1),
+				(self.NT_INSTANCE_ID, 0, 2**64 - 1),
+				
+				(self.NT_INT8, -128, 127),
+				(self.NT_INT16, -32768, 32767),
+				(self.NT_INT32, -(2**31), 2**31 - 1),
+				(self.NT_INSTANCE_ID, -(2**63), 2**63 - 1) # technically wrong, but just in case
+			]
+
+			for rt, rmn, rmx in RANGES:
+				if rmn <= mn and mx <= rmx:
+					return rt
+
+			print "[!] Serialization error: provided int (in range {}..{}) can't fit any of supported types".format(mn, mx)
+			return self.NT_INSTANCE_ID
+
+		def get_item_type(v):
+			if v is None:
+				return self.NT_NULL
+
+			t = type(v)
+			if t == bool:
+				return self.NT_BOOLEAN
+
+			if t == float:
+				return self.NT_FLOAT
+
+			if t == str or t == unicode:
+				return self.NT_STRING
+
+			if t == dict:
+				return self.NT_OBJECT
+
+			if t == list:
+				if len(v) == 0:
+					print "[!] Serialization error: can't find type of empty list"
+
+				t2 = type(v[0])
+				if t2 == int:
+					return get_int_type(min(v), max(v))
+				return get_item_type(v[0])
+
+			if t == int:
+				return get_int_type(v, v)
+
+			print "[!] Serialization error: can't serialize '{}'".format(t)
+			return self.NT_NULL
+
+		children_types = [get_item_type(v) for k, v in children]
+
+		for (k, v), t in zip(children, children_types):
+			hsh = crc32.hash(k, False)
+			flags = 1 << 4			
+			if type(v) == list:
+				flags = len(v) << 4
+			f2.write(struct.pack("<IHBB", hsh, flags, 0, t))
+
+		for so in string_offsets:
+			f2.write(struct.pack("<I", so))
+
+		for (k, v), t in zip(children, children_types):
+			if type(v) == list:
+				self._serialize_array(f2, v, t)
+			else:
+				self._serialize_node(f2, v, t)
+
+		self._pad(f2, 4)
+
+		f2.seek(0)
+		children_data = f2.read()
+
+		f.write(struct.pack("<IIII", 0, 0x03150044, len(children), len(children_data)))
+		f.write(children_data)
+
+	def _serialize_array(self, f, arr, item_type):
+		for v in arr:
+			self._serialize_node(f, v, item_type)
+
+	def _serialize_node(self, f, node, item_type):
+		if item_type == self.NT_UINT8:
+			f.write(struct.pack("<B", node))
+			return
+
+		if item_type == self.NT_UINT16:
+			f.write(struct.pack("<H", node))
+			return
+
+		if item_type == self.NT_UINT32:
+			f.write(struct.pack("<I", node))
+			return
+
+		if item_type == self.NT_INT8:
+			f.write(struct.pack("<b", node))
+			return
+
+		if item_type == self.NT_INT16:
+			f.write(struct.pack("<h", node))
+			return
+
+		if item_type == self.NT_INT32:
+			f.write(struct.pack("<i", node))
+			return
+
+		if item_type == self.NT_FLOAT:
+			f.write(struct.pack("<f", node))
+			return
+
+		if item_type == self.NT_STRING:
+			self._serialize_string(f, node)
+			return
+
+		if item_type == self.NT_OBJECT:
+			self._serialize_object(f, node)
+			return
+
+		if item_type == self.NT_BOOLEAN:
+			f.write(struct.pack("<B", int(node)))
+			return
+
+		if item_type == self.NT_INSTANCE_ID:
+			f.write(struct.pack("<Q", node))
+			return
+
+		if item_type == self.NT_NULL:
+			f.write('\0')
+			return
+
+		print "[!] Serialization error: unknown node_type={}".format(item_type)
+		f.write('\0')
+
+	def _serialize_string(self, f, s):
+		s = str(s)
+		f.write(struct.pack("<IIQ", len(s), crc32.hash(s, False), crc64.hash(s)))
+		f.write(s + '\0')
+		self._pad(f, 4)
+
+	def _pad(self, f, a):
+		r = f.tell() % a
+		if r != 0:
+			f.write('\0' * (a - r))

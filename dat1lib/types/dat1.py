@@ -22,7 +22,7 @@ class DAT1SectionHeader(object):
 		f = io.BytesIO(data)
 		return cls(f)
 
-class DAT1Header(object):	
+class DAT1Header(object):
 	def __init__(self, f):
 		self.magic, self.unk1, self.size = utils.read_struct(f, "<III")
 		self.sections = utils.read_class_array(f, "<I", DAT1SectionHeader)
@@ -32,6 +32,7 @@ class DAT1Header(object):
 
 class DAT1(object):
 	MAGIC = 0x44415431
+	EMPTY_DATA = struct.pack("<IIII", 0x44415431, 0, 16, 0)
 
 	def __init__(self, f, outer_obj=None):
 		self._outer = outer_obj
@@ -44,6 +45,7 @@ class DAT1(object):
 		self._recalc_strat = RECALCULATE_ORIGINAL_ORDER
 
 		self._strings_map = {}
+		self._strings_inverse_map = {}
 		self._raw_strings_data = None
 		if len(self.header.sections) > 0:
 			min_offset = None
@@ -80,6 +82,7 @@ class DAT1(object):
 
 				s = data[start:i]
 				self._strings_map[start] = s
+				self._strings_inverse_map[s] = start
 				start = i+1
 
 			i += 1
@@ -87,6 +90,19 @@ class DAT1(object):
 	def get_string(self, offset):
 		offset -= 16 + 12 * len(self.header.sections)
 		return self._strings_map.get(offset, None)
+
+	def add_string(self, s):
+		offset = 16 + 12 * len(self.header.sections)
+
+		s = str(s)
+		if s in self._strings_inverse_map:
+			return offset + self._strings_inverse_map[s]
+
+		start = len(self._raw_strings_data)
+		self._strings_map[start] = s
+		self._strings_inverse_map[s] = start
+		self._raw_strings_data += s + '\0'
+		return offset + start
 
 	def get_section(self, tag):
 		if tag not in self._sections_map:
@@ -111,12 +127,33 @@ class DAT1(object):
 
 		ndx = self._sections_map[tag]
 		self._sections_data[ndx] = data
-		self.sections[ndx] = dat1lib.types.sections.KNOWN_SECTIONS[tag](data)
+		self.sections[ndx] = dat1lib.types.sections.KNOWN_SECTIONS[tag](data, self)
+
+		self.recalculate_section_headers()
+
+	def add_section_obj(self, obj):
+		self.add_section_obj_with_tag(obj.TAG, obj)
+
+	def add_section_obj_with_tag(self, tag, obj):
+		if tag not in self._sections_map:
+			self._sections_map[tag] = len(self.sections)
+			self.sections += [None]
+			self._sections_data += [None]
+			self.header.sections += [DAT1SectionHeader.make(tag, self.header.size, 0)]
+
+		ndx = self._sections_map[tag]
+		self._sections_data[ndx] = ""
+		self.sections[ndx] = obj
 
 		self.recalculate_section_headers()
 
 	def set_recalculation_strategy(self, strat):
 		self._recalc_strat = strat
+
+	def full_refresh(self):
+		for tag in self._sections_map:
+			self.refresh_section_data(tag)
+		self.recalculate_section_headers()
 
 	def recalculate_section_headers(self):
 		offset_to_first_section = 16 + 12 * len(self.header.sections) + len(self._raw_strings_data)
