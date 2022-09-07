@@ -25,7 +25,8 @@ class DAT1SectionHeader(object):
 class DAT1Header(object):
 	def __init__(self, f):
 		self.magic, self.unk1, self.size = utils.read_struct(f, "<III")
-		self.sections = utils.read_class_array(f, "<I", DAT1SectionHeader)
+		sections_count, self.unk2 = utils.read_struct(f, "<HH")
+		self.sections = utils.read_class_N_array(f, sections_count, DAT1SectionHeader)
 		# self.sections = sorted(self.sections, key=lambda x: x.offset)
 
 ###
@@ -194,7 +195,7 @@ class DAT1(object):
 		#print self.header.size
 
 		h = self.header
-		out.write(struct.pack("<IIII", h.magic, h.unk1, h.size, len(h.sections)))
+		out.write(struct.pack("<IIIHH", h.magic, h.unk1, h.size, len(h.sections), h.unk2))
 		for s in h.sections:
 			out.write(struct.pack("<III", s.tag, s.offset, s.size))
 

@@ -4,8 +4,7 @@ import io
 import struct
 
 # .movie = BIK
-# .material = some strange 1TAD, as if no amount of sections provided
-# .zonelightbin = strange 1TAD again
+# .zonelightbin = strange 1TAD/asset, 38 bytes asset header instead of 36
 
 class UnknownAsset(object):
 	def __init__(self, f):
@@ -26,6 +25,23 @@ class UnknownAsset(object):
 		self.dat1.print_info(config)
 
 #
+
+class Material(UnknownAsset):
+	MAGIC = 0x1C04EF8C
+
+	def __init__(self, f):
+		UnknownAsset.__init__(self, f)
+
+	def print_info(self, config):
+		print "-------"
+		print "Material {:08X}".format(self.magic)
+		if self.magic != self.MAGIC:
+			print "[!] Unknown magic, should be {}".format(self.MAGIC)
+		print "size: {}".format(self.likely_is_dat1_size)
+		print "-------"
+		print ""
+
+		self.dat1.print_info(config)
 
 class LevelLight(UnknownAsset):
 	MAGIC = 0x567CC2F0
