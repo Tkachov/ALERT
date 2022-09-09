@@ -9,6 +9,7 @@ lib*.a
 Thumbs.db
 
 # Ignore Python files
+.*.py
 *.pyc
 
 # Ignore Komodo IDE/Edit project files

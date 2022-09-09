@@ -81,7 +81,7 @@ for md in __import_submodules(types):
 import struct
 import types.unknown
 
-def read(f):
+def read(f, try_unknown=True):
 	magic, = struct.unpack("<I", f.read(4))
 	f.seek(0)
 
@@ -89,10 +89,11 @@ def read(f):
 		if k == magic:
 			return types.KNOWN_TYPES[k](f)
 
-	try:
-		obj = types.unknown.UnknownAsset(f)
-		return obj
-	except:
-		pass
+	if try_unknown:
+		try:
+			obj = types.unknown.UnknownAsset(f)
+			return obj
+		except:
+			pass
 
 	return None
