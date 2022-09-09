@@ -26,23 +26,6 @@ class UnknownAsset(object):
 
 #
 
-class Material(UnknownAsset):
-	MAGIC = 0x1C04EF8C
-
-	def __init__(self, f):
-		UnknownAsset.__init__(self, f)
-
-	def print_info(self, config):
-		print "-------"
-		print "Material {:08X}".format(self.magic)
-		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.likely_is_dat1_size)
-		print "-------"
-		print ""
-
-		self.dat1.print_info(config)
-
 class LevelLight(UnknownAsset):
 	MAGIC = 0x567CC2F0
 

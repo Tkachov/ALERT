@@ -181,6 +181,15 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 		self.triples = [struct.unpack("<QII", data2[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
 		# crc64(matfile), crc32(matname), ?
 
+	def save(self):
+		of = io.BytesIO(bytes())
+		for a, b in self.string_offsets:
+			of.write(struct.pack("<QQ", a, b))
+		for a, b, c in self.triples:
+			of.write(struct.pack("<QII", a, b, c))
+		of.seek(0)
+		return of.read()
+
 	def get_short_suffix(self):
 		return "materials ({})".format(len(self.triples))
 
