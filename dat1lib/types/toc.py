@@ -172,11 +172,11 @@ class TOC(object):
 
 			if started_reading:
 				f.seek(comp_offset)
-				compressed = f.read(comp_size)
-				decompressed = self._decompress(compressed, real_size)
+				compressed_data = f.read(comp_size)
+				decompressed_data = self._decompress(compressed_data, real_size)
 				block_start = max(real_offset, asset_offset) - real_offset
 				block_end   = min(asset_end, real_end) - real_offset
-				data += decompressed[block_start:block_end]
+				data += decompressed_data[block_start:block_end]
 
 			if is_last_block:
 				break
@@ -185,7 +185,7 @@ class TOC(object):
 
 	def _decompress(self, comp_data, real_size):
 		comp_size = len(comp_data)
-		real_data = ['\0'] * real_size
+		real_data = ['\0' for i in xrange(real_size)]
 		real_i = 0
 		comp_i = 0
 
