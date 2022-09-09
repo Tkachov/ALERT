@@ -7,6 +7,12 @@ class Model(object):
 	MAGIC = 0x98906B9F
 
 	def __init__(self, f):
+		# 38298 occurrences
+		# size = 2260..42645436 (avg = 108149.2)
+		# from 8 to 31 sections (avg = 11.1)
+		#
+		# examples: 895946D95299E18F (min size), 8FCA3A1C0CF13DD0 (max size), 81DC2CDB45872F11 (8 sections), 9347CDA478F55078 (31 sections)
+		
 		self.magic, self.offset_to_stream_sections, self.stream_sections_size = struct.unpack("<III", f.read(12))
 		self.unk = f.read(24)
 		self._raw_dat1 = f.read()

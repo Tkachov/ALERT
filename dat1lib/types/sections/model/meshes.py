@@ -15,6 +15,11 @@ class MeshesSection(dat1lib.types.sections.Section): # aka model_subset
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# 38298 occurrences in 38298 files (always present)
+		# size = 64..56064 (avg = 305.0)
+		#
+		# examples: 800058C35E144B3F (min size), 857E2B6AE905140D (max size)
+
 		ENTRY_SIZE = 64
 		count = len(data)//ENTRY_SIZE
 		self.meshes = [MeshDefinition(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]

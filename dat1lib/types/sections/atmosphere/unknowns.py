@@ -12,11 +12,11 @@ class HeaderSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
-		"""
-		ENTRY_SIZE = 16
-		count = len(data)//ENTRY_SIZE
-		self.events = [Event(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
-		"""
+		# 133 occurrences in 133 files (always present)
+		# size = 1576
+		# always first
+		#
+		# examples: 803D388D02427C63
 
 		self.unk1 = data[:32]
 		self.z1, self.time_of_day, self.z2, self.z3 = struct.unpack("<IfII", data[32:48])
@@ -41,16 +41,6 @@ class HeaderSection(dat1lib.types.sections.Section):
 		print self.a, self.b, self.c, self.sun_radius # "{:08X}".format(self.c)
 		print self.unk3
 		print self.ambience_rgba
-		"""
-		print ""
-		#######........ | 12  12345678  1234  12345  1234  12345  12345  12345
-		print "           #       ulID     ?  flags  zero  flag2      ?      ?"
-		print "         ------------------------------------------------------"
-		for i, e in enumerate(self.events):
-			print "         - {:<2}  {:08X}  {:4}  {:5}  {:4}  {:5}  {:5}  {:5}".format(i, e.ulid, e.small, e.flags, e.zero, e.flags2, e.a, e.b)
-
-		print ""
-		"""
 
 ###
 
@@ -60,6 +50,11 @@ class StringsSection(dat1lib.types.sections.StringsSection):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.StringsSection.__init__(self, data, container)
+
+		# 127 occurrences in 133 files
+		# size = 1..88 (avg = 63.8)
+		#
+		# examples: 8814BE4101361FCC (min size), B11F882525900C32 (max size)
 
 	def get_short_suffix(self):
 		return "strings ({})".format(len(self._strings))
@@ -81,6 +76,11 @@ class TextureSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# 120 occurrences in 133 files
+		# size = 524268
+		#
+		# examples: 803D388D02427C63
+
 	def get_short_suffix(self):
 		return "texture DAT1"
 
@@ -97,9 +97,25 @@ class xE7997256_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# 66 occurrences in 133 files
+		# size = 2244624
+		#
+		# examples: 80BA05E01E62AE5B
+		
+		ENTRY_SIZE = 4
+		count = len(data)//ENTRY_SIZE
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for e in self.entries:
+			of.write(struct.pack("<I", e))
+		of.seek(0)
+		return of.read()
+
 	def get_short_suffix(self):
-		return "?"
+		return "? ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | ?            |".format(self.TAG)
+		print "{:08X} | ?            | {:6} entries".format(self.TAG, len(self.entries))

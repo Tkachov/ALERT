@@ -40,6 +40,11 @@ class HavokSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# 9987 occurrences in 38298 files
+		# size = 1976..349824 (avg = 16819.7)
+		#
+		# examples: 800804287BB19C92 (min size), 8FFC77E5D7F22334 (max size)
+
 		self.data = HavokData(io.BytesIO(data))
 
 	def get_short_suffix(self):

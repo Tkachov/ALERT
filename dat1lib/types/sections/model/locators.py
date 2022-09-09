@@ -10,6 +10,11 @@ class LocatorsMapSection(dat1lib.types.sections.UintUintMapSection): # aka model
 	def __init__(self, data, container):
 		dat1lib.types.sections.UintUintMapSection.__init__(self, data, container)
 
+		# 1401 occurrences in 38298 files
+		# size = 8..2944 (avg = 312.4)
+		#
+		# examples: 8008B62FF6E72FDE (min size), 8BBCF107882FAD67 (max size)
+
 	def get_short_suffix(self):
 		return "locators map ({})".format(len(self._map))
 
@@ -45,6 +50,11 @@ class LocatorsSection(dat1lib.types.sections.Section): # aka model_locator
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# 1401 occurrences in 38298 files
+		# size = 64..23552 (avg = 2499.7)
+		#
+		# examples: 8008B62FF6E72FDE (min size), 8BBCF107882FAD67 (max size)
+
 		ENTRY_SIZE = 64
 		count = len(data)//ENTRY_SIZE
 		self.locators = [LocatorDefinition(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
@@ -79,6 +89,13 @@ class LocatorRelatedSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# 39 occurrences in 38298 files
+		# size = 608..1152 (avg = 914.8)
+		#
+		# examples: 80C52396F2470510 (min size), 8308C60D2DCEA858 (max size)
+
+		# TODO: only 39 models, and I've met one of these! maybe hero-related?
 
 		self.size, = struct.unpack("<I", data[:4]) # same as len(data)
 		self.unknown1, = struct.unpack("<I", data[4:8]) # always 32?

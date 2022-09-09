@@ -55,7 +55,7 @@ def main(argv):
 
 	#
 
-	BNK_SECTION = dat1lib.types.sections.soundbank.bnk.BinkSection.TAG
+	BNK_SECTION = dat1lib.types.sections.soundbank.bnk.WwiseBankSection.TAG
 	sb.dat1.get_section(BNK_SECTION).replace_data(data)
 	sb.dat1.refresh_section_data(BNK_SECTION)
 	sb.dat1.recalculate_section_headers()

@@ -7,6 +7,12 @@ class Atmosphere(object):
 	MAGIC = 0x39F27E27
 
 	def __init__(self, f):
+		# 133 occurrences
+		# size = 1676..2770800 (avg = 1588694.2)
+		# from 1 to 4 sections (avg = 3.3)
+		#
+		# examples: 970D43801CB614DC (min size), B11F882525900C32 (max size), 80BA05E01E62AE5B (4 sections)
+		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
 		self._raw_dat1 = f.read()
