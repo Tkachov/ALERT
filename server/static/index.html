@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Editor</title>
+		<link rel="stylesheet" type="text/css" href="style.css"/>
+	</head>
+	<body>
+		<div id="load_toc" class="splash">
+			<div>
+				<p id="form_description">Select 'toc' location:</p>
+				<form id="load_toc_form">
+					<input id="toc_path" type="text" value="" placeholder="asset_archive/toc" />
+					<p id="load_toc_warning" class="warning"></p>
+				</form>
+			</div>
+		</div>
+		<div id="toc_loading" class="splash">
+			<div>
+				<p id="toc_loading_label">Loading 'toc'...</p>
+			</div>
+		</div>
+		<div id="editor">
+			<div class="workspace">
+				<div id="menu"></div>
+				<div id="columns">
+					<div id="left_column"></div>
+					<div id="middle_column">
+						<div id="main">
+							<form id="search_form">
+								<input id="search" type="text" value="" placeholder="asset name or hex ID" />
+								<!-- TODO: filters: by type, by archive -->
+							</form>
+							<div id="results"></div>
+						</div>
+						<div id="browser"></div>
+					</div>
+					<div id="right_column">
+						<div id="details"></div>
+					</div>
+				</div>
+			</div>
+			<div id="tooltip"></div>
+		</div>
+		<div id="settings">
+			<div>
+				<p id="settings_title">Options</p>
+				<div class="setting">
+					<b id="settings_language_label">Language</b><select id="settings_language_select">
+						<option value="en">English</option>
+						<option value="ru">Russian</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<script src="js/utils/ajax.js"></script>
+		<script src="js/localization.js"></script>
+		<script src="js/app.js"></script>
+	</body>
+</html>

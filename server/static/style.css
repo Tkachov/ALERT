@@ -1,0 +1,385 @@
+:root {
+	--interactable-highlight-color: #FB0;
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+	font-family: Tahoma;
+	background: #FFF;
+	color: #000;
+}
+
+.sending_input {
+	filter: grayscale(.5);
+	transition: filter .5s ease-in-out;
+}
+
+/* starting splashes */
+
+.splash {
+	position: fixed;
+	z-index: 300;
+	top: 0;
+	left: 0;
+
+	width: 100vw;
+	height: 100vh; /* calc(100vh - var(--row-height)); */
+	background: rgba(0, 0, 0, 0.85);
+	color: #FFF;
+
+	display: none;
+}
+
+.splash.open {
+	display: flex;
+}
+
+.splash > div {
+	width: 50vw;
+	/*height: 60vh;*/
+	margin: auto;
+	transform: translate(0, -50%);
+}
+
+.splash > div p {
+	text-align: center;
+	font-size: 36pt;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+#load_toc #form_description {
+	text-align: left;
+}
+
+.warning {
+	color: var(--interactable-highlight-color);
+	margin-top: 16pt !important;
+}
+
+#load_toc_warning {
+	text-align: left;
+	font-size: 20pt;
+}
+
+.splash > div form {
+	margin-top: 24pt;
+}
+
+.splash input {
+	display: block;
+	padding: 8pt; /* TODO */
+
+	margin: 0 auto;
+	margin-top: 10pt; /* TODO */
+
+	width: calc(100% - 8pt*2 - 1px*2);
+	border: 1px solid #CCC;
+
+	font-size: 16pt;
+}
+
+.splash input:hover {
+	border-color: var(--interactable-highlight-color);
+}
+
+.splash input[type="submit"] {
+	box-sizing: content-box;
+
+	width: calc(90% - 8pt*2 - 2px*2);
+	border: 2px solid #CCC; /* TODO */
+	margin-top: 24pt; /* TODO */
+
+	background: #000;
+	color: #FFF;
+	user-select: none;
+
+	text-align: center;
+	cursor: pointer;
+}
+
+.splash input[type="submit"]:hover {
+	border-color: var(--interactable-highlight-color);
+	color: var(--interactable-highlight-color);
+}
+
+/**/
+
+#editor {
+	display: none;
+}
+
+#editor.open {
+	display: block;
+}
+
+/**/
+
+.button {
+	display: block;
+	max-width: calc(90vh - 8pt*2 - 2px*2);
+	padding: 8pt; /* TODO */
+	border: 2px solid #CCC; /* TODO */
+
+	margin: 0 auto;
+	margin-top: 12pt; /* TODO */
+
+	background: #000;
+	color: #FFF;
+	font-size: 16pt;
+	user-select: none;
+
+	text-align: center;
+	cursor: pointer;
+}
+
+.button:hover {
+	border-color: var(--interactable-highlight-color);
+	color: var(--interactable-highlight-color);
+}
+
+.button.small {
+	align-self: right;
+	width: 60pt;
+	margin: 0;
+	font-size: 12pt;
+}
+
+/**/
+
+#editor {
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+	padding: 0;
+	border: 0;
+
+	overflow: hidden;
+}
+
+.workspace {
+	display: flex;
+	margin: 0;
+	flex-wrap: wrap;
+	flex-direction: column;
+	height: 100vh;
+}
+
+#menu {
+	display: flex;
+	background: #EEE;
+	height: 20pt;
+	border: 0;
+	border-bottom: 1px solid #CCC;
+	width:  100vw;
+	flex-grow: 0;
+	flex-shrink: 0;
+
+	display: none;
+}
+
+#columns {
+	display: flex;
+	flex-direction: row;
+	flex-grow: 1;
+}
+
+#left_column {
+	display: flex;
+	flex: 3 3 0;
+	border: 0;
+	border-right: 1px solid #CCC;
+}
+
+#middle_column {
+	display: flex;
+	flex-direction: column;
+	flex: 9 9 0;
+}
+
+#right_column {
+	display: flex;
+	flex: 3 3 0;
+	border: 0;
+	border-left: 1px solid #CCC;
+	padding: 10pt;
+}
+
+/* middle column */
+
+#main {
+	display: flex;
+	flex: 5 5 0;
+	flex-direction: column;
+}
+
+#browser {
+	display: flex;
+	flex: 3 3 0;
+	border: 0;
+	border-top: 1px solid #CCC;	
+}
+
+/* main */
+
+#search_form {
+	display: block;
+	height: 28pt;
+	background: #EEE;
+	padding: 2pt;
+}
+
+#search_form input {
+	display: block;
+	padding: 3pt;
+	margin: 3pt;
+	border: 1px solid #CCC;
+	font-size: 12pt;
+}
+
+#search {
+	width: 80%;
+}
+
+#results {
+	display: block;
+	padding: 6pt;
+	overflow: auto;
+	height: 100%;
+}
+
+.result_entry {
+	padding: 2pt;
+}
+
+.result_entry.selected {
+	background: #E0F0FF;
+}
+
+.result_entry:hover {
+	background: #EEE;
+}
+
+.result_entry.selected:hover {
+	background: #BCDFFF;
+}
+
+.result_entry b + span {
+	margin-left: 10pt;
+}
+
+/* details */
+
+#details {
+	display: block;
+}
+
+/**/
+
+.hidden {
+	display: none !important;
+}
+
+.interactable {
+	cursor: pointer;
+}
+
+/**/
+
+#settings {
+	position: fixed;
+	z-index: 1000;
+	top: 0;
+	left: 0;
+
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.7);
+	color: #FFF;
+
+	display: none;
+
+	--window-size: 80vh;
+	--window-padding: calc(var(--window-size)*0.025);
+	--window-header: calc(var(--window-size)*0.05);
+	/*
+	--option-padding-h: calc(var(--window-size)*0.005);
+	--option-padding-v: calc(var(--window-size)*0.0125);
+	*/
+	--option-padding-h: calc(var(--window-size)*0.01);
+	--option-padding-v: calc(var(--window-size)*0.0125);
+	--option-font: calc(var(--window-size)*0.02);
+	--option-line-height: calc(var(--option-font)*2);
+
+	--window-actual-size: calc(var(--window-size) - 2*var(--window-padding));
+	--option-actual-size: calc(var(--window-actual-size) - 2*var(--option-padding-h));
+}
+
+#settings.open {
+	display: flex;
+}
+
+#settings > div {
+
+	width: var(--window-actual-size);
+	min-height: var(--window-actual-size);
+	padding: var(--window-padding);
+	margin: auto;
+	/* transform: translate(0, -25%); */
+
+	background: #FFF;
+	color: #000;
+}
+
+#settings_title {
+	font-size: var(--window-header);
+	text-align: center;
+	margin-top: 0;
+	margin-bottom: var(--window-padding);
+}
+
+.setting {
+	display: block;
+	margin: 0 calc(var(--window-padding)*-1);
+	padding: var(--option-padding-v) calc(var(--window-padding) + var(--option-padding-h));
+	font-size: var(--option-font);
+}
+
+.setting:hover {
+	background: #FAFAFA;
+}
+
+.setting > * {
+	display: inline-block;
+	width: calc(var(--option-actual-size)*0.5);
+	margin: 0;	
+	border: 0;
+	outline: 0;
+	padding: 0;
+	line-height: var(--option-line-height);
+}
+
+.setting > *:first-child {
+	/* label */
+	text-align: left;
+}
+
+.setting > *:last-child {
+	/* select/input/whatever */
+	box-sizing: content-box;
+}
+
+.setting > select:last-child {
+	--inner-padding: calc(var(--option-padding-v)*0.5);
+
+	border: 1px solid #CCC;
+	width: calc(var(--option-actual-size)*0.5 - 1px*2 - var(--inner-padding)*2);
+	height: calc(var(--option-line-height) - 1px*2 - var(--inner-padding)*2);
+	padding: var(--inner-padding);
+	font-size: var(--option-font);
+}
+
+.setting.hidden {
+	display: none;
+}
