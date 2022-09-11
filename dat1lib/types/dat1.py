@@ -220,8 +220,27 @@ class DAT1(object):
 		self._print_sections(config)
 
 	def _print_header(self):
+		# TODO: use types.KNOWN_TYPES here?
 		UNK1_KNOWN_VALUES = {
+			0x7C207220: "actor",
+			0xC96F58F3: "animclip",
+			0xF777E4A8: "animset",
+			0x39F27E27: "atmosphere",
+			0xC4999B32: "cinematic2",
+			0x23A93984: "conduit",
+			0x21A56F68: "config",
+			0x2AFE7495: "level",
+			0x567CC2F0: "levellight",
+			0x122BB0AB: "localization",
+			0x1C04EF8C: "material",
+			0x07DC03E3: "materialgraph",
 			0x98906B9F: "model",
+			0x7E4F1BB7: "soundbank",
+			0x5C4580B9: "texture",
+			0xF05EF819: "visualeffect",
+			0x35C9D886: "wwiselookup",
+			0x8A0B1487: "zone",
+
 			0x2A077A51: "dag",
 			0x51B8E006: "toc"
 		}
