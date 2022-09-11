@@ -275,6 +275,14 @@ html, body {
 	display: block;
 }
 
+/* model viewer */
+
+#model_renderer {
+	width: 80%;
+	height: 80%;
+	transform: none;
+}
+
 /**/
 
 .hidden {

@@ -2,6 +2,7 @@ const USER_STORED_FIELDS = ["toc_path", "locale"];
 const USER_STORAGE_KEY = "user";
 const POSSIBLE_STATES = ["editor"];
 
+var viewer = { ready: false };
 var controller = {
 	user: {
 		toc_path: "",
