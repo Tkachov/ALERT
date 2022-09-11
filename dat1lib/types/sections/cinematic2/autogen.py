@@ -251,14 +251,18 @@ class x2EF690BD_Section(dat1lib.types.sections.Section):
 		# size = 2..134 (avg = 23.7)
 		#
 		# examples: 89A71B7F8F42C1E5 (min size), A8A79439EA51466A (max size)
-		pass
+		ENTRY_SIZE = 2
+		count = len(data)//ENTRY_SIZE
+		self.entries = [struct.unpack("<H", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
 
 	def get_short_suffix(self):
-		return "2EF690BD ({} bytes)".format(len(self._raw))
+		return "2EF690BD ({} values)".format(len(self.entries))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 2EF690BD     | {:6} bytes".format(self.TAG, len(self._raw))
+		print "{:08X} | 2EF690BD     | {:6} values".format(self.TAG, len(self.entries))
+		for i, x in enumerate(self.entries):
+			print "  - {:<3}  {:3}".format(i, x)
 
 #
 
