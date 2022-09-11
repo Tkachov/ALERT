@@ -3,6 +3,7 @@
 import dat1lib
 import dat1lib.types.toc
 import io
+import obj_writer
 import os.path
 
 class State(object):	
@@ -50,11 +51,7 @@ class State(object):
 		self.toc = toc
 		self.toc_path = toc_fn
 
-	def extract_asset(self, index):
-		# TODO: what if I want to force reload?
-		if self.currently_extracted_asset_index == index:
-			return self.currently_extracted_asset
-
+	def _read_asset(self, index):
 		data = None
 
 		try:
@@ -75,12 +72,28 @@ class State(object):
 
 			raise
 
-		#
-
 		d = io.BytesIO(data)
 		obj = dat1lib.read(d, try_unknown=False)
 
+		return data, obj
+
+	def extract_asset(self, index):
+		# TODO: what if I want to force reload?
+		if self.currently_extracted_asset_index == index:
+			return self.currently_extracted_asset
+
+		data, obj = self._read_asset(index)
 		self.currently_extracted_asset = obj
 		self.currently_extracted_asset_index = index
 
 		return self.currently_extracted_asset
+
+	def get_model(self, index):
+		model = None
+
+		if self.currently_extracted_asset_index == index:
+			model = self.currently_extracted_asset
+		else:
+			data, model = self._read_asset(index)
+
+		return obj_writer.write(model)

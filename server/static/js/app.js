@@ -242,6 +242,15 @@ var controller = {
 			e.appendChild(createElementWithTextNode("p", "type: " + info.type));
 			e.appendChild(createElementWithTextNode("p", "magic: " + info.magic));
 			e.appendChild(createElementWithTextNode("p", "sections: " + info.sections));
+
+			if (info.type == "Model") {
+				var btn = createElementWithTextNode("a", "Open in viewer");
+				e.appendChild(btn);
+				var self = this;
+				btn.onclick = function () {
+					viewer.show_mesh("/api/model?index=" + entry.index);
+				};
+			}
 		} else {
 			var self = this;
 			this.extract_asset(entry.index, function () { self.make_asset_details(entry); }, function () {});

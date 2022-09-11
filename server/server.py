@@ -53,6 +53,7 @@ def api_post(module):
 api_post('load_toc')
 api_post('search_assets')
 api_post('extract_asset')
+api_get('model')
 # api_post('module.submodule')
 
 #########################

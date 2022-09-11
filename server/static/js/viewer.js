@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'OrbitControls';
+import { OBJLoader } from 'OBJLoader';
 
 viewer = {
 	ready: false,
@@ -20,18 +21,20 @@ viewer = {
 
 	//
 
-	show_mesh: function (mesh2) {
+	show_mesh: function (model) {
 		this.show();
 		this.make_renderer();
 
-		// TODO: load mesh
-		const geometry = new THREE.TorusKnotGeometry(10, 1.3, 500, 6, 6, 20);
-		const material = new THREE.MeshStandardMaterial({ color: 0xCCCCCC });
-		const mesh = new THREE.Mesh(geometry, material);
-		mesh.scale.x = 0.1;
-		mesh.scale.y = 0.1;
-		mesh.scale.z = 0.1;
-		this.scene.add(mesh);
+		var loader = new OBJLoader();
+		var self = this;
+		loader.load(model, function (geometry) {
+			geometry.scale.x = 3;
+			geometry.scale.y = 3;
+			geometry.scale.z = 3;
+			self.scene.add(geometry);
+		}, undefined, function (err) {
+			console.error(err);
+		});
 
 		var frontSpot = new THREE.SpotLight(0xFFFFFF);
 		var backSpot = new THREE.SpotLight(0xFFFFFF);
@@ -46,7 +49,6 @@ viewer = {
 		}
 
 		var e = document.getElementById("model_viewer");
-		var self = this;
 		e.onclick = function (ev) { if (ev.target == e) self.hide(); };
 	},
 
@@ -80,6 +82,10 @@ viewer = {
 			this.camera.updateProjectionMatrix();
 			this.renderer.setSize(w, h);
 		}
+	},
+
+	abort: function () {
+		this.aborted = true;
 	},
 
 	//
