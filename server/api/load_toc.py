@@ -21,7 +21,7 @@ def handle(request, db):
 			raise Exception("Missing 'toc_path' field!")
 
 		db.load_toc(toc_path)
-		ret = {"error": False, "toc": make_toc_json(db.toc)}
+		ret = {"error": False, "toc": make_toc_json(db)}
 
 	except Exception as e:
 		traceback.print_exc()
@@ -30,10 +30,13 @@ def handle(request, db):
 	json_response = json.dumps(ret)
 	return Response(json_response, 200, {'Content-Type': 'application/json'})
 
-def make_toc_json(toc):
+def make_toc_json(db):
+	toc = db.toc
 	archives = toc.get_archives_section()
 	assets = toc.get_assets_section()
 	return {
 		"archives": len(archives.archives),
-		"assets": len(assets.ids)
+		"assets": len(assets.ids),
+		"tree": db.tree,
+		"assets_map": db.hashes
 	}

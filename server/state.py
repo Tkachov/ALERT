@@ -14,7 +14,47 @@ class State(object):
 		self.currently_extracted_asset = None
 		self.currently_extracted_asset_index = None
 
-	def load_toc(self, path):
+		self.tree = None
+		self.hashes = {}
+
+	def _insert_path(self, path, aid):
+		self.hashes[aid] = [path, []]
+		parts = path.split("/")
+		dirs, file = parts[:-1], parts[-1]
+		
+		node = self.tree
+		for d in dirs:
+			if d not in node:
+				node[d] = {}
+			node = node[d]
+
+		node[file] = aid
+
+	def _load_tree(self):
+		if self.tree is not None:
+			return
+
+		self.tree = {}
+
+		def normalize_path(path):
+			return path.lower().replace('\\', '/').strip()
+
+		try:
+			with open("hashes.txt", "r") as f:
+				for line in f:
+					try:
+						parts = line.split(",")
+						aid, path = parts[0], normalize_path(parts[1])
+						if path != "":
+							self._insert_path(path, aid)
+					except:
+						pass
+		except:
+			pass
+
+	def load_toc(self, path):		
+		self._load_tree()
+
 		# TODO: toc is not None
 
 		asset_archive_path = os.path.basename(path)
@@ -50,6 +90,15 @@ class State(object):
 
 		self.toc = toc
 		self.toc_path = toc_fn
+
+		s = self.toc.get_assets_section()
+		ids = s.ids
+		for i in xrange(len(ids)):
+			aid = "{:016X}".format(ids[i])
+			if aid in self.hashes:
+				self.hashes[aid][1] += [i]
+			else:
+				self.hashes[aid] = ["", [i]]
 
 	def _read_asset(self, index):
 		data = None

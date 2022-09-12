@@ -74,7 +74,7 @@ class ObjHelper(object):
 		# pizza B3D0E63D7EA1F3E8
 		# body 878B7EEABDC354A2
 
-		if True:
+		if False:
 			for v in vertexes:
 				self.write_vertex(v.x, v.y, v.z)
 

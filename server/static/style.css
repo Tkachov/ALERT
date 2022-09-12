@@ -183,6 +183,7 @@ html, body {
 	display: flex;
 	flex-direction: row;
 	flex-grow: 1;
+	height: 100vh;
 }
 
 #left_column {
@@ -390,4 +391,163 @@ html, body {
 
 .setting.hidden {
 	display: none;
+}
+
+/* directories */
+
+			#left_column {
+				/*width: calc(50% - 2*5pt - 2*1px - var(--margin-between-boxes));
+				display: inline-block;
+
+				border: 1px solid #CCC;
+				background: #FFF;*/
+				padding: 5pt;
+				margin: 0;
+				/*margin-left: var(--margin-between-boxes);
+
+				height: 400pt;*/
+
+				overflow-x: auto;
+				overflow-y: scroll;				
+			}
+
+			#left_column > div {
+				width: 100%;
+			}
+
+			.entry {
+				margin: 0 -5pt;
+				padding: 1pt 5pt;
+				user-select: none;
+			}
+
+			.entry > .fname {
+				display: inline-block;
+				width: calc(100% - 20pt);
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+			}
+
+			.directory_contents {
+				margin-left: 20pt;
+			}
+
+			.entry:hover {
+				background: #F9F9F9;
+				background: rgb(229, 243, 255);
+			}
+
+			.entry.selected, .entry.selected:hover {
+				background: rgb(219, 233, 250);
+			}
+
+			.entry.directory::before {
+				content: '›';
+				display: inline-block;
+				transform: rotate(90deg);
+				color: #444;
+				font-size: 14pt;
+				text-align: center;
+				vertical-align: middle;				
+				margin: 0 4pt;
+				margin-top: -6pt;
+				line-height: 0;
+			}
+
+			.entry.directory.closed::before {
+				transform: rotate(0deg) translateX(-1pt);
+				color: #AAA;
+				margin-top: -8pt;
+			}
+
+			.entry.directory:hover::before {
+				cursor: pointer;
+				color: rgb(78, 208, 249);
+			}
+
+			.entry.directory.closed + .directory_contents {
+				display: none;
+			}
+
+/*  */
+
+#browser {
+	flex-direction: column;
+	max-height: 37.5%;
+}
+
+.breadcrumbs {
+	display: flex;
+	padding: 4pt;
+}
+
+.breadcrumb {
+	padding: 2pt;
+	background: #EEE;
+	margin: 2pt;
+}
+
+.contents {
+	display: flex;
+	flex-wrap: wrap;
+	overflow-y: auto;
+	justify-content: space-evenly;
+	padding-bottom: 6pt;
+}
+
+.contents > .directory, .contents > .file {
+	width: 80pt;
+	height: 70pt;
+	/*background: #EEE;*/
+	padding: 2pt;
+	display: inline-flex;
+	font-size: 10pt;	
+	margin-top: 6pt;
+	user-select: none;
+	position: relative;
+}
+
+.contents > .directory::before {
+	content: ' ';
+	width: 60pt;
+	height: 40pt;
+	padding: 0;
+	position: absolute;
+	margin: 1pt 10pt;
+	background: #99d2f4;
+}
+
+.contents > .file::before {
+	content: ' ';
+	width: 30pt;
+	height: 40pt;
+	padding: 0;
+	position: absolute;
+	margin: 1pt 25pt;
+	border: 1px solid #CCC;
+	background: #F3F3F3;
+}
+
+.contents > .directory {
+
+}
+
+.contents > .file {
+
+}
+
+.contents > .directory:hover, .contents > .file:hover {
+	background: rgb(229, 243, 255);
+	cursor: pointer;
+}
+
+.contents > .directory > span, .contents > .file > span {
+	text-align: center;
+	word-wrap: anywhere;
+	margin-top: 46pt;
+	text-overflow: ellipsis;
+	height: 24pt;
+	width: 80pt;
+	overflow: hidden;
 }
