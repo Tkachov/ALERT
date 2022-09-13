@@ -2,6 +2,11 @@ const USER_STORED_FIELDS = ["toc_path", "locale"];
 const USER_STORAGE_KEY = "user";
 const POSSIBLE_STATES = ["editor"];
 
+// TODO: make reverse map for aid -> path lookup
+// TODO: search / details path instead of aid
+// TODO: search js structure
+// TODO: asset in window
+
 var viewer = { ready: false };
 var controller = {
 	user: {
@@ -196,6 +201,8 @@ var controller = {
 		*/
 	},
 
+	/* search */
+
 	make_search_result: function (container, r) {
 		var e = document.createElement("div");
 		e.className = "result_entry";
@@ -218,6 +225,8 @@ var controller = {
 		}
 		e.classList.add("selected");
 	},
+
+	/* details tab */
 
 	make_toc_details: function () {
 		if (this.toc == null) return;
@@ -256,6 +265,8 @@ var controller = {
 			this.extract_asset(entry.index, function () { self.make_asset_details(entry); }, function () {});
 		}
 	},
+
+	/* directories tree / content browser */
 
 	get_entry_info: function (path) {
 		var result = {
@@ -379,11 +390,18 @@ var controller = {
 				folder.appendChild(item);
 			}
 
+			var is_multiple;
 			for (var f of files) {
+				is_multiple = (entry.tree_node[f][1].length > 1);
 				var item = document.createElement("span");
-				item.className = "file";
+				item.className = "file" + (is_multiple ? " multiple" : "");
 				item.appendChild(createElementWithTextNode("span", f));
 				item.onclick = this.make_entry_onclick(entry.basedir + f);
+				if (is_multiple) {
+					var badge = createElementWithTextNode("span", "" + entry.tree_node[f][1].length);
+					badge.className = "multiple_badge";
+					item.appendChild(badge);
+				}
 				folder.appendChild(item);
 			}
 
@@ -445,8 +463,6 @@ var controller = {
 		this._selected_tree_node.classList.add("selected");
 		this._selected_tree_node.scrollIntoView({behavior: "smooth", block: "center"});
 	},
-
-
 
 	make_directories_tree: function () {
 		function is_array(s) {
@@ -561,6 +577,8 @@ var controller = {
 
 		this.make_content_browser(this.get_entry_info(""));
 	},
+
+	/* api calls */
 
 	trigger_toc_load: function () {
 		var e = document.getElementById("toc_path");

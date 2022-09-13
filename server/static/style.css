@@ -1,5 +1,8 @@
 :root {
 	--interactable-highlight-color: #FB0;
+
+	--highlight-color: rgb(229, 243, 255);
+	--selected-color: rgb(219, 233, 250);
 }
 
 html, body {
@@ -213,6 +216,7 @@ html, body {
 	display: flex;
 	flex: 5 5 0;
 	flex-direction: column;
+	max-height: 62.5%;
 }
 
 #browser {
@@ -255,15 +259,15 @@ html, body {
 }
 
 .result_entry.selected {
-	background: #E0F0FF;
+	background: var(--selected-color);
 }
 
 .result_entry:hover {
-	background: #EEE;
+	background: var(--highlight-color);
 }
 
 .result_entry.selected:hover {
-	background: #BCDFFF;
+	background: var(--selected-color);
 }
 
 .result_entry b + span {
@@ -312,10 +316,6 @@ html, body {
 	--window-size: 80vh;
 	--window-padding: calc(var(--window-size)*0.025);
 	--window-header: calc(var(--window-size)*0.05);
-	/*
-	--option-padding-h: calc(var(--window-size)*0.005);
-	--option-padding-v: calc(var(--window-size)*0.0125);
-	*/
 	--option-padding-h: calc(var(--window-size)*0.01);
 	--option-padding-v: calc(var(--window-size)*0.0125);
 	--option-font: calc(var(--window-size)*0.02);
@@ -393,91 +393,82 @@ html, body {
 	display: none;
 }
 
-/* directories */
+/* directories tree */
 
-			#left_column {
-				/*width: calc(50% - 2*5pt - 2*1px - var(--margin-between-boxes));
-				display: inline-block;
+#left_column {
+	padding: 5pt;
+	margin: 0;
 
-				border: 1px solid #CCC;
-				background: #FFF;*/
-				padding: 5pt;
-				margin: 0;
-				/*margin-left: var(--margin-between-boxes);
+	overflow-x: auto;
+	overflow-y: scroll;
+}
 
-				height: 400pt;*/
+#left_column > div {
+	width: 100%;
+}
 
-				overflow-x: auto;
-				overflow-y: scroll;				
-			}
+#left_column .separator {
+	height: 1px;
+	background: #CCC;
+	display: block;
+	margin: 2pt;
+}
 
-			#left_column > div {
-				width: 100%;
-			}
+.entry {
+	margin: 0 -5pt;
+	padding: 1pt 5pt;
+	user-select: none;
+}
 
-			#left_column .separator {
-				height: 1px;
-				background: #CCC;
-				display: block;
-				margin: 2pt;
-			}
+.entry > .fname {
+	display: inline-block;
+	width: calc(100% - 20pt);
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
 
-			.entry {
-				margin: 0 -5pt;
-				padding: 1pt 5pt;
-				user-select: none;
-			}
+.directory_contents {
+	margin-left: 20pt;
+}
 
-			.entry > .fname {
-				display: inline-block;
-				width: calc(100% - 20pt);
-				text-overflow: ellipsis;
-				overflow: hidden;
-				white-space: nowrap;
-			}
+.entry:hover {
+	background: var(--highlight-color);
+}
 
-			.directory_contents {
-				margin-left: 20pt;
-			}
+.entry.selected, .entry.selected:hover {
+	background: var(--selected-color);
+}
 
-			.entry:hover {
-				background: #F9F9F9;
-				background: rgb(229, 243, 255);
-			}
+.entry.directory::before {
+	content: '›';
+	display: inline-block;
+	transform: rotate(90deg);
+	color: #444;
+	font-size: 14pt;
+	text-align: center;
+	vertical-align: middle;				
+	margin: 0 4pt;
+	margin-top: -6pt;
+	line-height: 0;
+}
 
-			.entry.selected, .entry.selected:hover {
-				background: rgb(219, 233, 250);
-			}
+.entry.directory.closed::before {
+	transform: rotate(0deg) translateX(-1pt);
+	color: #AAA;
+	margin-top: -8pt;
+}
 
-			.entry.directory::before {
-				content: '›';
-				display: inline-block;
-				transform: rotate(90deg);
-				color: #444;
-				font-size: 14pt;
-				text-align: center;
-				vertical-align: middle;				
-				margin: 0 4pt;
-				margin-top: -6pt;
-				line-height: 0;
-			}
+.entry.directory:hover::before {
+	cursor: pointer;
+	color: rgb(78, 208, 249);
+}
 
-			.entry.directory.closed::before {
-				transform: rotate(0deg) translateX(-1pt);
-				color: #AAA;
-				margin-top: -8pt;
-			}
+.entry.directory.closed + .directory_contents {
+	display: none;
+}
 
-			.entry.directory:hover::before {
-				cursor: pointer;
-				color: rgb(78, 208, 249);
-			}
-
-			.entry.directory.closed + .directory_contents {
-				display: none;
-			}
-
-/*  */
+/* content browser */
 
 #browser {
 	flex-direction: column;
@@ -498,7 +489,7 @@ html, body {
 }
 
 .breadcrumb:hover {
-	background: rgb(229, 243, 255);
+	background: var(--highlight-color);
 	cursor: pointer;
 }
 
@@ -517,7 +508,6 @@ html, body {
 .contents > .directory, .contents > .file {
 	width: 80pt;
 	height: 70pt;
-	/*background: #EEE;*/
 	padding: 2pt;
 	display: inline-flex;
 	font-size: 10pt;	
@@ -547,6 +537,42 @@ html, body {
 	background: #F3F3F3;
 }
 
+.contents > .file.multiple::before {
+	width: 24pt;
+	height: 32pt;
+	margin-left: 30pt;
+	margin-top: 3pt;
+}
+
+.contents > .file.multiple::after {
+	content: ' ';
+	width: 24pt;
+	height: 32pt;
+	padding: 0;
+	position: absolute;
+	margin: 1pt 25pt;
+	border: 1px solid #CCC;
+	background: #FAFAFA;
+	margin-top: 7pt;
+	margin-left: 26pt;
+}
+
+.contents > .file > .multiple_badge {
+	position: absolute;
+	margin: 1pt 25pt;
+	background: #333;
+	color: #FFF;
+	margin-top: 30pt;
+	margin-left: 46pt;
+	z-index: 1;
+	padding: 1pt;
+	width: 11.5pt;
+	height: 11.5pt;
+	font-size: 8pt;
+	text-align: center;
+	line-height: 10pt;
+}
+
 .contents > .directory {
 
 }
@@ -556,13 +582,13 @@ html, body {
 }
 
 .contents > .directory:hover, .contents > .file:hover {
-	background: rgb(229, 243, 255);
+	background: var(--highlight-color);
 	cursor: pointer;
 }
 
 .contents > .directory.selected, .contents > .file.selected,
 .contents > .directory.selected:hover, .contents > .file.selected:hover {
-	background: rgb(219, 233, 250);
+	background: var(--selected-color);
 }
 
 .contents > .directory > span, .contents > .file > span {
