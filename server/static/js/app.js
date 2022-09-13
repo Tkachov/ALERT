@@ -268,8 +268,10 @@ var controller = {
 		var crumbs = document.createElement("div");
 		crumbs.className = "breadcrumbs";
 
-		var b = createElementWithTextNode("span", "home"); // breadcrumb to <n>
+		var self = this;
+		var b = createElementWithTextNode("span", "home");
 			b.className = "breadcrumb";
+			b.onclick = function () { self.make_content_browser(""); };
 			crumbs.appendChild(b);
 
 function is_string(s) {
@@ -294,7 +296,9 @@ var highlighted_file = null;
 
 			n = n[p];
 
-			crumbs.appendChild(document.createTextNode("/"));
+			var sep = document.createElement("span");
+			sep.className = "separator";
+			crumbs.appendChild(sep);
 
 			var b = createElementWithTextNode("span", p); // breadcrumb to <n>
 			b.className = "breadcrumb";
@@ -305,7 +309,9 @@ var highlighted_file = null;
 		if (!is_array(n[last])) {
 			n = n[last];
 
-			crumbs.appendChild(document.createTextNode("/"));
+			var sep = document.createElement("span");
+			sep.className = "separator";
+			crumbs.appendChild(sep);
 
 			var b = createElementWithTextNode("span", last); // breadcrumb to <n>
 			b.className = "breadcrumb";
@@ -543,7 +549,35 @@ function build_tree(self, tree, prefix, depth=0) {
 
 var e = document.getElementById("left_column");
 e.innerHTML = "";
+
+
 e.appendChild(build_tree(this, this.toc.tree, ""));
+
+var first = (e.children.length > 0 ? e.children[0] : e);
+
+var sep = document.createElement("div");
+sep.className = "separator";
+first.insertBefore(sep, first.firstChild);
+
+{
+	var self = this;
+	var depth = 0;
+	var f = "home";
+	var c = document.createElement("div");
+	var p = document.createElement("p");
+		p.className = "entry file";
+		p.style.marginLeft = "-" + (5 + depth*20) + "pt";
+		p.style.paddingLeft = (5 + depth*20) + "pt";
+		p.onclick = function () { self.make_content_browser(""); };
+
+		var s = document.createElement("span");
+		s.className = "fname";
+		s.innerHTML = f;
+		s.title = f;
+		p.appendChild(s);
+		c.appendChild(p);
+		first.insertBefore(c, first.firstChild);
+}
 
 /*
 var en = e.querySelector(".entry");

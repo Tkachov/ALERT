@@ -415,6 +415,13 @@ html, body {
 				width: 100%;
 			}
 
+			#left_column .separator {
+				height: 1px;
+				background: #CCC;
+				display: block;
+				margin: 2pt;
+			}
+
 			.entry {
 				margin: 0 -5pt;
 				padding: 1pt 5pt;
@@ -479,13 +486,24 @@ html, body {
 
 .breadcrumbs {
 	display: flex;
-	padding: 4pt;
+	padding: 2pt 4pt;
+	border: 0;
+	border-bottom: 1px solid #CCC;
 }
 
-.breadcrumb {
-	padding: 2pt;
-	background: #EEE;
+.breadcrumbs > .breadcrumb, .breadcrumbs > .separator {
+	padding: 3pt;
 	margin: 2pt;
+	user-select: none;
+}
+
+.breadcrumb:hover {
+	background: rgb(229, 243, 255);
+	cursor: pointer;
+}
+
+.breadcrumbs > .separator::before {
+	content: '›';
 }
 
 .contents {
