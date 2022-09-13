@@ -276,6 +276,10 @@ function is_string(s) {
 	return (typeof s === 'string' || s instanceof String);
 }
 
+function is_array(s) {
+	return (s.constructor === Array);
+}
+
 var highlighted_file = null;
 
 		var n = this.toc.tree;
@@ -283,7 +287,7 @@ var highlighted_file = null;
 		// for (var p of parts) {
 		for (var i=0; i<parts.length-1; ++i) {
 			var p = parts[i];
-			if (is_string(n[p])) {
+			if (is_array(n[p])) {
 				highlighted_file = p;
 				break;
 			}
@@ -298,7 +302,7 @@ var highlighted_file = null;
 		}
 
 		var last = parts[parts.length-1];
-		if (!is_string(n[last])) {
+		if (!is_array(n[last])) {
 			n = n[last];
 
 			crumbs.appendChild(document.createTextNode("/"));
@@ -312,7 +316,7 @@ var highlighted_file = null;
 			var directories = [];
 	var files = [];
 	for (var k in n) {
-		if (is_string(n[k])) {
+		if (is_array(n[k])) {
 			files.push(k);
 		} else {
 			directories.push(k);
@@ -437,12 +441,16 @@ function is_string(s) {
 	return (typeof s === 'string' || s instanceof String);
 }
 
+function is_array(s) {
+	return (s.constructor === Array);
+}
+
 
 function build_tree(self, tree, prefix, depth=0) {
 	var directories = [];
 	var files = [];
 	for (var k in tree) {
-		if (is_string(tree[k])) {
+		if (is_array(tree[k])) {
 			files.push(k);
 		} else {
 			directories.push(k);
@@ -521,7 +529,7 @@ function build_tree(self, tree, prefix, depth=0) {
 		p.className = "entry file";
 		p.style.marginLeft = "-" + (5 + depth*20) + "pt";
 		p.style.paddingLeft = (5 + depth*20) + "pt";
-		p.onclick = make_file_onclick(self, p, tree[f], prefix + f);
+		p.onclick = make_file_onclick(self, p, tree[f][0], prefix + f);
 
 		var s = document.createElement("span");
 		s.className = "fname";

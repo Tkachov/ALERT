@@ -16,9 +16,9 @@ class State(object):
 
 		self.tree = None
 		self.hashes = {}
+		self._known_paths = {}
 
 	def _insert_path(self, path, aid):
-		self.hashes[aid] = [path, []]
 		parts = path.split("/")
 		dirs, file = parts[:-1], parts[-1]
 		
@@ -28,7 +28,21 @@ class State(object):
 				node[d] = {}
 			node = node[d]
 
-		node[file] = aid
+		node[file] = [aid, []]
+		self._known_paths[aid] = path
+
+	def _add_index_to_tree(self, aid, i):
+		path = self._known_paths[aid]
+		parts = path.split("/")
+		dirs, file = parts[:-1], parts[-1]
+		
+		node = self.tree
+		for d in dirs:
+			if d not in node:
+				node[d] = {}
+			node = node[d]
+
+		node[file][1] += [i]
 
 	def _load_tree(self):
 		if self.tree is not None:
@@ -95,10 +109,13 @@ class State(object):
 		ids = s.ids
 		for i in xrange(len(ids)):
 			aid = "{:016X}".format(ids[i])
-			if aid in self.hashes:
-				self.hashes[aid][1] += [i]
+			if aid in self._known_paths:
+				self._add_index_to_tree(aid, i)
 			else:
-				self.hashes[aid] = ["", [i]]
+				if aid in self.hashes:
+					self.hashes[aid] += [i]
+				else:
+					self.hashes[aid] = [i] # ["", [i]]
 
 	def _read_asset(self, index):
 		data = None
