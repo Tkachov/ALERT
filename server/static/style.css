@@ -560,6 +560,11 @@ html, body {
 	cursor: pointer;
 }
 
+.contents > .directory.selected, .contents > .file.selected,
+.contents > .directory.selected:hover, .contents > .file.selected:hover {
+	background: rgb(219, 233, 250);
+}
+
 .contents > .directory > span, .contents > .file > span {
 	text-align: center;
 	word-wrap: anywhere;

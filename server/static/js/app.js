@@ -257,334 +257,309 @@ var controller = {
 		}
 	},
 
-	make_content_browser: function (path) {
+	get_entry_info: function (path) {
+		var result = {
+			path: path,
+			tree_node: null,
+			crumbs: [],
+			is_file: false,
+			aid: "",
+			basedir: ""
+		};
 
-		var parts = [];
-		if (path != "") parts = path.split("/");
+		if (path != "") result.crumbs = path.split("/");
 
-		var e = document.getElementById("browser");
-		e.innerHTML = "";
-
-		var crumbs = document.createElement("div");
-		crumbs.className = "breadcrumbs";
-
-		var self = this;
-		var b = createElementWithTextNode("span", "home");
-			b.className = "breadcrumb";
-			b.onclick = function () { self.make_content_browser(""); };
-			crumbs.appendChild(b);
-
-function is_string(s) {
-	return (typeof s === 'string' || s instanceof String);
-}
-
-function is_array(s) {
-	return (s.constructor === Array);
-}
-
-var highlighted_file = null;
-
-		var n = this.toc.tree;
-		if (parts.length > 0) {
-		// for (var p of parts) {
-		for (var i=0; i<parts.length-1; ++i) {
-			var p = parts[i];
-			if (is_array(n[p])) {
-				highlighted_file = p;
-				break;
+		result.tree_node = this.toc.tree;
+		if (result.crumbs.length > 0) {
+			for (var i=0; i<result.crumbs.length-1; ++i) {
+				var p = result.crumbs[i];
+				if (is_array(result.tree_node[p])) break;
+				result.tree_node = result.tree_node[p];
 			}
 
-			n = n[p];
-
-			var sep = document.createElement("span");
-			sep.className = "separator";
-			crumbs.appendChild(sep);
-
-			var b = createElementWithTextNode("span", p); // breadcrumb to <n>
-			b.className = "breadcrumb";
-			crumbs.appendChild(b);
+			var last = result.crumbs[result.crumbs.length-1];
+			if (is_array(result.tree_node[last])) {
+				result.is_file = true;
+				result.aid = result.tree_node[last][0];
+			} else {
+				result.tree_node = result.tree_node[last];
+			}
 		}
 
-		var last = parts[parts.length-1];
-		if (!is_array(n[last])) {
-			n = n[last];
-
-			var sep = document.createElement("span");
-			sep.className = "separator";
-			crumbs.appendChild(sep);
-
-			var b = createElementWithTextNode("span", last); // breadcrumb to <n>
-			b.className = "breadcrumb";
-			crumbs.appendChild(b);
+		var len = result.crumbs.length - (result.is_file ? 1 : 0);
+		for (var i=0; i<len; ++i) {
+			result.basedir += result.crumbs[i] + "/";
 		}
-	}
+
+		return result;
+	},
+
+	make_entry_onclick: function (path) {
+		var self = this;
+		return function (ev) {
+			var e = self.get_entry_info(path);
+			self.make_content_browser(e);
+			self.select_tree_node(e);
+
+			if (e.is_file) {
+				var s = document.getElementById("search");
+				s.value = e.aid;
+				self.search_assets();
+			}
+
+			ev.preventDefault();
+		};
+	},
+
+	_browser_made_for_entry: null,
+
+	make_content_browser: function (entry) {
+		var remake_browser = true;
+		if (this._browser_made_for_entry != null && this._browser_made_for_entry.basedir == entry.basedir) {
+			remake_browser = false;
+		}
+
+		this._browser_made_for_entry = entry;
+
+		if (remake_browser) {
+			var e = document.getElementById("browser");
+			e.innerHTML = "";
+
+			var crumbs = document.createElement("div");
+			crumbs.className = "breadcrumbs";
+
+			function add_breadcrumb(parent, self, full_path, crumb) {
+				if (parent.children.length > 0) {
+					var sep = document.createElement("span");
+					sep.className = "separator";
+					parent.appendChild(sep);
+				}
+
+				var b = createElementWithTextNode("span", crumb);
+				b.className = "breadcrumb";
+				b.onclick = self.make_entry_onclick(full_path);
+				parent.appendChild(b);
+			}
+
+			var self = this;
+			add_breadcrumb(crumbs, self, "", "home");
+
+			var full_path = "";
+			var len = entry.crumbs.length - (entry.is_file ? 1 : 0);
+			if (len > 0) {		
+				for (var i=0; i<len; ++i) {
+					var p = entry.crumbs[i];
+					full_path += p;
+					add_breadcrumb(crumbs, self, full_path, p);
+					full_path += "/";
+				}
+			}
 
 			var directories = [];
-	var files = [];
-	for (var k in n) {
-		if (is_array(n[k])) {
-			files.push(k);
-		} else {
-			directories.push(k);
+			var files = [];
+			var n = entry.tree_node;
+			for (var k in n) {
+				if (is_array(n[k])) {
+					files.push(k);
+				} else {
+					directories.push(k);
+				}
+			}
+			directories.sort();
+			files.sort();
+
+			var folder = document.createElement("div");
+			folder.className = "contents";
+
+			for (var d of directories) {
+				var item = document.createElement("span");
+				item.className = "directory";
+				item.appendChild(createElementWithTextNode("span", d));
+				item.onclick = this.make_entry_onclick(entry.basedir + d);
+				folder.appendChild(item);
+			}
+
+			for (var f of files) {
+				var item = document.createElement("span");
+				item.className = "file";
+				item.appendChild(createElementWithTextNode("span", f));
+				item.onclick = this.make_entry_onclick(entry.basedir + f);
+				folder.appendChild(item);
+			}
+
+			e.appendChild(crumbs);
+			e.appendChild(folder);
 		}
-	}
-	directories.sort();
-	files.sort();
 
-	var folder = document.createElement("div");
-		folder.className = "contents";
+		if (entry.is_file) {
+			var e = document.getElementById("browser");
+			
+			var files = e.querySelectorAll(".directory");
+			for (var f of files) {
+				f.classList.remove("selected");
+			}
 
-		for (var d of directories) {
-			var item = document.createElement("span");
-			item.className = "directory";
-			item.appendChild(createElementWithTextNode("span", d));
-			folder.appendChild(item);
+			var selected = null;
+			files = e.querySelectorAll(".file");
+			for (var f of files) {
+				f.classList.remove("selected");
+				
+				if (f.children[0].innerText == entry.crumbs[entry.crumbs.length-1])
+					selected = f;
+			}
+
+			if (selected != null) {
+				selected.classList.add("selected");
+				selected.scrollIntoView({behavior: "smooth", block: "center"});
+			}
 		}
-
-		for (var f of files) {
-			var item = document.createElement("span");
-			item.className = "file";
-			item.appendChild(createElementWithTextNode("span", f));
-			folder.appendChild(item);
-		}
-
-		e.appendChild(crumbs);
-		e.appendChild(folder);
 	},
 
 	_selected_tree_node: null,
 
-	_select_tree_node: function (e) {
+	select_tree_node: function (e) {
 		if (this._selected_tree_node != null)
 			this._selected_tree_node.classList.remove("selected");
 
-		this._selected_tree_node = e;
+		var n = document.getElementById("left_column").children[0];
+		if (e.path == "") {
+			n = n.children[0].children[0];
+		} else {
+			var next = n;
+			for (var c of e.crumbs) {
+				n.classList.remove("closed");
+				n = next;
+				for (var i=0; i<n.children.length; ++i) {
+					if (n.children[i].innerText == c) {
+						if (n.children[i].classList.contains("directory"))
+							next = n.children[i+1].children[0];
+						
+						n = n.children[i];
+						break;
+					}
+				}
+			}
+		}
+
+		this._selected_tree_node = n;
 		this._selected_tree_node.classList.add("selected");
+		this._selected_tree_node.scrollIntoView({behavior: "smooth", block: "center"});
 	},
 
+
+
 	make_directories_tree: function () {
-
-function sorted_tree(tree_list) {
-	var items = [];
-	for (var k in tree_list)
-		items.push({"item": tree_list[k], "name": k});
-	items.sort(function (a, b) {
-		if (a.item.type != b.item.type) {
-			if (a.item.type == "directory")
-				return 1;
-			return -1;
-		}
-		if (a.name > b.name)
-			return 1;
-		if (a.name < b.name)
-			return -1;
-		return 0;
-	});
-	return items;
-}
-
-/*
-function build_tree(tree, filename, depth=0) {
-	// console.log(tree, filename);
-	if (tree.type == "file") {
-		var p = document.createElement("p");
-		p.className = "entry file";
-		p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-		p.style.paddingLeft = (5 + depth*20) + "pt";
-		var s = document.createElement("span");
-		s.className = "fname";
-		s.innerHTML = filename;
-		s.title = filename;
-		p.appendChild(s);
-		s = document.createElement("span");
-		s.className = "size";
-		s.innerHTML = fix_size(tree.size);
-		p.appendChild(s);
-		return p;
-	}
-
-	if (filename == "") {
-		if (tree.list.length < 2) {
-			for (var k in tree.list)
-				return build_tree(tree.list[k], k, depth+1)
-			return document.createTextNode("");
+		function is_array(s) {
+			return (s.constructor === Array);
 		}
 
-		var c = document.createElement("div");
-		var sorted = sorted_tree(tree.list);
-		for (var t of sorted) {
-			c.appendChild(build_tree(t.item, t.name, depth+1));
+		function build_tree(self, tree, prefix, depth=0) {
+			var directories = [];
+			var files = [];
+			for (var k in tree) {
+				if (is_array(tree[k])) {
+					files.push(k);
+				} else {
+					directories.push(k);
+				}
+			}
+			directories.sort();
+			files.sort();
+
+			function make_dir_onclick(self, p, path) {
+				return function (ev) {
+					if (ev.target == p) {
+						p.classList.toggle("closed");
+					}
+				};
+			}
+
+			var c = document.createElement("div");
+			for (var d of directories) {
+				var p = document.createElement("p");
+				p.className = "entry directory closed";
+				p.style.marginLeft = "-" + (5 + depth*20) + "pt";
+				p.style.paddingLeft = (5 + depth*20) + "pt";
+				p.onclick = make_dir_onclick(self, p, prefix + d);
+
+				var s = document.createElement("span");
+				s.className = "fname";
+				s.innerHTML = d;
+				s.title = d;
+				s.onclick = self.make_entry_onclick(prefix + d);
+				p.appendChild(s);
+				c.appendChild(p);
+
+				var ct = document.createElement("div");
+				ct.className = "directory_contents";
+				ct.appendChild(build_tree(self, tree[d], prefix + d + "/", depth+1));
+				c.appendChild(ct);
+			}
+
+			function make_file_onclick(self, p, aid, path) {
+				return function () {
+					self._select_tree_node(p);
+					self.make_content_browser(path);
+
+					var e = document.getElementById("search");
+					e.value = aid;
+					self.search_assets();
+				};
+			}
+
+			for (var f of files) {
+				var p = document.createElement("p");
+				p.className = "entry file";
+				p.style.marginLeft = "-" + (5 + depth*20) + "pt";
+				p.style.paddingLeft = (5 + depth*20) + "pt";
+				// p.onclick = make_file_onclick(self, p, tree[f][0], prefix + f);
+				p.onclick = self.make_entry_onclick(prefix + f);
+
+				var s = document.createElement("span");
+				s.className = "fname";
+				s.innerHTML = f;
+				s.title = f;
+				p.appendChild(s);
+				c.appendChild(p);
+			}
+
+			return c;
 		}
-		return c;
-	}
 
-	var c = document.createElement("div");	
-	var p = document.createElement("p");
-	p.className = "entry directory";
-	p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-	p.style.paddingLeft = (5 + depth*20) + "pt";
-	p.onclick = function () {
-		p.classList.toggle("closed");
-	};
-	var s = document.createElement("span");
-	s.className = "fname";
-	s.innerHTML = filename;
-	s.title = filename;
-	p.appendChild(s);
-	c.appendChild(p);
-	var ct = document.createElement("div");
-	ct.className = "directory_contents";
-	var sorted = sorted_tree(tree.list);
-		for (var t of sorted) {
-			ct.appendChild(build_tree(t.item, t.name, depth+1));
+		var e = document.getElementById("left_column");
+		e.innerHTML = "";
+		e.appendChild(build_tree(this, this.toc.tree, ""));
+
+		// home + separator
+
+		var first = (e.children.length > 0 ? e.children[0] : e);
+
+		var sep = document.createElement("div");
+		sep.className = "separator";
+		first.insertBefore(sep, first.firstChild);
+
+		{
+			var self = this;
+			var depth = 0;
+			var f = "home";
+			var c = document.createElement("div");
+			var p = document.createElement("p");
+				p.className = "entry file";
+				p.style.marginLeft = "-" + (5 + depth*20) + "pt";
+				p.style.paddingLeft = (5 + depth*20) + "pt";
+				// p.onclick = function () { self.make_content_browser(""); };
+				p.onclick = this.make_entry_onclick("");
+
+				var s = document.createElement("span");
+				s.className = "fname";
+				s.innerHTML = f;
+				s.title = f;
+				p.appendChild(s);
+				c.appendChild(p);
+				first.insertBefore(c, first.firstChild);
 		}
-	c.appendChild(ct);
-	return c;
-}
-*/
 
-function is_string(s) {
-	return (typeof s === 'string' || s instanceof String);
-}
-
-function is_array(s) {
-	return (s.constructor === Array);
-}
-
-
-function build_tree(self, tree, prefix, depth=0) {
-	var directories = [];
-	var files = [];
-	for (var k in tree) {
-		if (is_array(tree[k])) {
-			files.push(k);
-		} else {
-			directories.push(k);
-		}
-	}
-	directories.sort();
-	files.sort();
-
-	/*
-	var c = document.createElement("div");
-	var p = document.createElement("p");
-	p.className = "entry directory";
-	p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-	p.style.paddingLeft = (5 + depth*20) + "pt";
-	p.onclick = function () {
-		p.classList.toggle("closed");
-	};
-	var s = document.createElement("span");
-	s.className = "fname";
-	s.innerHTML = filename;
-	s.title = filename;
-	p.appendChild(s);
-	c.appendChild(p);
-	var ct = document.createElement("div");
-	ct.className = "directory_contents";
-	var sorted = sorted_tree(tree.list);
-		for (var t of sorted) {
-			ct.appendChild(build_tree(t.item, t.name, depth+1));
-		}
-	c.appendChild(ct);
-	return c;
-	*/
-
-	function make_dir_onclick(self, p, path) {
-		return function () {
-			self._select_tree_node(p);
-			self.make_content_browser(path);
-			p.classList.toggle("closed");
-		};
-	}
-
-	var c = document.createElement("div");
-	for (var d of directories) {
-		var p = document.createElement("p");
-		p.className = "entry directory closed";
-		p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-		p.style.paddingLeft = (5 + depth*20) + "pt";
-		p.onclick = make_dir_onclick(self, p, prefix + d);
-
-		var s = document.createElement("span");
-		s.className = "fname";
-		s.innerHTML = d;
-		s.title = d;
-		p.appendChild(s);
-		c.appendChild(p);
-
-		var ct = document.createElement("div");
-		ct.className = "directory_contents";
-		ct.appendChild(build_tree(self, tree[d], prefix + d + "/", depth+1));
-		c.appendChild(ct);
-	}
-
-	function make_file_onclick(self, p, aid, path) {
-		return function () {
-			self._select_tree_node(p);
-			self.make_content_browser(path);
-
-			var e = document.getElementById("search");
-			e.value = aid;
-			self.search_assets();
-		};
-	}
-
-	for (var f of files) {
-		var p = document.createElement("p");
-		p.className = "entry file";
-		p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-		p.style.paddingLeft = (5 + depth*20) + "pt";
-		p.onclick = make_file_onclick(self, p, tree[f][0], prefix + f);
-
-		var s = document.createElement("span");
-		s.className = "fname";
-		s.innerHTML = f;
-		s.title = f;
-		p.appendChild(s);
-		c.appendChild(p);
-	}
-	return c;
-}
-
-var e = document.getElementById("left_column");
-e.innerHTML = "";
-
-
-e.appendChild(build_tree(this, this.toc.tree, ""));
-
-var first = (e.children.length > 0 ? e.children[0] : e);
-
-var sep = document.createElement("div");
-sep.className = "separator";
-first.insertBefore(sep, first.firstChild);
-
-{
-	var self = this;
-	var depth = 0;
-	var f = "home";
-	var c = document.createElement("div");
-	var p = document.createElement("p");
-		p.className = "entry file";
-		p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-		p.style.paddingLeft = (5 + depth*20) + "pt";
-		p.onclick = function () { self.make_content_browser(""); };
-
-		var s = document.createElement("span");
-		s.className = "fname";
-		s.innerHTML = f;
-		s.title = f;
-		p.appendChild(s);
-		c.appendChild(p);
-		first.insertBefore(c, first.firstChild);
-}
-
-/*
-var en = e.querySelector(".entry");
-if (en != null) en.onclick();
-*/
-this.make_content_browser("");
-
+		this.make_content_browser(this.get_entry_info(""));
 	},
 
 	trigger_toc_load: function () {
@@ -709,4 +684,14 @@ function createElementWithTextNode(tag, text) {
 	var e = document.createElement(tag);
 	e.appendChild(document.createTextNode(text));
 	return e;
+}
+
+//
+
+function is_string(s) {
+	return (typeof s === 'string' || s instanceof String);
+}
+
+function is_array(s) {
+	return (s.constructor === Array);
 }
