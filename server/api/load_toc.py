@@ -38,5 +38,6 @@ def make_toc_json(db):
 		"archives": len(archives.archives),
 		"assets": len(assets.ids),
 		"tree": db.tree,
-		"assets_map": db.hashes
+		"assets_map": db.hashes,
+		"archives_map": db.archives
 	}

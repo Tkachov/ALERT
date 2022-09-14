@@ -17,6 +17,7 @@ class State(object):
 		self.tree = None
 		self.hashes = {}
 		self._known_paths = {}
+		self.archives = []
 
 	def _insert_path(self, path, aid):
 		parts = path.split("/")
@@ -31,7 +32,7 @@ class State(object):
 		node[file] = [aid, []]
 		self._known_paths[aid] = path
 
-	def _add_index_to_tree(self, aid, i):
+	def _add_index_to_tree(self, aid, i, archive_index):
 		path = self._known_paths[aid]
 		parts = path.split("/")
 		dirs, file = parts[:-1], parts[-1]
@@ -42,7 +43,7 @@ class State(object):
 				node[d] = {}
 			node = node[d]
 
-		node[file][1] += [i]
+		node[file][1] += [[i, archive_index]]
 
 	def _load_tree(self):
 		if self.tree is not None:
@@ -106,16 +107,20 @@ class State(object):
 		self.toc_path = toc_fn
 
 		s = self.toc.get_assets_section()
+		s2 = self.toc.get_offsets_section()
 		ids = s.ids
 		for i in xrange(len(ids)):
 			aid = "{:016X}".format(ids[i])
 			if aid in self._known_paths:
-				self._add_index_to_tree(aid, i)
+				self._add_index_to_tree(aid, i, s2.entries[i].archive_index)
 			else:
 				if aid in self.hashes:
-					self.hashes[aid] += [i]
+					self.hashes[aid] += [[i, s2.entries[i].archive_index]]
 				else:
-					self.hashes[aid] = [i] # ["", [i]]
+					self.hashes[aid] = [[i, s2.entries[i].archive_index]] # ["", [i]]
+
+		s3 = self.toc.get_archives_section()
+		self.archives = ["{}".format(a.filename) for a in s3.archives]
 
 	def _read_asset(self, index):
 		data = None
@@ -145,14 +150,17 @@ class State(object):
 
 	def extract_asset(self, index):
 		# TODO: what if I want to force reload?
+		s = self.toc.get_sizes_section()
+		sz = s.entries[index].value
+
 		if self.currently_extracted_asset_index == index:
-			return self.currently_extracted_asset
+			return self.currently_extracted_asset, sz
 
 		data, obj = self._read_asset(index)
 		self.currently_extracted_asset = obj
 		self.currently_extracted_asset_index = index
 
-		return self.currently_extracted_asset
+		return self.currently_extracted_asset, sz
 
 	def get_model(self, index):
 		model = None

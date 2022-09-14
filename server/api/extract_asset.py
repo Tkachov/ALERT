@@ -20,8 +20,8 @@ def handle(request, db):
 		if index is None:
 			raise Exception("Missing 'index' field!")
 
-		asset = db.extract_asset(int(index))
-		ret = {"error": False, "asset": make_asset_details_json(asset)}
+		asset, sz = db.extract_asset(int(index))
+		ret = {"error": False, "asset": make_asset_details_json(asset, sz)}
 
 	except Exception as e:
 		traceback.print_exc()
@@ -30,9 +30,10 @@ def handle(request, db):
 	json_response = json.dumps(ret)
 	return Response(json_response, 200, {'Content-Type': 'application/json'})
 
-def make_asset_details_json(asset):
+def make_asset_details_json(asset, sz):
 	return {
 		"type": asset.__class__.__name__,
 		"magic": asset.MAGIC,
-		"sections": len(asset.dat1.sections)
+		"sections": len(asset.dat1.sections),
+		"size": sz
 	}

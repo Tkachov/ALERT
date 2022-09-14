@@ -2,9 +2,6 @@ const USER_STORED_FIELDS = ["toc_path", "locale"];
 const USER_STORAGE_KEY = "user";
 const POSSIBLE_STATES = ["editor"];
 
-// TODO: make reverse map for aid -> path lookup
-// TODO: search / details path instead of aid
-// TODO: search js structure
 // TODO: asset in window
 
 var viewer = { ready: false };
@@ -21,6 +18,7 @@ var controller = {
 
 	toc: null,
 	assets: new Map(),
+	asset_ids: new Map(),
 
 	// submit forms
 
@@ -206,13 +204,15 @@ var controller = {
 	make_search_result: function (container, r) {
 		var e = document.createElement("div");
 		e.className = "result_entry";
-		e.appendChild(createElementWithTextNode("b", r.id));
-		e.appendChild(createElementWithTextNode("span", r.index));
+		e.appendChild(createElementWithTextNode("b", r.name));
+		e.appendChild(createElementWithTextNode("span", this.toc.archives_map[r.archive]));
+		e.title = r.aid + (r.path != "" ? " - " + r.path : "");
 
 		var self = this;
 		e.onclick = function () {
 			self.change_selected(container, e);
 			self.make_asset_details(r);
+			if (r.path != "") self.make_entry_onclick(r.path, false)();
 		}
 
 		return e;
@@ -242,12 +242,18 @@ var controller = {
 		var e = document.getElementById("details");
 		e.innerHTML = "";
 
-		e.appendChild(createElementWithTextNode("b", entry.id));
-		e.appendChild(createElementWithTextNode("p", "size: " + entry.size));
-		e.appendChild(createElementWithTextNode("p", "archive: " + entry.archive));
+		e.appendChild(createElementWithTextNode("b", entry.name));
+		if (entry.path != "") {
+			e.appendChild(createElementWithTextNode("p", entry.path + " (" + this.toc.archives_map[entry.archive] + ")"));
+			e.appendChild(createElementWithTextNode("span", entry.aid));
+		} else {
+			e.appendChild(createElementWithTextNode("p", this.toc.archives_map[entry.archive]));
+		}
 
 		if (this.assets.has(entry.index)) {
 			var info = this.assets.get(entry.index);
+			e.appendChild(document.createElement("hr"));
+			e.appendChild(createElementWithTextNode("p", "size: " + info.size));
 			e.appendChild(createElementWithTextNode("p", "type: " + info.type));
 			e.appendChild(createElementWithTextNode("p", "magic: " + info.magic));
 			e.appendChild(createElementWithTextNode("p", "sections: " + info.sections));
@@ -267,6 +273,24 @@ var controller = {
 	},
 
 	/* directories tree / content browser */
+
+	traverse_tree: function (tree, current_path) {
+		for (var k in tree) {
+			if (is_array(tree[k])) {
+				this.asset_ids.set(tree[k][0], current_path + k);
+			} else {
+				this.traverse_tree(tree[k], current_path + k + "/");
+			}
+		}
+	},
+
+	fill_structs: function () {
+		for (var k in this.toc.assets_map) {
+			this.asset_ids.set(k, "");
+		}
+
+		this.traverse_tree(this.toc.tree, "");
+	},
 
 	get_entry_info: function (path) {
 		var result = {
@@ -305,20 +329,20 @@ var controller = {
 		return result;
 	},
 
-	make_entry_onclick: function (path) {
+	make_entry_onclick: function (path, update_search) {
 		var self = this;
 		return function (ev) {
 			var e = self.get_entry_info(path);
 			self.make_content_browser(e);
 			self.select_tree_node(e);
 
-			if (e.is_file) {
+			if (e.is_file && update_search) {
 				var s = document.getElementById("search");
-				s.value = e.aid;
-				self.search_assets();
+				if (s.value != e.aid) {
+					s.value = e.aid;
+					self.search_assets();
+				}
 			}
-
-			ev.preventDefault();
 		};
 	},
 
@@ -348,7 +372,7 @@ var controller = {
 
 				var b = createElementWithTextNode("span", crumb);
 				b.className = "breadcrumb";
-				b.onclick = self.make_entry_onclick(full_path);
+				b.onclick = self.make_entry_onclick(full_path, true);
 				parent.appendChild(b);
 			}
 
@@ -386,7 +410,7 @@ var controller = {
 				var item = document.createElement("span");
 				item.className = "directory";
 				item.appendChild(createElementWithTextNode("span", d));
-				item.onclick = this.make_entry_onclick(entry.basedir + d);
+				item.onclick = this.make_entry_onclick(entry.basedir + d, true);
 				folder.appendChild(item);
 			}
 
@@ -396,7 +420,7 @@ var controller = {
 				var item = document.createElement("span");
 				item.className = "file" + (is_multiple ? " multiple" : "");
 				item.appendChild(createElementWithTextNode("span", f));
-				item.onclick = this.make_entry_onclick(entry.basedir + f);
+				item.onclick = this.make_entry_onclick(entry.basedir + f, true);
 				if (is_multiple) {
 					var badge = createElementWithTextNode("span", "" + entry.tree_node[f][1].length);
 					badge.className = "multiple_badge";
@@ -502,7 +526,7 @@ var controller = {
 				s.className = "fname";
 				s.innerHTML = d;
 				s.title = d;
-				s.onclick = self.make_entry_onclick(prefix + d);
+				s.onclick = self.make_entry_onclick(prefix + d, true);
 				p.appendChild(s);
 				c.appendChild(p);
 
@@ -529,7 +553,7 @@ var controller = {
 				p.style.marginLeft = "-" + (5 + depth*20) + "pt";
 				p.style.paddingLeft = (5 + depth*20) + "pt";
 				// p.onclick = make_file_onclick(self, p, tree[f][0], prefix + f);
-				p.onclick = self.make_entry_onclick(prefix + f);
+				p.onclick = self.make_entry_onclick(prefix + f, true);
 
 				var s = document.createElement("span");
 				s.className = "fname";
@@ -564,7 +588,7 @@ var controller = {
 				p.style.marginLeft = "-" + (5 + depth*20) + "pt";
 				p.style.paddingLeft = (5 + depth*20) + "pt";
 				// p.onclick = function () { self.make_content_browser(""); };
-				p.onclick = this.make_entry_onclick("");
+				p.onclick = this.make_entry_onclick("", false);
 
 				var s = document.createElement("span");
 				s.className = "fname";
@@ -608,6 +632,7 @@ var controller = {
 				self.splashes.load_toc.error = null;
 				self.state = "editor";
 				self.toc = r.toc;
+				self.fill_structs();
 				self.make_toc_details();
 				self.make_directories_tree();
 				self.render();
@@ -629,6 +654,7 @@ var controller = {
 		var e = document.getElementById("search");
 		var v = e.value;
 
+		/*
 		this.sending_input = true;
 
 		var self = this;
@@ -657,6 +683,77 @@ var controller = {
 		);
 
 		this.render();
+		*/
+
+		function add_results(self, array, aid, path) {
+			if (path == "") {
+				for (var i of self.toc.assets_map[aid])
+					array.push({index: i[0], archive: i[1], aid: aid, name: aid, path: ""});
+				return;
+			}
+
+			var e = self.get_entry_info(path);
+			var basename = e.crumbs[e.crumbs.length-1];
+			for (var i of e.tree_node[basename][1])
+				array.push({index: i[0], archive: i[1], aid: e.aid, name: basename, path: path});
+		}
+
+		function meets_request(s, terms) {
+			if (s == null || s == "") return false;
+
+			for (var t of terms) {
+				if (!s.includes(t))
+					return false;
+			}
+
+			return true;
+		}
+
+		try {
+			this.editor.search.results = [];
+
+			if (this.asset_ids.has(v)) {
+				add_results(this, this.editor.search.results, v, this.asset_ids.get(v));
+			} else {
+				var parts = v.split(" ");
+				var terms = [];
+				var hexonly = true;
+				for (var p of parts) {
+					if (p.trim() != "") {
+						var normalized = p.trim().toLowerCase().replaceAll("\\", "/");
+						terms.push(normalized);
+
+						if (hexonly) {
+							for (var c of normalized) {
+								if (!"0123456789abcdef".includes(c)) {
+									hexonly = false;
+									break;
+								}
+							}
+						}
+					}
+				}
+
+				if (terms.length > 0)
+				{
+					for (let [k, path] of this.asset_ids.entries()) {
+						if ((hexonly && meets_request(k.toLowerCase(), terms)) || (path != "" && meets_request(path, terms)))
+							add_results(this, this.editor.search.results, k, path);
+					}
+				}
+			}
+		} catch (e) {
+			console.log(e);
+			this.editor.search.error = e.name + ": " + e.message;
+		}
+
+		this.render();
+
+		if (this.editor.search.results.length == 1) {
+			var e = document.getElementById("results");
+			e = e.querySelector(".result_entry");
+			if (e != null) e.onclick();
+		}
 
 		return false; // invalidate form anyways (so it won't refresh the page on submit)
 	},
