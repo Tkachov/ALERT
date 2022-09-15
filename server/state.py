@@ -192,21 +192,23 @@ class State(object):
 		
 		CONFIG = {
 			"sections": True,
-			"sections_verbose": True
+			"sections_verbose": True,
+			"web": True
 		}
-		order = [(i, s.tag, s.offset) for i, s in enumerate(asset.dat1.header.sections)]
-		order = sorted(order, key=lambda x: x[2])
 
 		for ndx, s in enumerate(asset.dat1.header.sections):
 			section = asset.dat1.sections[ndx]
 			report["sections"][s.tag] = ""
 			try:
 				if section is not None:
-					captured = StringIO.StringIO()
-					sys.stdout = captured
-					section.print_verbose(CONFIG)
-					report["sections"][s.tag] = captured.getvalue()
-					sys.stdout = sys.__stdout__
+					if "web_repr" in dir(section):
+						report["sections"][s.tag] = section.web_repr()
+					else:
+						captured = StringIO.StringIO()
+						sys.stdout = captured
+						section.print_verbose(CONFIG)
+						report["sections"][s.tag] = {"name": "{:08X}".format(s.tag), "type": "text", "readonly": True, "content": captured.getvalue()}
+						sys.stdout = sys.__stdout__
 			except:
 			 	pass
 

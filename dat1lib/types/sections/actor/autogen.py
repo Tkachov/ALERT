@@ -31,6 +31,9 @@ class x135832C8_Section(dat1lib.types.sections.Section):
 		return "135832C8 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | 135832C8     | {:6} entries".format(self.TAG, len(self.entries))
 
@@ -64,6 +67,9 @@ class x32FAC8E0_Section(dat1lib.types.sections.Section):
 		return "32FAC8E0 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | 32FAC8E0     | {:6} entries".format(self.TAG, len(self.entries))
 
@@ -96,6 +102,9 @@ class x364A6C7C_Section(dat1lib.types.sections.Section):
 		return "364A6C7C ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | 364A6C7C     | {:6} entries".format(self.TAG, len(self.entries))
 
@@ -128,6 +137,9 @@ class x3AB204B9_Section(dat1lib.types.sections.Section):
 		return "3AB204B9 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | 3AB204B9     | {:6} entries".format(self.TAG, len(self.entries))
 
@@ -160,6 +172,9 @@ class x6D4301EF_Section(dat1lib.types.sections.Section):
 		return "6D4301EF ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | 6D4301EF     | {:6} entries".format(self.TAG, len(self.entries))
 

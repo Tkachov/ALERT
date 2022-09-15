@@ -26,6 +26,9 @@ class ConfigTypeSection(dat1lib.types.sections.SerializedSection):
 		if len(self.extras) > 0:
 			print " "*10, self.extras
 
+	def web_repr(self):
+		return {"name": "Type", "type": "json", "readonly": False, "content": self.root}
+
 ###
 
 class ConfigContentSection(dat1lib.types.sections.SerializedSection):
@@ -49,3 +52,6 @@ class ConfigContentSection(dat1lib.types.sections.SerializedSection):
 		print json.dumps(self.root, indent=4, sort_keys=True)
 		if len(self.extras) > 0:
 			print " "*10, self.extras
+
+	def web_repr(self):
+		return {"name": "Content", "type": "json", "readonly": False, "content": self.root}

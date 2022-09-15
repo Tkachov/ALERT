@@ -33,6 +33,9 @@ class HeaderSection(dat1lib.types.sections.Section):
 		# return "events ({})".format(len(self.events))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Header       |".format(self.TAG)
 		print self.time_of_day
@@ -117,5 +120,8 @@ class xE7997256_Section(dat1lib.types.sections.Section):
 		return "? ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | ?            | {:6} entries".format(self.TAG, len(self.entries))

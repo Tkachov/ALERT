@@ -99,6 +99,9 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Vertexes     | {:6} vertexes".format(self.TAG, len(self.vertexes))
+		if config.get("web", False):
+			return
+		
 		print ""
 		#######........ | 123  12345678  12345678  12345678  12345678  12345678  12345678
 		print "           #           x         y         z        nx        ny        nz         U         V"
@@ -130,6 +133,9 @@ class x6B855EED_Section(dat1lib.types.sections.Section):
 		return "? ({})".format(len(self.values))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
 		print self.values[:32], "...", self.values[-32:]
@@ -155,6 +161,9 @@ class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 		return "? ({})".format(len(self.values))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
 		print self.values[:32], "...", self.values[-32:]

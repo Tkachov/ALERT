@@ -2,9 +2,6 @@ const USER_STORED_FIELDS = ["toc_path", "locale"];
 const USER_STORAGE_KEY = "user";
 const POSSIBLE_STATES = ["editor"];
 
-// TODO: asset in window
-// 85CEEC8ED04F7750 report crashes
-
 var viewer = { ready: false };
 var controller = {
 	user: {
@@ -643,17 +640,30 @@ var controller = {
 			var tag = parseInt(k).toString(16).toUpperCase();
 			var color = tag.substr(1, 6);
 
+			var section = report.sections[k];
+
 			var s = document.createElement("div");
 			s.className = "spoiler";
 			var sh = document.createElement("div");
 			var clr = document.createElement("span");
 			clr.style.background = "#" + color;
 			sh.appendChild(clr);
-			sh.appendChild(createElementWithTextNode("span", tag));
+			sh.appendChild(createElementWithTextNode("span", section.name));
 			s.appendChild(sh);
 			sh.onclick = make_spoiler_onclick(s);
-			var c = createElementWithTextNode("pre", report.sections[k]);
-			s.appendChild(c);
+			if (section.type == "text") {
+				if (section.content != "") {
+					var c = createElementWithTextNode("pre", section.content);
+					s.appendChild(c);
+				}
+
+				// TODO: not readonly => editable text
+			} else if (section.type == "json") {
+				var c = createElementWithTextNode("pre", JSON.stringify(section.content, null, 4));
+				s.appendChild(c);
+
+				// TODO: not readonly => editable json
+			}
 			sp.appendChild(s);
 			sections[k] = s;
 		}
@@ -664,7 +674,7 @@ var controller = {
 
 		for (var s of report.header) {
 			var tag = s[0].toString(16).toUpperCase();
-			var x = createElementWithTextNode("span", tag + " - " + s[2] + " bytes");
+			var x = createElementWithTextNode("span", report.sections[s[0]].name + " - " + s[2] + " bytes");
 
 			var color = tag.substr(1, 6);
 			x.style.background = "#" + color;

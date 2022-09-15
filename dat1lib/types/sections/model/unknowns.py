@@ -29,6 +29,9 @@ class x7CA37DA0_Section(dat1lib.types.sections.Section):
 		return "? ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | ?            | {:6} structs".format(self.TAG, len(self.entries))
 
@@ -56,6 +59,9 @@ class x811902D7_Section(dat1lib.types.sections.Section):
 		return "? ({}, {})".format(len(self.uints), len(self.shorts))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | ?            | {:6} uints \t {:6} shorts".format(self.TAG, len(self.uints), len(self.shorts))
 
@@ -81,6 +87,9 @@ class xDCC88A19_Section(dat1lib.types.sections.Section):
 		return "vectors? ({})".format(len(self.vectors))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Vectors?     | {:6} vectors".format(self.TAG, len(self.vectors))
 		# TODO: print vec4f
@@ -108,6 +117,9 @@ class xDF9FDF12_Section(dat1lib.types.sections.Section):
 		return "0-70-0-2? ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | 0-70-0-2?    | {:6} tuples".format(self.TAG, len(self.entries))
 
@@ -142,6 +154,9 @@ class xB7380E8C_Section(dat1lib.types.sections.Section):
 		return "indexes? ({})".format(len(self.indexes))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Some Indexes | {:6} indexes".format(self.TAG, len(self.indexes))
 
@@ -167,6 +182,9 @@ class xC5354B60_Section(dat1lib.types.sections.Section): # aka model_mirror_ids
 		return "offsets? ({})".format(len(self.offsets))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Some Offsets | {:6} offsets".format(self.TAG, len(self.offsets))
 
@@ -383,6 +401,9 @@ class x707F1B58_Section(dat1lib.types.sections.Section):
 		return "? ({}, {})".format(len(self.floats), len(self.shorts))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Matrixes?    | {:6} floats, {:6} shorts".format(self.TAG, len(self.floats), len(self.shorts))
 		print "           {} {} {} {} {}".format(self.unknown, self.count0, self.count1, self.count2, self.count3)
@@ -431,6 +452,9 @@ class x380A5744_Section(dat1lib.types.sections.Section):
 		return "? ({}, {}, {})".format(len(self.pairs), len(self.pairs2), len(self.rest))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | ?            | {:6} pairs, {:6} pairs, {:6} uints".format(self.TAG, len(self.pairs), len(self.pairs2), len(self.rest))
 		
