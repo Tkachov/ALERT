@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
-
 import dat1lib
 import dat1lib.types.toc
 import io
 import obj_writer
 import os.path
+import sys
+import StringIO
 
 class State(object):	
 	def __init__(self):
@@ -171,3 +171,45 @@ class State(object):
 			data, model = self._read_asset(index)
 
 		return obj_writer.write(model)
+
+	def get_asset_report(self, index):
+		asset = None
+
+		if self.currently_extracted_asset_index == index:
+			asset = self.currently_extracted_asset
+		else:
+			data, asset = self._read_asset(index)
+
+		#
+
+		report = {"header": [], "sections": {}}
+
+		#
+
+		report["header"] = [(s.tag, s.offset, s.size) for s in asset.dat1.header.sections]
+
+		#
+		
+		CONFIG = {
+			"sections": True,
+			"sections_verbose": True
+		}
+		order = [(i, s.tag, s.offset) for i, s in enumerate(asset.dat1.header.sections)]
+		order = sorted(order, key=lambda x: x[2])
+
+		for ndx, s in enumerate(asset.dat1.header.sections):
+			section = asset.dat1.sections[ndx]
+			report["sections"][s.tag] = ""
+			try:
+				if section is not None:
+					captured = StringIO.StringIO()
+					sys.stdout = captured
+					section.print_verbose(CONFIG)
+					report["sections"][s.tag] = captured.getvalue()
+					sys.stdout = sys.__stdout__
+			except:
+			 	pass
+
+		#
+
+		return report

@@ -258,6 +258,17 @@ var controller = {
 			e.appendChild(createElementWithTextNode("p", "magic: " + info.magic));
 			e.appendChild(createElementWithTextNode("p", "sections: " + info.sections));
 
+			e.appendChild(document.createElement("hr"));
+
+			{
+				var btn = createElementWithTextNode("a", "Sections report");
+				e.appendChild(btn);
+				var self = this;
+				btn.onclick = function () {
+					self.get_asset_report(entry.index);
+				};
+			}
+
 			if (info.type == "Model") {
 				var btn = createElementWithTextNode("a", "Open in viewer");
 				e.appendChild(btn);
@@ -602,6 +613,67 @@ var controller = {
 		this.make_content_browser(this.get_entry_info(""));
 	},
 
+	/* asset report */
+
+	make_asset_report: function (report) {
+		var e = document.getElementById("asset_report");
+		e.innerHTML = "";
+
+		var d = document.createElement("div");
+		e.appendChild(d);
+
+		var h = document.createElement("div");
+		h.className = "header";
+		var sp = document.createElement("div");
+		d.appendChild(h);
+		sp.className = "content";
+		d.appendChild(sp);
+
+		// spoilers with reports by section
+
+		function make_spoiler_onclick(s) {
+			return function () { s.classList.toggle("open"); };
+		}
+
+		var sections = {};
+		for (var k in report.sections) {
+			var tag = parseInt(k).toString(16).toUpperCase();
+			var color = tag.substr(1, 6);
+
+			var s = document.createElement("div");
+			s.className = "spoiler";
+			var sh = document.createElement("div");
+			var clr = document.createElement("span");
+			clr.style.background = "#" + color;
+			sh.appendChild(clr);
+			sh.appendChild(createElementWithTextNode("span", tag));
+			s.appendChild(sh);
+			sh.onclick = make_spoiler_onclick(s);
+			var c = createElementWithTextNode("pre", report.sections[k]);
+			s.appendChild(c);
+			sp.appendChild(s);
+			sections[k] = s;
+		}
+
+		// header
+
+		h.appendChild(createElementWithTextNode("b", report.header.length + " sections"));
+
+		for (var s of report.header) {
+			var tag = s[0].toString(16).toUpperCase();
+			var x = createElementWithTextNode("span", tag + " - " + s[2] + " bytes");
+
+			var color = tag.substr(1, 6);
+			x.style.background = "#" + color;
+			x.style.color = (hexToLuma(color) < 0.6 ? "#FFF" : "#000");
+			x.onclick = make_spoiler_onclick(sections[s[0]]);
+			h.appendChild(x);
+		}
+
+		e.classList.add("open");
+		e.onclick = function (ev) { if (ev.target == e) e.classList.remove("open"); };
+	},
+
 	/* api calls */
 
 	trigger_toc_load: function () {
@@ -780,6 +852,27 @@ var controller = {
 				failure_cb();
 			}
 		);
+	},
+
+	get_asset_report: function (index) {
+		var self = this;
+		ajax.postAndParseJson(
+			"api/asset_report", {
+				index: index
+			},
+			function(r) {
+				if (r.error) {
+					// TODO: self.editor.search.error = r.message;
+					return;
+				}
+
+				// TODO: self.editor.search.error = null;
+				self.make_asset_report(r.report);
+			},
+			function(e) {				
+				// TODO: self.editor.search.error = e;
+			}
+		);
 	}
 };
 
@@ -809,4 +902,11 @@ function is_string(s) {
 
 function is_array(s) {
 	return (s.constructor === Array);
+}
+
+function hexToLuma(hex) {
+	const r = parseInt(hex.substr(0, 2), 16);
+	const g = parseInt(hex.substr(2, 2), 16);
+	const b = parseInt(hex.substr(4, 2), 16);
+	return [0.299 * r, 0.587 * g, 0.114 * b].reduce((a, b) => a + b) / 255;
 }

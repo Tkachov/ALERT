@@ -304,12 +304,102 @@ html, body {
 	border-bottom: 0;
 }
 
+#details a {
+	color: #0060BB;
+	text-decoration: underline;
+	display: block;
+}
+
+#details a:hover {
+	color: #0080FF;
+	cursor: pointer;
+}
+
 /* model viewer */
 
 #model_renderer {
 	width: 80%;
 	height: 80%;
 	transform: none;
+}
+
+/* asset report */
+
+#asset_report > div {
+	width: 80%;
+	height: 80%;
+	transform: none;
+	background: #FFF;
+	color: #000;
+	padding: 10pt;
+	display: flex;
+	flex-direction: column;
+}
+
+#asset_report .header {
+	margin-bottom: 20pt;
+}
+
+#asset_report .header > b {
+	display: block;
+	font-size: 22pt;
+	margin-bottom: 5pt;
+	margin-top: -3pt;
+}
+
+#asset_report .header > span {
+	display: inline-block;
+	margin: 0;
+	margin-top: 4pt;
+	margin-right: 4pt;
+	border-radius: 3px;
+	padding: 3pt;
+	cursor: pointer;
+}
+
+#asset_report .content {
+	overflow: auto;
+}
+
+#asset_report .spoiler {
+	border: 1px solid #FFF;
+	margin-bottom: 5pt;
+	margin-right: 4pt;
+}
+
+#asset_report .spoiler.open {
+	border: 1px solid #EEE;
+}
+
+#asset_report .spoiler > div:first-child {
+	height: 20pt;
+}
+
+#asset_report .spoiler > div > span {
+	display: inline-block;
+	line-height: 14pt;
+	margin: 3pt;
+	vertical-align: top;
+}
+
+#asset_report .spoiler > div > span:first-child {
+	width: 14pt;
+	height: 14pt;
+}
+
+#asset_report .spoiler > div:first-child:hover {
+	background: #EEE;
+	cursor: pointer;
+}
+
+#asset_report .spoiler > div + * {
+	display: none;
+}
+
+#asset_report .spoiler.open > div + * {
+	display: block;
+	margin: 4pt;
+	overflow: auto;
 }
 
 /**/
