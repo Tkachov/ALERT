@@ -31,6 +31,9 @@ def handle(request, db):
 	return Response(json_response, 200, {'Content-Type': 'application/json'})
 
 def make_asset_details_json(asset, sz):
+	if asset is None:
+		return {"type": None, "magic": None, "sections": None, "size": sz}
+	
 	return {
 		"type": asset.__class__.__name__,
 		"magic": asset.MAGIC,

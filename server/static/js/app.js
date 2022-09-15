@@ -3,6 +3,7 @@ const USER_STORAGE_KEY = "user";
 const POSSIBLE_STATES = ["editor"];
 
 // TODO: asset in window
+// 85CEEC8ED04F7750 report crashes
 
 var viewer = { ready: false };
 var controller = {
@@ -254,28 +255,30 @@ var controller = {
 			var info = this.assets.get(entry.index);
 			e.appendChild(document.createElement("hr"));
 			e.appendChild(createElementWithTextNode("p", "size: " + info.size));
-			e.appendChild(createElementWithTextNode("p", "type: " + info.type));
-			e.appendChild(createElementWithTextNode("p", "magic: " + info.magic));
-			e.appendChild(createElementWithTextNode("p", "sections: " + info.sections));
+			if (info.type != null) {
+				e.appendChild(createElementWithTextNode("p", "type: " + info.type));
+				e.appendChild(createElementWithTextNode("p", "magic: " + info.magic));
+				e.appendChild(createElementWithTextNode("p", "sections: " + info.sections));
 
-			e.appendChild(document.createElement("hr"));
+				e.appendChild(document.createElement("hr"));
 
-			{
-				var btn = createElementWithTextNode("a", "Sections report");
-				e.appendChild(btn);
-				var self = this;
-				btn.onclick = function () {
-					self.get_asset_report(entry.index);
-				};
-			}
+				{
+					var btn = createElementWithTextNode("a", "Sections report");
+					e.appendChild(btn);
+					var self = this;
+					btn.onclick = function () {
+						self.get_asset_report(entry.index);
+					};
+				}
 
-			if (info.type == "Model") {
-				var btn = createElementWithTextNode("a", "Open in viewer");
-				e.appendChild(btn);
-				var self = this;
-				btn.onclick = function () {
-					viewer.show_mesh("/api/model?index=" + entry.index);
-				};
+				if (info.type == "Model") {
+					var btn = createElementWithTextNode("a", "Open in viewer");
+					e.appendChild(btn);
+					var self = this;
+					btn.onclick = function () {
+						viewer.show_mesh("/api/model?index=" + entry.index);
+					};
+				}
 			}
 		} else {
 			var self = this;

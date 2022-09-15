@@ -63,7 +63,7 @@ class xF5260180_Section(dat1lib.types.sections.Section):
 
 		print self.data_size, self.unk1, self.unk2, self.unk3, self.unk4
 		print self.materials_count, self.unk5, self.unk6, self.unk7, self.unk8
-		print repr(self.unk9)
+		print " ".join(["{:02X}".format(ord(c)) for c in self.unk9])
 
 		
 		print ""
@@ -77,7 +77,7 @@ class xF5260180_Section(dat1lib.types.sections.Section):
 			if s is None:
 				s = "<str at {}>".format(spos)
 
-			print "         - {:<3}  {:08X} {:08X}  {:<4}  {}".format(i, shash, crc32.hash(s, False), spos, s)
+			print "         - {:<3}  {:08X} {:08X}  {:<4}  {}".format(i, shash, crc32.hash(s, False), spos, repr(s))
 		print ""
 
 #
