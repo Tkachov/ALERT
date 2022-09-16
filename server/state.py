@@ -182,7 +182,7 @@ class State(object):
 
 		#
 
-		report = {"header": [], "sections": {}}
+		report = {"header": [], "sections": {}, "strings": ""}
 
 		#
 
@@ -211,6 +211,20 @@ class State(object):
 						sys.stdout = sys.__stdout__
 			except:
 			 	pass
+
+		#
+
+		try:
+			items = asset.dat1._strings_map.items()
+			items = sorted(items, key=lambda x: x[0])
+			########## 123  123456  ...
+			result =  "#    offset  value\n"
+			result += "------------------\n"
+			for i, (offset, s) in enumerate(items):
+				result += "{:<3}  {:6}  {}\n".format(i, offset, s)
+			report["strings"] = result
+		except:
+			pass
 
 		#
 

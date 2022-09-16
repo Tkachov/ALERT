@@ -635,9 +635,34 @@ var controller = {
 			return function () { s.classList.toggle("open"); };
 		}
 
+		var sections_order = [];
+		for (var s of report.header) {
+			sections_order.push([s[0], s[1], s[2]]);
+		}
+		sections_order.sort(function(a, b) {
+			return a[1] - b[1];
+		});
+
 		var sections = {};
-		for (var k in report.sections) {
-			var tag = parseInt(k).toString(16).toUpperCase();
+		if (report.strings.length > 0) {
+			var s = document.createElement("div");
+			s.className = "spoiler";
+			var sh = document.createElement("div");
+			var clr = document.createElement("span");
+			clr.style.background = "#EEE";
+			sh.appendChild(clr);
+			sh.appendChild(createElementWithTextNode("span", "Strings block"));
+			s.appendChild(sh);
+			sh.onclick = make_spoiler_onclick(s);
+			var c = createElementWithTextNode("pre", report.strings);
+			s.appendChild(c);
+			sp.appendChild(s);
+			sections["SB"] = s;
+		}
+
+		for (var sect of sections_order) {
+			var k = "" + sect[0];
+			var tag = sect[0].toString(16).toUpperCase();
 			var color = tag.substr(1, 6);
 
 			var section = report.sections[k];
@@ -672,7 +697,14 @@ var controller = {
 
 		h.appendChild(createElementWithTextNode("b", report.header.length + " sections"));
 
-		for (var s of report.header) {
+		if (report.strings.length > 0) {
+			var x = createElementWithTextNode("span", "Strings block");
+			x.style.background = "#EEE";
+			x.onclick = make_spoiler_onclick(sections["SB"]);
+			h.appendChild(x);
+		}
+		
+		for (var s of sections_order) {
 			var tag = s[0].toString(16).toUpperCase();
 			var x = createElementWithTextNode("span", report.sections[s[0]].name + " - " + s[2] + " bytes");
 
