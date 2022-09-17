@@ -340,6 +340,17 @@ html, body {
 	margin-bottom: 20pt;
 }
 
+#asset_report .header .editor_button {
+	float: right;
+	color: #0060BB;
+	text-decoration: underline;
+}
+
+#asset_report .header .editor_button:hover {
+	color: #0080FF;
+	cursor: pointer;
+}
+
 #asset_report .header > b {
 	display: block;
 	font-size: 22pt;
@@ -400,6 +411,102 @@ html, body {
 	display: block;
 	margin: 4pt;
 	overflow: auto;
+}
+
+/* asset editor */
+
+#asset_editor > div {
+	width: calc(80% + 2*10pt);
+	height: 80%;
+	transform: none;
+	background: #FFF;
+	color: #000;
+	display: flex;
+	flex-direction: row;
+	padding: 10pt 0;
+}
+
+#asset_editor .original, #asset_editor .edited {
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	padding: 0 10pt;
+	position: relative;
+}
+
+#asset_editor .original {
+	border: 0;
+	border-right: 1px solid #CCC;
+}
+
+#asset_editor .header {
+	margin-bottom: 10pt;
+}
+
+#asset_editor input {
+	display: inline-block;
+	width: 100pt;
+	font-size: 11pt;
+	padding: 2pt;
+	margin-right: 10pt;
+}
+
+#asset_editor input[disabled] {
+	background: #EEE;
+	color: #666;
+}
+
+#asset_editor input[type="checkbox"] {
+	width: auto;
+	height: 12pt;
+	margin-right: 6pt;
+}
+
+#asset_editor .section {
+	display: block;
+	padding: 5pt 10pt;
+	margin: 0 -10pt;
+}
+
+#asset_editor .section:hover {
+	background: #EEE;
+}
+
+#asset_editor .section > * {
+	vertical-align: top;
+}
+
+#asset_editor .section > span:first-child {
+	width: 14pt;
+	height: 14pt;
+	display: inline-block;
+	margin-right: 10pt;
+}
+
+#asset_editor .section > a {
+	float: right;
+}
+
+#asset_editor .bottom_button {
+	display: block;
+	width: calc(100% - 2*5pt - 2*10pt);
+	padding: 5pt 5pt;
+	/*
+	width: calc(100% - 2*10pt);
+	padding: 5pt 10pt;
+	margin: 0 -10pt;*/
+	text-align: center;
+	color: #0060BB;
+	text-decoration: underline;
+
+	position: absolute;
+	bottom: 0;
+}
+
+#asset_editor .bottom_button:hover {
+	background: #EEE;
+	/*color: #0080FF;*/
+	cursor: pointer;
 }
 
 /**/

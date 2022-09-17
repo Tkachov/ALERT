@@ -54,8 +54,11 @@ api_post('load_toc')
 api_post('search_assets')
 api_post('extract_asset')
 api_post('asset_report')
+api_post('asset_editor')
 api_get('model')
-# api_post('module.submodule')
+api_get('editor.extract')
+api_get('editor.save_section')
+api_get('editor.save_strings')
 
 #########################
 

@@ -2,6 +2,12 @@ const USER_STORED_FIELDS = ["toc_path", "locale"];
 const USER_STORAGE_KEY = "user";
 const POSSIBLE_STATES = ["editor"];
 
+/* TODO: asset editor: 
+	- header with size field
+	- strings block: keep, replace, append
+	- sections: keep, replace
+*/
+
 var viewer = { ready: false };
 var controller = {
 	user: {
@@ -31,6 +37,12 @@ var controller = {
 		search: {
 			error: null,
 			results: []
+		},
+
+		editor: {
+			index: null,
+			report: null,
+			edited: null
 		}
 	},
 
@@ -195,6 +207,178 @@ var controller = {
 		else
 			document.body.classList.remove("sending_input");
 		*/
+
+		this._render_asset_editor();
+	},
+
+	_render_asset_editor: function () {
+		var e = document.getElementById("asset_editor");
+		var show = (this.editor.editor.index != null);
+		
+		if (show) e.classList.add("open");
+		else e.classList.remove("open");
+		
+		if (!show) return;
+
+		var self = this;
+		e.onclick = function (ev) {
+			if (ev.target == e) {
+				self.editor.editor.index = null;
+				self.render();
+			}
+		};
+
+		//
+
+		if (this.editor.editor.edited == null) {
+			var edited = {
+				header: {
+					magic: this.editor.editor.report.header.magic,
+					size: this.editor.editor.report.header.size,
+					recalculate_size: true,
+					rest: []
+				},
+				strings: {
+					option: 0
+				},
+				sections: []
+			};
+
+			for (var r of this.editor.editor.report.header.rest) {
+				edited.header.rest.push(r);
+			}
+
+			this.editor.editor.edited = edited;
+		}
+
+		//
+		
+		e.innerHTML = "";
+
+		var d = document.createElement("div");
+		e.appendChild(d);
+
+		var original = document.createElement("div");
+		original.className = "original";
+		d.appendChild(original);
+
+		var h = document.createElement("div");
+		h.className = "header";
+		original.appendChild(h);
+
+		h.appendChild(createElementWithTextNode("b", "Original asset header"));
+		h.appendChild(document.createElement("br"));
+
+		var input = document.createElement("input");
+		input.type = "number";
+		input.value = this.editor.editor.report.header.magic;
+		input.disabled = true;
+		h.appendChild(input);
+
+		input = document.createElement("input");
+		input.type = "number";
+		input.value = this.editor.editor.report.header.size;
+		input.disabled = true;
+		h.appendChild(input);
+
+		h.appendChild(document.createElement("br"));
+
+		for (var r of this.editor.editor.report.header.rest) {
+			input = document.createElement("input");
+			input.type = "number";
+			input.value = r;
+			input.disabled = true;
+			h.appendChild(input);
+		}
+
+		var s = document.createElement("div");
+		s.className = "section";
+
+		var clr = document.createElement("span");
+		clr.style.background = "#EEE";
+		s.appendChild(clr);
+		s.appendChild(createElementWithTextNode("span", "Strings block (" + this.editor.editor.report.strings.count + " strings/" + this.editor.editor.report.strings.size + " bytes)"));
+		
+		var a = createElementWithTextNode("a", "Save raw");
+		a.href = "/api/editor/save_strings?index=" + this.editor.editor.index;
+		a.target = "_blank";
+		s.appendChild(a);
+		original.appendChild(s);
+
+		for (var section of this.editor.editor.report.sections) {
+			var tag = section.tag.toString(16).toUpperCase();
+			var color = tag.substr(1, 6);
+
+			s = document.createElement("div");
+			s.className = "section";
+
+			clr = document.createElement("span");
+			clr.style.background = "#" + color;
+			s.appendChild(clr);
+			s.appendChild(createElementWithTextNode("span", tag + " (" + section.size + " bytes)"));
+			
+			a = createElementWithTextNode("a", "Save raw");
+			a.href = "/api/editor/save_section?index=" + this.editor.editor.index + "&section=" + section.tag;
+			a.target = "_blank";
+			s.appendChild(a);
+			original.appendChild(s);
+		}
+
+		a = createElementWithTextNode("a", "Extract asset (" + this.editor.editor.report.total_size + " bytes)");
+		a.className = "bottom_button";
+		a.href = "/api/editor/extract?index=" + this.editor.editor.index;
+		a.target = "_blank";
+		original.appendChild(a);
+
+		//
+
+		var edited = document.createElement("div");
+		edited.className = "edited";
+		d.appendChild(edited);
+
+		h = document.createElement("div");
+		h.className = "header";
+		edited.appendChild(h);
+
+		h.appendChild(createElementWithTextNode("b", "Edited asset header"));
+		h.appendChild(document.createElement("br"));
+
+		var input = document.createElement("input");
+		input.type = "number";
+		input.value = this.editor.editor.edited.header.magic;
+		input.disabled = true;
+		h.appendChild(input);
+
+		input = document.createElement("input");
+		input.type = "number";
+		input.value = this.editor.editor.edited.header.size;
+		input.disabled = this.editor.editor.edited.header.recalculate_size;
+		h.appendChild(input);
+
+		input = document.createElement("input");
+		input.type = "checkbox";
+		input.name = "recalculate_size";
+		input.id = "recalculate_size";
+        input.checked = this.editor.editor.edited.header.recalculate_size;
+        h.appendChild(input);
+
+        var label = createElementWithTextNode("label", "Put final size in this field automatically");
+        label.htmlFor = "recalculate_size";
+        h.appendChild(label);
+
+		h.appendChild(document.createElement("br"));
+
+		for (var r of this.editor.editor.edited.header.rest) {
+			input = document.createElement("input");
+			input.type = "number";
+			input.value = r;
+			h.appendChild(input);
+		}
+
+		a = createElementWithTextNode("a", "Save edited asset");
+		a.className = "bottom_button";
+		// TODO: onclick
+		edited.appendChild(a);
 	},
 
 	/* search */
@@ -265,6 +449,15 @@ var controller = {
 					var self = this;
 					btn.onclick = function () {
 						self.get_asset_report(entry.index);
+					};
+				}
+
+				{
+					var btn = createElementWithTextNode("a", "Edit asset");
+					e.appendChild(btn);
+					var self = this;
+					btn.onclick = function () {
+						self.get_asset_editor(entry.index);
 					};
 				}
 
@@ -615,7 +808,7 @@ var controller = {
 
 	/* asset report */
 
-	make_asset_report: function (report) {
+	make_asset_report: function (index, report) {
 		var e = document.getElementById("asset_report");
 		e.innerHTML = "";
 
@@ -628,6 +821,12 @@ var controller = {
 		d.appendChild(h);
 		sp.className = "content";
 		d.appendChild(sp);
+
+		var self = this;
+		var oe = createElementWithTextNode("a", "Edit asset");
+		oe.className = "editor_button";
+		oe.onclick = function () { self.get_asset_editor(index); };
+		h.appendChild(oe);
 
 		// spoilers with reports by section
 
@@ -912,7 +1111,31 @@ var controller = {
 				}
 
 				// TODO: self.editor.search.error = null;
-				self.make_asset_report(r.report);
+				self.make_asset_report(index, r.report);
+			},
+			function(e) {				
+				// TODO: self.editor.search.error = e;
+			}
+		);
+	},
+
+	get_asset_editor: function (index) {
+		var self = this;
+		ajax.postAndParseJson(
+			"api/asset_editor", {
+				index: index
+			},
+			function(r) {
+				if (r.error) {
+					// TODO: self.editor.search.error = r.message;
+					return;
+				}
+
+				// TODO: self.editor.search.error = null;
+				self.editor.editor.index = index;
+				self.editor.editor.report = r.report;
+				self.editor.editor.edited = null;
+				self.render();
 			},
 			function(e) {				
 				// TODO: self.editor.search.error = e;

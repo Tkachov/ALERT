@@ -5,6 +5,7 @@ import obj_writer
 import os.path
 import sys
 import StringIO
+import struct
 
 class State(object):	
 	def __init__(self):
@@ -13,6 +14,7 @@ class State(object):
 
 		self.currently_extracted_asset = None
 		self.currently_extracted_asset_index = None
+		self.currently_extracted_asset_data = None
 
 		self.tree = None
 		self.hashes = {}
@@ -148,6 +150,19 @@ class State(object):
 
 		return data, obj
 
+	def _get_asset_by_index(self, index):
+		if self.currently_extracted_asset_index == index:
+			return self.currently_extracted_asset_data, self.currently_extracted_asset
+		
+		return self._read_asset(index)
+
+	def _get_asset_name(self, index):
+		s = self.toc.get_assets_section()
+		aid = "{:016X}".format(s.ids[index])
+		if aid in self._known_paths:
+			return os.path.basename(self._known_paths[aid])
+		return aid
+
 	def extract_asset(self, index):
 		# TODO: what if I want to force reload?
 		s = self.toc.get_sizes_section()
@@ -159,33 +174,30 @@ class State(object):
 		data, obj = self._read_asset(index)
 		self.currently_extracted_asset = obj
 		self.currently_extracted_asset_index = index
+		self.currently_extracted_asset_data = data
 
 		return self.currently_extracted_asset, sz
 
 	def get_model(self, index):
-		model = None
+		data, asset = self._get_asset_by_index(index)
+		return obj_writer.write(asset)
 
-		if self.currently_extracted_asset_index == index:
-			model = self.currently_extracted_asset
-		else:
-			data, model = self._read_asset(index)
+	def get_asset_data(self, index):
+		data, asset = self._get_asset_by_index(index)
+		return data, self._get_asset_name(index)
 
-		return obj_writer.write(model)
+	def get_asset_section_data(self, index, section):
+		data, asset = self._get_asset_by_index(index)
+		return asset.dat1.get_section(section)._raw, self._get_asset_name(index) + ".{:08X}.raw".format(section)
+
+	def get_asset_strings(self, index):
+		data, asset = self._get_asset_by_index(index)
+		return asset.dat1._raw_strings_data, self._get_asset_name(index) + ".strings.raw"
 
 	def get_asset_report(self, index):
-		asset = None
-
-		if self.currently_extracted_asset_index == index:
-			asset = self.currently_extracted_asset
-		else:
-			data, asset = self._read_asset(index)
-
-		#
+		data, asset = self._get_asset_by_index(index)
 
 		report = {"header": [], "sections": {}, "strings": ""}
-
-		#
-
 		report["header"] = [(s.tag, s.offset, s.size) for s in asset.dat1.header.sections]
 
 		#
@@ -225,6 +237,39 @@ class State(object):
 			report["strings"] = result
 		except:
 			pass
+
+		#
+
+		return report
+
+	def get_asset_editor(self, index):
+		data, asset = self._get_asset_by_index(index)
+
+		#
+
+		report = {
+			"header": {"magic": 0, "size": 0, "rest": []},
+			"strings": {"count": 0, "size": 0},
+			"sections": [],
+			"total_size": len(data)
+		}
+
+		#
+
+		report["header"]["magic"], report["header"]["size"] = struct.unpack("<II", data[:8])
+		report["header"]["rest"] = [struct.unpack("<I", data[8+i*4:12+i*4])[0] for i in xrange(7)]
+
+		report["strings"]["count"] = len(asset.dat1._strings_map)
+		report["strings"]["size"] = len(asset.dat1._raw_strings_data)
+
+		#
+
+		sorted_sections = [(s.tag, s.offset, s.size) for s in asset.dat1.header.sections]
+		sorted_sections = sorted(sorted_sections, key=lambda x: x[1])
+
+		for tag, _, size in sorted_sections:
+			# TODO: web_editor_data()
+			report["sections"] += [{"tag": tag, "size": size, "type": "raw"}]
 
 		#
 
