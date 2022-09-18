@@ -17,6 +17,9 @@ class x4EDE3593_Section(dat1lib.types.sections.Section):
 		# always last
 		#
 		# examples: 800035F1EBDCBCEC
+
+		# <texture block size> <shorts...>
+		# two of the shorts look like offsets in that block size?
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

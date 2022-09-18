@@ -14,6 +14,8 @@ class x364A6C7C_Section(dat1lib.types.sections.Section):
 		# size = 176..320 (avg = 301.3)
 		#
 		# examples: 802A792FD6F72CE3 (min size), 80029DC4DB44B189 (max size)
+
+		# floats; starts with 4x4 matrix (identity in actors_3d_poi_distant_fx_marker_quest_vertical_camfacer.actor)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

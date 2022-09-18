@@ -367,6 +367,10 @@ class Texture(object):
 		self.unk = f.read(28)
 		self._raw_dat1 = f.read()
 
+		# <magic> <dat1 size> <texture block size>
+		# <zero> <zero> <texture block size>
+		# <zero> <zero> <zero>
+
 		if self.magic != self.MAGIC:
 			print "[!] Bad Texture magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
 
@@ -483,6 +487,8 @@ class Zone(object):
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
 		self._raw_dat1 = f.read()
+
+		# <magic> <size of first dat1> <size of second dat1> <zeros...>
 
 		if self.magic != self.MAGIC:
 			print "[!] Bad Zone magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)

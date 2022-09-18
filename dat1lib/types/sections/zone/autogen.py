@@ -322,7 +322,7 @@ class x3D8DBDB8_Section(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 3D8DBDB8     | {:6} entries".format(self.TAG, len(self.entries))
+		print "{:08X} | 3D8DBDB8     | = {:08X} aka {}".format(self.TAG, self.entries[0], self.entries[0])
 
 #
 
@@ -1254,7 +1254,7 @@ class xC6A5905E_Section(dat1lib.types.sections.Section):
 
 #
 
-class xDC625B3D_Section(dat1lib.types.sections.Section):
+class xDC625B3D_Section(dat1lib.types.sections.Section): # aka zone_actor_names
 	TAG = 0xDC625B3D
 	TYPE = 'Zone'
 
@@ -1283,6 +1283,9 @@ class xDC625B3D_Section(dat1lib.types.sections.Section):
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | DC625B3D     | {:6} entries".format(self.TAG, len(self.entries))
+		for i, x in enumerate(self.entries):
+			print "  - {:<3}  {}".format(i, self._dat1.get_string(x))
+		print ""
 
 #
 
