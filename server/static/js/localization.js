@@ -41,6 +41,15 @@ const ROOT_DIRECTORY = {
 		},
 
 		"editor": {
+			"asset_editor": {
+				"section_edit_option_keep": {
+					"en": "Keep as is"
+				},
+
+				"section_edit_option_replace": {
+					"en": "Replace raw"
+				}
+			}
 		},
 
 		"settings": {

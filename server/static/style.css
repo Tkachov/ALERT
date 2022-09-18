@@ -509,6 +509,58 @@ html, body {
 	cursor: pointer;
 }
 
+#asset_editor .edited .section {
+	border: 0;
+	border-top: 1px solid #CCC;
+	border-bottom: 1px solid #CCC;
+}
+
+#asset_editor .edited .section.closed {
+	border: 0;
+}
+
+#asset_editor .edited .section:hover {
+	background: none;
+}
+
+#asset_editor .edited .section.closed:hover {
+	background: #EEE;
+}
+
+#asset_editor .edited .section select {
+	float: right;
+}
+
+#asset_editor .edited .section > .arrows {
+	float: right;
+	display: block;
+	width: 30pt;
+	min-height: 2pt;
+}
+
+#asset_editor .edited .section > .arrows > a {
+	display: inline-block;
+	width: 15pt;
+	color: #0060BB;
+	text-align: center;
+}
+
+#asset_editor .edited .section > .arrows > a:hover {
+	color: #FF0080;
+	cursor: pointer;
+}
+
+#asset_editor .edited .section > input[type="file"] {
+	width: calc(100% - 2*2pt - 2*1px);
+	margin-top: 8pt;
+	margin-bottom: 4pt;
+}
+
+#asset_editor .edited .section > textarea {
+	margin: 8pt 0 4pt 0;
+	width: calc(100% - 2*2pt - 2*1px);
+}
+
 /**/
 
 .hidden {

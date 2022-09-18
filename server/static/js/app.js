@@ -2,11 +2,10 @@ const USER_STORED_FIELDS = ["toc_path", "locale"];
 const USER_STORAGE_KEY = "user";
 const POSSIBLE_STATES = ["editor"];
 
-/* TODO: asset editor: 
-	- header with size field
-	- strings block: keep, replace, append
-	- sections: keep, replace
-*/
+// TODO: favorites, history
+// TODO: "windows"
+// TODO: fix bigger models
+// TODO: model viewer materials preview
 
 var viewer = { ready: false };
 var controller = {
@@ -239,13 +238,19 @@ var controller = {
 					rest: []
 				},
 				strings: {
-					option: 0
+					option_index: 0,
+					appended: "",
+					dom: null
 				},
 				sections: []
 			};
 
 			for (var r of this.editor.editor.report.header.rest) {
 				edited.header.rest.push(r);
+			}
+
+			for (var section of this.editor.editor.report.sections) {
+				edited.sections.push({tag: section.tag, type: section.type, option_index: 0, dom: null});
 			}
 
 			this.editor.editor.edited = edited;
@@ -355,29 +360,196 @@ var controller = {
 		input.disabled = this.editor.editor.edited.header.recalculate_size;
 		h.appendChild(input);
 
+		var size_input = input;
+		size_input.onchange = function () { self.editor.editor.edited.header.size = size_input.value; }
+
 		input = document.createElement("input");
 		input.type = "checkbox";
 		input.name = "recalculate_size";
 		input.id = "recalculate_size";
-        input.checked = this.editor.editor.edited.header.recalculate_size;
-        h.appendChild(input);
+		input.checked = this.editor.editor.edited.header.recalculate_size;
+		h.appendChild(input);
 
-        var label = createElementWithTextNode("label", "Put final size in this field automatically");
-        label.htmlFor = "recalculate_size";
-        h.appendChild(label);
+		var size_checkbox = input;
+		size_checkbox.onchange = function () {
+			self.editor.editor.edited.header.recalculate_size = size_checkbox.checked;
+			size_input.disabled = self.editor.editor.edited.header.recalculate_size;
+		}
+
+		var label = createElementWithTextNode("label", "Put final size in this field automatically");
+		label.htmlFor = "recalculate_size";
+		h.appendChild(label);
 
 		h.appendChild(document.createElement("br"));
 
-		for (var r of this.editor.editor.edited.header.rest) {
+		function make_rest_input_onchange(self, input, index) {
+			return function () { self.editor.editor.edited.header.rest[index] = input.value; };
+		}
+
+		for (var i=0; i<this.editor.editor.edited.header.rest.length; ++i) {
 			input = document.createElement("input");
 			input.type = "number";
-			input.value = r;
+			input.value = this.editor.editor.edited.header.rest[i];
 			h.appendChild(input);
+			input.onchange = make_rest_input_onchange(this, input, i);
+		}
+
+		function make_option(text, value) {
+			var o = createElementWithTextNode("option", text);
+			o.value = value;
+			return o;
+		}
+
+		function make_file_upload(name) {
+			var input = document.createElement("input");
+			input.type = "file";
+			input.name = name;
+			return input;			
+		}
+
+		const STRINGS_OPTION_KEEP = "keep";
+		const STRINGS_OPTION_REPLACE = "replace";
+		const STRINGS_OPTION_APPEND = "append";
+
+		if (this.editor.editor.edited.strings.dom == null) {
+			s = document.createElement("div");
+			s.className = "section";
+			this.editor.editor.edited.strings.dom = s;
+
+			clr = document.createElement("span");
+			clr.style.background = "#EEE";
+			s.appendChild(clr);
+			s.appendChild(createElementWithTextNode("span", "Strings block"));
+
+			var arrd = document.createElement("span");
+			arrd.className = "arrows";
+			s.appendChild(arrd);
+
+			select = document.createElement("select");
+			select.appendChild(make_option("Keep as is", STRINGS_OPTION_KEEP));
+			select.appendChild(make_option("Replace raw", STRINGS_OPTION_REPLACE));
+			select.appendChild(make_option("Add strings", STRINGS_OPTION_APPEND));
+			select.selectedIndex = this.editor.editor.edited.strings.option_index;
+			s.appendChild(select);
+
+			var strings_select = select;
+			strings_select.onchange = function () {
+				self.editor.editor.edited.strings.option_index = strings_select.selectedIndex;
+				self.editor.editor.edited.strings.dom = null;
+				self.render();
+			}
+
+			switch (strings_select.options[strings_select.selectedIndex].value) {
+				case STRINGS_OPTION_KEEP: s.classList.add("closed"); break;
+				case STRINGS_OPTION_REPLACE:
+					s.appendChild(document.createElement("br"));
+					s.appendChild(make_file_upload("strings"));
+				break;
+				case STRINGS_OPTION_APPEND:
+					s.appendChild(document.createElement("br"));
+					var ta = createElementWithTextNode("textarea", this.editor.editor.edited.strings.appended);
+					ta.onchange = function () { self.editor.editor.edited.strings.appended = ta.value; }
+					s.appendChild(ta);
+				break;
+			}
+
+			edited.appendChild(s);
+		}
+
+		edited.appendChild(this.editor.editor.edited.strings.dom);
+
+		const TYPE_OPTIONS = {
+			"raw": ["keep", "replace"]
+		};
+
+		function get_section_by_tag(sections, tag) {
+			for (var s of sections) {
+				if (s.tag == tag) return s;
+			}
+			return null;
+		}
+
+		function make_section_option_select(self, select, tag) {
+			return function () {
+				var sct = get_section_by_tag(self.editor.editor.edited.sections, tag);
+				sct.option_index = select.selectedIndex;
+				sct.dom = null;
+				self.render();
+			};
+		}
+
+		function make_section_arrow_swap(self, tag, offset) {
+			return function () {
+				var target = -1;
+				for (var i=0; i<self.editor.editor.edited.sections.length; ++i) {
+					if (self.editor.editor.edited.sections[i].tag == tag) {
+						target = i;
+						break;
+					}
+				}
+
+				if (target == -1 || target+offset < 0 || target+offset >= self.editor.editor.edited.sections.length) return;
+
+				var a = self.editor.editor.edited.sections[i];
+				var b = self.editor.editor.edited.sections[i+offset];
+				self.editor.editor.edited.sections[i] = b;
+				self.editor.editor.edited.sections[i+offset] = a;
+				self.render();
+			};
+		}
+
+		for (var section of this.editor.editor.edited.sections) {
+			if (section.dom == null) {
+				var tag = section.tag.toString(16).toUpperCase();
+				var color = tag.substr(1, 6);
+
+				s = document.createElement("div");
+				s.className = "section";
+				section.dom = s;
+
+				clr = document.createElement("span");
+				clr.style.background = "#" + color;
+				s.appendChild(clr);
+				s.appendChild(createElementWithTextNode("span", tag));
+
+				var arrd = document.createElement("span");
+				arrd.className = "arrows";
+				s.appendChild(arrd);
+
+				var arrup = createElementWithTextNode("a", "↑");
+				arrup.onclick = make_section_arrow_swap(this, section.tag, -1);
+				arrd.appendChild(arrup);
+
+				var arrdown = createElementWithTextNode("a", "↓");
+				arrdown.onclick = make_section_arrow_swap(this, section.tag, 1);
+				arrd.appendChild(arrdown);
+
+				var available_options = TYPE_OPTIONS[section.type];
+
+				select = document.createElement("select");
+				for (var op of available_options)
+					select.appendChild(make_option(this.get_localized("ui/editor/asset_editor/section_edit_option_" + op), op));
+				select.selectedIndex = section.option_index;
+				s.appendChild(select);
+				select.onchange = make_section_option_select(this, select, section.tag);
+
+				switch (select.options[select.selectedIndex].value) {
+					case "keep": s.classList.add("closed"); break;
+					case "replace":
+						s.appendChild(document.createElement("br"));
+						s.appendChild(make_file_upload(tag));
+					break;
+				}
+
+				edited.appendChild(s);
+			}
+
+			edited.appendChild(section.dom);
 		}
 
 		a = createElementWithTextNode("a", "Save edited asset");
 		a.className = "bottom_button";
-		// TODO: onclick
+		a.onclick = function () { self.edit_asset(); }
 		edited.appendChild(a);
 	},
 
@@ -1136,6 +1308,54 @@ var controller = {
 				self.editor.editor.report = r.report;
 				self.editor.editor.edited = null;
 				self.render();
+			},
+			function(e) {				
+				// TODO: self.editor.search.error = e;
+			}
+		);
+	},
+
+	edit_asset: function () {
+		var form_data = new FormData();
+		form_data.set("index", this.editor.editor.index);
+		form_data.set("header", JSON.stringify(this.editor.editor.edited.header));
+
+		var strings_dom = this.editor.editor.edited.strings.dom;
+		var strings_select = strings_dom.querySelector("select");
+		var strings_option = strings_select.options[strings_select.selectedIndex].value;
+		var strings_data = {"option": strings_option};
+		if (strings_option == "append")
+			strings_data["appended"] = this.editor.editor.edited.strings.appended;
+		form_data.set("strings", JSON.stringify(strings_data));
+		if (strings_option == "replace")
+			form_data.set("strings_raw", strings_dom.querySelector("input[type=\"file\"]").files[0]);
+
+		var sections_data = [];
+		for (var s of this.editor.editor.edited.sections) {
+			var section_select = s.dom.querySelector("select");
+			var section_option = section_select.options[section_select.selectedIndex].value;
+			sections_data.push({"tag": s.tag, "option": section_option});
+			if (section_option == "replace") {
+				var f = s.dom.querySelector("input[type=\"file\"]");
+				form_data.set(f.name + "_raw", f.files[0]);
+			}
+		}
+		form_data.set("sections", JSON.stringify(sections_data));
+
+		var self = this;
+		ajax.postFormAndParseJson(
+			"api/editor/edit_asset", form_data,
+			function(r) {
+				if (r.error) {
+					// TODO: self.editor.search.error = r.message;
+					return;
+				}
+
+				// TODO: self.editor.search.error = null;
+				var a = document.createElement("a");
+				a.href = "/api/editor/edited_asset";
+				a.target = "_blank";
+				a.click();
 			},
 			function(e) {				
 				// TODO: self.editor.search.error = e;

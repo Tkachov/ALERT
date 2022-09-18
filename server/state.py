@@ -21,6 +21,9 @@ class State(object):
 		self._known_paths = {}
 		self.archives = []
 
+		self.edited_asset = None
+		self.edited_asset_name = None
+
 	def _insert_path(self, path, aid):
 		parts = path.split("/")
 		dirs, file = parts[:-1], parts[-1]
@@ -274,3 +277,52 @@ class State(object):
 		#
 
 		return report
+
+	def edit_asset(self, asset_index, header, strings, sections):
+		_, asset = self._read_asset(asset_index) # a new copy instead of reusing existing one, because we're editing it
+		dat1 = asset.dat1
+
+		if strings["option"] == "replace":
+			dat1._raw_strings_data = strings["raw"]
+		
+		elif strings["option"] == "append":
+			lines = strings["appended"].replace('\r\n', '\n').replace('\r', '\n').split('\n')
+			for l in lines:
+				dat1.add_string(l)
+
+		#
+
+		index = 0
+		for s in sections:
+			tag = s["tag"]
+			option = s["option"]
+
+			for hs in dat1.header.sections:
+				if hs.tag == tag:
+					hs.offset = index
+					break
+			index += 1
+
+			if option == "replace":
+				dat1._sections_data[dat1._sections_map[tag]] = s["raw"]
+
+		dat1.recalculate_section_headers()		
+
+		#
+
+		f = io.BytesIO(bytes())
+
+		magic, size = int(header["magic"]), int(header["size"])
+		if header["recalculate_size"]:
+			size = dat1.header.size
+		f.write(struct.pack("<II", magic, size))
+
+		rest = header["rest"]
+		for x in rest:
+			f.write(struct.pack("<I", int(x)))
+
+		dat1.save(f)
+		f.seek(0)
+
+		self.edited_asset = f
+		self.edited_asset_name = self._get_asset_name(asset_index)
