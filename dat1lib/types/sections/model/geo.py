@@ -34,8 +34,24 @@ class IndexesSection(dat1lib.types.sections.Section): # aka model_index
 ###
 
 class Vertex(object):
-	def __init__(self, data):
-		self.x, self.y, self.z, self.a, self.b, self.c = struct.unpack("<hhhHII", data)
+	def __init__(self, xyz, nxyz, uv):
+		self.x, self.y, self.z = xyz
+		self.nx, self.ny, self.nz = nxyz
+		self.u, self.v = uv
+
+		def float12(x):
+			return x/4096.0
+
+		self.x = float12(self.x)
+		self.y = float12(self.y)
+		self.z = float12(self.z)
+
+		self.nx = float12(self.nx)
+		self.ny = float12(self.ny)
+		self.nz = float12(self.nz)
+
+		self.u = self.u/16384.0
+		self.v = self.v/16384.0
 
 class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 	TAG = 0xA98BE69B
@@ -52,7 +68,30 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
-		self.vertexes = [Vertex(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		# self.vertexes = [Vertex(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		# self.alternative = list(struct.unpack("<" + "h"*(8*count), data))
+		# self.alternative = list(struct.unpack("<h" + "f"*(4*count - 1) + "h", data))
+
+		BUF_SIZE = len(data)//8
+		buffers = [struct.unpack("<" + "h" * (BUF_SIZE//2), data[i*BUF_SIZE:(i+1)*BUF_SIZE]) for i in xrange(8)]
+
+		self.vertexes = []
+		X, Y, Z = 0, 0, 0
+		NX, NY, NZ = 0, 0, 0
+		U, V = 0, 0
+		for i in xrange(len(buffers[0])):
+			x, y, z = buffers[2][i], buffers[3][i], buffers[4][i]
+			nx, ny, nz = buffers[0][i], buffers[1][i], buffers[5][i]
+			u, v = buffers[6][i], buffers[7][i]
+			X ^= x
+			Y ^= y
+			Z ^= z
+			NX ^= nx
+			NY ^= ny
+			NZ ^= nz
+			U ^= u
+			V ^= v
+			self.vertexes += [Vertex((X, Y, Z), (NX, NY, NZ), (U, V))]
 
 	def get_short_suffix(self):
 		return "vertexes ({})".format(len(self.vertexes))
@@ -60,12 +99,15 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Vertexes     | {:6} vertexes".format(self.TAG, len(self.vertexes))
+		if config.get("web", False):
+			return
+		
 		print ""
 		#######........ | 123  12345678  12345678  12345678  12345678  12345678  12345678
-		print "           #           x         y         z         a         b         c"
-		print "         -----------------------------------------------------------------"
+		print "           #           x         y         z        nx        ny        nz         U         V"
+		print "         -------------------------------------------------------------------------------------"
 		for i, l in enumerate(self.vertexes[:32]):
-			print "         - {:<3}  {:8}  {:8}  {:8}  {:8}  {:08X}  {:08X}".format(i, l.x, l.y, l.z, l.a, l.b, l.c)
+			print "         - {:<3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}".format(i, l.x, l.y, l.z, l.nx, l.ny, l.nz, l.u, l.v)
 		print "..."
 		print ""
 
@@ -91,6 +133,9 @@ class x6B855EED_Section(dat1lib.types.sections.Section):
 		return "? ({})".format(len(self.values))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
 		print self.values[:32], "...", self.values[-32:]
@@ -116,6 +161,9 @@ class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 		return "? ({})".format(len(self.values))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
 		print self.values[:32], "...", self.values[-32:]

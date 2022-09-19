@@ -32,6 +32,9 @@ class x364A6C7C_Section(dat1lib.types.sections.Section):
 		return "364A6C7C ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | 364A6C7C     | {:6} entries".format(self.TAG, len(self.entries))
 		for i, x in enumerate(self.entries):

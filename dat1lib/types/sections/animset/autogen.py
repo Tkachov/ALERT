@@ -33,6 +33,9 @@ class xD614B18B_Section(dat1lib.types.sections.Section):
 		return "D614B18B ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | D614B18B     | {:6} entries".format(self.TAG, len(self.entries))
 		print "bones={}, modelname_hash={:016X}, 0={}, ?={}, ?={}".format(self.bones_count, self.modelname_hash, self.unk1, self.unk2, self.unk3)
@@ -69,5 +72,8 @@ class xDF74DA06_Section(dat1lib.types.sections.Section):
 		return "DF74DA06 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | DF74DA06     | {:6} entries".format(self.TAG, len(self.entries))

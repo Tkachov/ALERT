@@ -31,6 +31,9 @@ class x2F4056CE_Section(dat1lib.types.sections.Section):
 		return "2F4056CE ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | 2F4056CE     | {:6} entries".format(self.TAG, len(self.entries))
 
@@ -64,6 +67,9 @@ class xCEB30E68_Section(dat1lib.types.sections.Section):
 		return "CEB30E68 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | CEB30E68     | {:6} entries".format(self.TAG, len(self.entries))
 
