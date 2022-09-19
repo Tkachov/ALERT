@@ -75,5 +75,5 @@ class ValuesSection(dat1lib.types.sections.StringsSection):
 		print "{:08X} | Values       | {:6} strings".format(self.TAG, len(self._strings))
 		if config.get("web", False):
 			for s in self._strings:
-				print " "*11 + "- '{}'".format(s)
+				print " "*11 + "- {}".format(repr(s))
 			print ""

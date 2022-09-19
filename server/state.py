@@ -236,7 +236,7 @@ class State(object):
 			result =  "#    offset  value\n"
 			result += "------------------\n"
 			for i, (offset, s) in enumerate(items):
-				result += "{:<3}  {:6}  {}\n".format(i, offset, s)
+				result += "{:<3}  {:6}  {}\n".format(i, offset, repr(s))
 			report["strings"] = result
 		except:
 			pass

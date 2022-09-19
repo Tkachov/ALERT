@@ -136,16 +136,19 @@ class ComponentsDataSection(dat1lib.types.sections.Section):
 
 		headers = container.get_section(ComponentDefinitionsSection.TAG)
 		for e in headers.entries:
-			offset, size = e[5], e[6]
-			offset -= this_section_real_offset
+			try:
+				offset, size = e[5], e[6]
+				offset -= this_section_real_offset
 
-			a, b, c, data_len = struct.unpack("<IIII", data[offset:offset+16])
-			comp_data = data[offset+16:offset+size]
+				a, b, c, data_len = struct.unpack("<IIII", data[offset:offset+16])
+				comp_data = data[offset+16:offset+size]
 
-			if data_len != size-16:
-				print "[!] size={}, data_len={}, expected data_len={}".format(size, data_len, size-16)
+				if data_len != size-16:
+					print "[!] size={}, data_len={}, expected data_len={}".format(size, data_len, size-16)
 
-			self.entries += [(a, b, c, data_len, comp_data)]
+				self.entries += [(a, b, c, data_len, comp_data)]
+			except:
+				pass
 
 	def get_short_suffix(self):
 		return "components data ({})".format(len(self.entries))

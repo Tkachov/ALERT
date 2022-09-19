@@ -77,9 +77,11 @@ class DAT1(object):
 		i = 0
 		start = 0
 		while i < len(data):
-			if data[i] == '\0':
-				if start == i:
-					break
+			if data[i] == '\0' or i == len(data)-1:
+				if start == i:					
+					i += 1
+					start = i
+					continue
 
 				s = data[start:i]
 				self._strings_map[start] = s
