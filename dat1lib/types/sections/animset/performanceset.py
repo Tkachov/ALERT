@@ -37,7 +37,7 @@ class ClipsListSection(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Clips List   | {:6} .performanceclips".format(self.TAG, len(self.entries))
 
-		if False:
+		if config.get("web", False):
 			##### "  - 123  12345678 12345678 1234567812345678 1234567812345678
 			print "      #         ?        ? .performanceclip        .animclip"
 			print "  ----------------------------------------------------------"

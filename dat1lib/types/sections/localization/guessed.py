@@ -47,7 +47,7 @@ class KeyNamesSection(dat1lib.types.sections.StringsSection):
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Key Names    | {:6} strings".format(self.TAG, len(self._strings))
-		if False:
+		if config.get("web", False):
 			for s in self._strings:
 				print " "*11 + "- '{}'".format(s)
 			print ""
@@ -73,7 +73,7 @@ class ValuesSection(dat1lib.types.sections.StringsSection):
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print "{:08X} | Values       | {:6} strings".format(self.TAG, len(self._strings))
-		if False:
+		if config.get("web", False):
 			for s in self._strings:
 				print " "*11 + "- '{}'".format(s)
 			print ""
