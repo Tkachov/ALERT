@@ -9,6 +9,9 @@ import struct
 
 class State(object):	
 	def __init__(self):
+		self._reset()
+
+	def _reset(self):
 		self.toc = None
 		self.toc_path = None
 
@@ -85,12 +88,18 @@ class State(object):
 			toc_fn = os.path.join(path, "toc")
 
 		if self.toc_path is not None:
-			if os.path.samefile(self.toc_path, toc_fn):
-				# don't do anything, it's already loaded
-				# TODO: parameter to force reload?
-				return
+			try:
+				if os.path.samefile(self.toc_path, toc_fn):
+					# don't do anything, it's already loaded
+					# TODO: parameter to force reload?
+					return
+			except:
+				# `samefile` not available on Windows
+				pass
 
 			# TODO: not the same, should we "unload" it (if error happens, we'd still be working with old one, which might be confusing for user -- as if new one loaded correctly)
+			self._reset()
+			self._load_tree()
 
 		#
 

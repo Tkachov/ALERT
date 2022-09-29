@@ -1,3 +1,5 @@
+import sys
+import os
 from flask import Flask, url_for, send_from_directory, request, Response
 import importlib
 from functools import wraps
@@ -5,8 +7,49 @@ from functools import wraps
 from state import State
 
 state = State()
+app = None
 
-app = Flask(__name__)
+def print_self(filename):
+	try:
+		from pefile import PE
+
+		name = None
+		version = None
+
+		pe = PE(filename)
+		for i in xrange(len(pe.FileInfo)):
+			try:
+				fi = pe.FileInfo[i]
+				for j in xrange(len(fi)):
+					try:
+						content = fi[j]
+						sts = content.StringTable
+						for st in sts:
+							for k, v in st.entries.items():
+								if k == "ProductName":
+									name = v
+								elif k == "ProductVersion":
+									version = v
+					except:
+						pass
+			except:
+				pass
+
+		if name is not None:
+			if version is not None:
+				print " * {} v. {}".format(name, version)
+			else:
+				print " *", name
+	except:
+		pass
+
+if getattr(sys, 'frozen', False):
+	print_self(sys.argv[0])
+	print " *", sys._MEIPASS
+	print ""
+	app = Flask(__name__, static_folder=os.path.join(sys._MEIPASS, 'static'))
+else:
+	app = Flask(__name__)
 
 ##### THIS IS MAGIC #####
 
@@ -68,22 +111,27 @@ api_post('editor.edit_asset')
 
 @app.route('/')
 def index():
-	return send_from_directory('static', 'index.html')
+	return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/<path:path>')
 def send_static(path):
-	return send_from_directory('static', path)
+	r = send_from_directory(app.static_folder, path)
+	
+	ct = None
+	if path.endswith(".js"):
+		ct = "application/javascript; charset=utf-8"
+	elif path.endswith(".ico"):
+		ct = "image/x-icon"
+
+	if ct is not None:
+		r.headers['Content-Type'] = ct
+
+	return r
 
 # error handling
-
-def get_file_contents(filename):
-	f = open(filename, 'r')
-	res = f.read()
-	f.close()
-	return res
 
 @app.errorhandler(401)
 @app.errorhandler(403)
 @app.errorhandler(404)
 def http_error_handler(error):	
-	return get_file_contents('static/%d.html' % error.code), error.code
+	return send_from_directory(app.static_folder, "%d.html" % error.code), error.code
