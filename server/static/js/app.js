@@ -6,6 +6,7 @@ const POSSIBLE_STATES = ["editor"];
 // TODO: "windows"
 // TODO: fix bigger models
 // TODO: model viewer materials preview
+// 80C52396F2470510 -- so many sections in /edit
 
 var viewer = { ready: false };
 var controller = {
