@@ -1,3 +1,4 @@
+import base64
 import dat1lib
 import dat1lib.types.toc
 import io
@@ -7,7 +8,7 @@ import sys
 import StringIO
 import struct
 
-class State(object):	
+class State(object):
 	def __init__(self):
 		self._reset()
 
@@ -233,6 +234,14 @@ class State(object):
 						section.print_verbose(CONFIG)
 						report["sections"][s.tag] = {"name": "{:08X}".format(s.tag), "type": "text", "readonly": True, "content": captured.getvalue()}
 						sys.stdout = sys.__stdout__
+
+						try:
+							if report["sections"][s.tag]["content"] == "": # TODO: make it part of web_repr()
+								report["sections"][s.tag]["type"] = "bytes"
+								report["sections"][s.tag]["offset"] = 0 # TODO: make it absolute, not section-relative
+								report["sections"][s.tag]["content"] = base64.b64encode(section._raw)
+						except:
+							pass
 			except:
 			 	pass
 

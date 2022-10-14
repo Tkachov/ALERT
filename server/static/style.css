@@ -413,6 +413,25 @@ html, body {
 	overflow: auto;
 }
 
+.hex_view {
+	font-family: monospace;
+}
+
+.hex_view th {
+	font-weight: normal;
+	user-select: none;
+	margin-bottom: 4pt;
+}
+
+.hex_view td:first-child, .hex_view td:last-child {
+	user-select: none;
+}
+
+.hex_view td:nth-child(2) {
+	margin-left: 4pt;
+	margin-right: 4pt;
+}
+
 /* asset editor */
 
 #asset_editor > div {

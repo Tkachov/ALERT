@@ -7,6 +7,12 @@ const POSSIBLE_STATES = ["editor"];
 // TODO: fix bigger models
 // TODO: model viewer materials preview
 // 80C52396F2470510 -- so many sections in /edit
+/*
+- fix \x00 in archives names for Chrome
+- fix middle pane to never be wider than expected (so right pane is always there)
+- fix asset_archive directory path so it opens archives correctly
+- fix state.py:148 rindex() to work if needle
+*/
 
 var viewer = { ready: false };
 var controller = {
@@ -1060,6 +1066,49 @@ var controller = {
 				s.appendChild(c);
 
 				// TODO: not readonly => editable json
+			} else if (section.type == "bytes") {
+				var raw = atob(section.content);
+
+				var t = document.createElement("table");
+				t.className = "hex_view";
+				var thd = document.createElement("tr");
+				thd.innerHTML = "<th></th><th>00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</th><th></th>";
+				t.appendChild(thd);
+
+				function padhex(n, l) {
+					var r = n.toString(16).toUpperCase();
+					while (r.length < l) {
+						r = "0" + r;
+					}
+					return r;
+				}
+
+				for (var o = 0; o < raw.length; o += 16) {
+					var trw = document.createElement("tr");
+					trw.appendChild(createElementWithTextNode("td", padhex(o, 8)));
+
+					var hex_bytes = "";
+					var ascii_bytes = "";
+					for (var oj = 0; oj < 16; ++oj) {
+						if (o + oj >= raw.length) break;
+						if (oj > 0) hex_bytes += " ";
+						var bt = raw.charCodeAt(o + oj);
+						hex_bytes += padhex(bt, 2);
+						if (bt >= 32 && bt < 128)
+							ascii_bytes += String.fromCharCode(bt);
+						else
+							ascii_bytes += '.';
+					}
+
+					trw.appendChild(createElementWithTextNode("td", hex_bytes));
+					trw.appendChild(createElementWithTextNode("td", ascii_bytes));
+
+					t.appendChild(trw);
+				}
+				
+				s.appendChild(t);
+
+				// TODO: not readonly => hex editor
 			}
 			sp.appendChild(s);
 			sections[k] = s;
