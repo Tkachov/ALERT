@@ -187,6 +187,7 @@ html, body {
 	flex-direction: row;
 	flex-grow: 1;
 	height: 100vh;
+	width: 100vw;
 }
 
 #left_column {
@@ -194,12 +195,14 @@ html, body {
 	flex: 3 3 0;
 	border: 0;
 	border-right: 1px solid #CCC;
+	max-width: calc(100% * 3 / 15);
 }
 
 #middle_column {
 	display: flex;
 	flex-direction: column;
 	flex: 9 9 0;
+	max-width: calc(100% * 9 / 15);
 }
 
 #right_column {

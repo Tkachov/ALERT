@@ -8,8 +8,6 @@ const POSSIBLE_STATES = ["editor"];
 // TODO: model viewer materials preview
 // 80C52396F2470510 -- so many sections in /edit
 /*
-- fix \x00 in archives names for Chrome
-- fix middle pane to never be wider than expected (so right pane is always there)
 - fix asset_archive directory path so it opens archives correctly
 - fix state.py:148 rindex() to work if needle
 */
@@ -562,11 +560,15 @@ var controller = {
 
 	/* search */
 
+	_get_archive_name: function (arch) {
+		return this.toc.archives_map[arch].replaceAll("\x00", "");
+	},
+
 	make_search_result: function (container, r) {
 		var e = document.createElement("div");
 		e.className = "result_entry";
 		e.appendChild(createElementWithTextNode("b", r.name));
-		e.appendChild(createElementWithTextNode("span", this.toc.archives_map[r.archive]));
+		e.appendChild(createElementWithTextNode("span", this._get_archive_name(r.archive)));
 		e.title = r.aid + (r.path != "" ? " - " + r.path : "");
 
 		var self = this;
@@ -605,10 +607,10 @@ var controller = {
 
 		e.appendChild(createElementWithTextNode("b", entry.name));
 		if (entry.path != "") {
-			e.appendChild(createElementWithTextNode("p", entry.path + " (" + this.toc.archives_map[entry.archive] + ")"));
+			e.appendChild(createElementWithTextNode("p", entry.path + " (" + this._get_archive_name(entry.archive) + ")"));
 			e.appendChild(createElementWithTextNode("span", entry.aid));
 		} else {
-			e.appendChild(createElementWithTextNode("p", this.toc.archives_map[entry.archive]));
+			e.appendChild(createElementWithTextNode("p", this._get_archive_name(entry.archive)));
 		}
 
 		if (this.assets.has(entry.index)) {
