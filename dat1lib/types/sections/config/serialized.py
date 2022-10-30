@@ -22,9 +22,9 @@ class ConfigTypeSection(dat1lib.types.sections.SerializedSection):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Config Type  | {}".format(self.TAG, self.root)
+		print("{:08X} | Config Type  | {}".format(self.TAG, self.root))
 		if len(self.extras) > 0:
-			print " "*10, self.extras
+			print(" "*10, self.extras)
 
 	def web_repr(self):
 		return {"name": "Type", "type": "json", "readonly": False, "content": self.root}
@@ -48,10 +48,10 @@ class ConfigContentSection(dat1lib.types.sections.SerializedSection):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Content      |".format(self.TAG)
-		print json.dumps(self.root, indent=4, sort_keys=True)
+		print("{:08X} | Content      |".format(self.TAG))
+		print(json.dumps(self.root, indent=4, sort_keys=True))
 		if len(self.extras) > 0:
-			print " "*10, self.extras
+			print(" "*10, self.extras)
 
 	def web_repr(self):
 		return {"name": "Content", "type": "json", "readonly": False, "content": self.root}

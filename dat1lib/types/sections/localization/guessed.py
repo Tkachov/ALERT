@@ -25,7 +25,7 @@ class EntriesCountSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Entries Cnt  | = {}".format(self.TAG, self.count)
+		print("{:08X} | Entries Cnt  | = {}".format(self.TAG, self.count))
 
 #
 
@@ -46,11 +46,11 @@ class KeyNamesSection(dat1lib.types.sections.StringsSection):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Key Names    | {:6} strings".format(self.TAG, len(self._strings))
+		print("{:08X} | Key Names    | {:6} strings".format(self.TAG, len(self._strings)))
 		if config.get("web", False):
 			for s in self._strings:
-				print " "*11 + "- '{}'".format(s)
-			print ""
+				print(" "*11 + "- '{}'".format(s))
+			print("")
 
 #
 
@@ -72,8 +72,8 @@ class ValuesSection(dat1lib.types.sections.StringsSection):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Values       | {:6} strings".format(self.TAG, len(self._strings))
+		print("{:08X} | Values       | {:6} strings".format(self.TAG, len(self._strings)))
 		if config.get("web", False):
 			for s in self._strings:
-				print " "*11 + "- {}".format(repr(s))
-			print ""
+				print(" "*11 + "- {}".format(repr(s)))
+			print("")

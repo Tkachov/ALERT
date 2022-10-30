@@ -23,22 +23,22 @@ class EventsSection(dat1lib.types.sections.Section):
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
-		self.events = [Event(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.events = [Event(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def get_short_suffix(self):
 		return "events ({})".format(len(self.events))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Events       | {:6} events".format(self.TAG, len(self.events))
-		print ""
+		print("{:08X} | Events       | {:6} events".format(self.TAG, len(self.events)))
+		print("")
 		#######........ | 12  12345678  1234  12345  1234  12345  12345  12345
-		print "           #       ulID     ?  flags  zero  flag2      ?      ?"
-		print "         ------------------------------------------------------"
+		print("           #       ulID     ?  flags  zero  flag2      ?      ?")
+		print("         ------------------------------------------------------")
 		for i, e in enumerate(self.events):
-			print "         - {:<2}  {:08X}  {:4}  {:5}  {:4}  {:5}  {:5}  {:5}".format(i, e.ulid, e.small, e.flags, e.zero, e.flags2, e.a, e.b)
+			print("         - {:<2}  {:08X}  {:4}  {:5}  {:4}  {:5}  {:5}  {:5}".format(i, e.ulid, e.small, e.flags, e.zero, e.flags2, e.a, e.b))
 
-		print ""
+		print("")
 
 ###
 
@@ -59,10 +59,10 @@ class StringsSection(dat1lib.types.sections.StringsSection):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Strings      | {:6} strings".format(self.TAG, len(self._strings))
+		print("{:08X} | Strings      | {:6} strings".format(self.TAG, len(self._strings)))
 		for s in self._strings:
-			print " "*11 + "- '{}'".format(s)
-		print ""
+			print(" "*11 + "- '{}'".format(s))
+		print("")
 
 ###
 
@@ -84,13 +84,13 @@ class HeaderSection(dat1lib.types.sections.Section):
 
 		ENTRY_SIZE = 4
 		count = len(rest)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def get_short_suffix(self):
 		return "header?"
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Header?      |".format(self.TAG)
-		print " "*11 + "{}  {}  {}".format(self.a, self.b, self.bnk_section_size)
-		print ""
+		print("{:08X} | Header?      |".format(self.TAG))
+		print(" "*11 + "{}  {}  {}".format(self.a, self.b, self.bnk_section_size))
+		print("")

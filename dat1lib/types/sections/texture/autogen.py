@@ -4,7 +4,7 @@ import struct
 
 #
 
-class x4EDE3593_Section(dat1lib.types.sections.Section):
+class TextureHeaderSection(dat1lib.types.sections.Section):
 	TAG = 0x4EDE3593
 	TYPE = 'Texture'
 
@@ -18,27 +18,36 @@ class x4EDE3593_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 800035F1EBDCBCEC
 
-		# <texture block size> <shorts...>
-		# two of the shorts look like offsets in that block size?
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		# named according to https://github.com/monax3/SpiderTex/blob/main/src/texture_file.rs
+
+		self.sd_len, self.hd_len = struct.unpack("<II", data[:8])
+		self.hd_width, self.hd_height = struct.unpack("<HH", data[8:12])
+		self.sd_width, self.sd_height = struct.unpack("<HH", data[12:16])
+		self.array_size, self.stex_format, self.planes = struct.unpack("<HBB", data[16:20])
+		self.fmt, self.unk = struct.unpack("<HQ", data[20:30])
+		self.sd_mipmaps, self.unk2, self.hd_mipmaps, self.unk3 = struct.unpack("<BBBB", data[30:34])
+		self.unk4 = data[34:]
 
 	def save(self):
 		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
+		of.write(struct.pack("<II", self.sd_len, self.hd_len))
+		of.write(struct.pack("<HH", self.hd_width, self.hd_height))
+		of.write(struct.pack("<HH", self.sd_width, self.sd_height))
+		of.write(struct.pack("<HBB", self.array_size, self.stex_format, self.planes))
+		of.write(struct.pack("<HQ", self.fmt, self.unk))
+		of.write(struct.pack("<BBBB", self.sd_mipmaps, self.unk2, self.hd_mipmaps, self.unk3))
+		of.write(self.unk4)
 		of.seek(0)
 		return of.read()
 
 	def get_short_suffix(self):
-		return "4EDE3593 ({})".format(len(self.entries))
+		return "texture header"
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 4EDE3593     | {:6} entries".format(self.TAG, len(self.entries))
-
+		print("{:08X} | tex. header  |".format(self.TAG))
+		print("\tSD len={}, {}x{}, {} mipmaps".format(self.sd_len, self.sd_width, self.sd_height, self.sd_mipmaps))
+		print("\tHD len={}, {}x{}, {} mipmaps".format(self.hd_len, self.hd_width, self.hd_height, self.hd_mipmaps))
+		print("\tarray_size={}, stex_format={}, planes={}, format={}".format(self.array_size, self.stex_format, self.planes, self.fmt))
+		print("\t{:016X} {:02X} {:02X} {}".format(self.unk, self.unk2, self.unk3, "".join(["{:02X}".format(c) for c in self.unk4])))
+		print("")

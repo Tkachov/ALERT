@@ -21,7 +21,7 @@ class IndexesSection(dat1lib.types.sections.Section): # aka model_index
 		if len(self._delta_encoded) > 0:
 			self.values += [self._delta_encoded[0]]
 
-		for i in xrange(1, len(self._delta_encoded)):
+		for i in range(1, len(self._delta_encoded)):
 			self.values += [self.values[i-1] + self._delta_encoded[i]]
 
 	def get_short_suffix(self):
@@ -29,7 +29,7 @@ class IndexesSection(dat1lib.types.sections.Section): # aka model_index
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | model_index  | {:6} shorts".format(self.TAG, len(self.values))
+		print("{:08X} | model_index  | {:6} shorts".format(self.TAG, len(self.values)))
 
 ###
 
@@ -68,18 +68,18 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
-		# self.vertexes = [Vertex(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		# self.vertexes = [Vertex(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 		# self.alternative = list(struct.unpack("<" + "h"*(8*count), data))
 		# self.alternative = list(struct.unpack("<h" + "f"*(4*count - 1) + "h", data))
 
 		BUF_SIZE = len(data)//8
-		buffers = [struct.unpack("<" + "h" * (BUF_SIZE//2), data[i*BUF_SIZE:(i+1)*BUF_SIZE]) for i in xrange(8)]
+		buffers = [struct.unpack("<" + "h" * (BUF_SIZE//2), data[i*BUF_SIZE:(i+1)*BUF_SIZE]) for i in range(8)]
 
 		self.vertexes = []
 		X, Y, Z = 0, 0, 0
 		NX, NY, NZ = 0, 0, 0
 		U, V = 0, 0
-		for i in xrange(len(buffers[0])):
+		for i in range(len(buffers[0])):
 			x, y, z = buffers[2][i], buffers[3][i], buffers[4][i]
 			nx, ny, nz = buffers[0][i], buffers[1][i], buffers[5][i]
 			u, v = buffers[6][i], buffers[7][i]
@@ -98,18 +98,18 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Vertexes     | {:6} vertexes".format(self.TAG, len(self.vertexes))
+		print("{:08X} | Vertexes     | {:6} vertexes".format(self.TAG, len(self.vertexes)))
 		if config.get("web", False):
 			return
 		
-		print ""
+		print("")
 		#######........ | 123  12345678  12345678  12345678  12345678  12345678  12345678
-		print "           #           x         y         z        nx        ny        nz         U         V"
-		print "         -------------------------------------------------------------------------------------"
+		print("           #           x         y         z        nx        ny        nz         U         V")
+		print("         -------------------------------------------------------------------------------------")
 		for i, l in enumerate(self.vertexes[:32]):
-			print "         - {:<3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}".format(i, l.x, l.y, l.z, l.nx, l.ny, l.nz, l.u, l.v)
-		print "..."
-		print ""
+			print("         - {:<3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}".format(i, l.x, l.y, l.z, l.nx, l.ny, l.nz, l.u, l.v))
+		print("...")
+		print("")
 
 ###
 
@@ -137,9 +137,9 @@ class x6B855EED_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
-		print self.values[:32], "...", self.values[-32:]
-		print ""
+		print("{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values)))
+		print(self.values[:32], "...", self.values[-32:])
+		print("")
 
 class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 	TAG = 0x5CBA9DE9
@@ -165,9 +165,9 @@ class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values))
-		print self.values[:32], "...", self.values[-32:]
+		print("{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values)))
+		print(self.values[:32], "...", self.values[-32:])
 		#s = set(self.values)
-		#print len(s), min(s), max(s)
-		print ""
+		#print(len(s), min(s), max(s))
+		print("")
 

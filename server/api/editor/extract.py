@@ -22,7 +22,7 @@ def handle(request, db):
 			raise Exception("Missing 'index' field!")
 		
 		data, basename = db.get_asset_data(int(index))
-		return send_file(io.BytesIO(data), as_attachment=True, attachment_filename=basename, mimetype='application/octet-stream')
+		return send_file(io.BytesIO(data), as_attachment=True, download_name=basename, mimetype='application/octet-stream')
 
 	except Exception as e:
 		traceback.print_exc()

@@ -4,7 +4,7 @@ from flask import Flask, url_for, send_from_directory, request, Response
 import importlib
 from functools import wraps
 
-from state import State
+from server.state import State
 
 state = State()
 app = None
@@ -17,18 +17,18 @@ def print_self(filename):
 		version = None
 
 		pe = PE(filename)
-		for i in xrange(len(pe.FileInfo)):
+		for i in range(len(pe.FileInfo)):
 			try:
 				fi = pe.FileInfo[i]
-				for j in xrange(len(fi)):
+				for j in range(len(fi)):
 					try:
 						content = fi[j]
 						sts = content.StringTable
 						for st in sts:
 							for k, v in st.entries.items():
-								if k == "ProductName":
+								if k == b"ProductName":
 									name = v
-								elif k == "ProductVersion":
+								elif k == b"ProductVersion":
 									version = v
 					except:
 						pass
@@ -37,46 +37,29 @@ def print_self(filename):
 
 		if name is not None:
 			if version is not None:
-				print " * {} v. {}".format(name, version)
+				print(" * {} v. {}".format(name.decode('ascii'), version.decode('ascii')))
 			else:
-				print " *", name
+				print(" *", name)
 	except:
 		pass
 
 if getattr(sys, 'frozen', False):
 	print_self(sys.argv[0])
-	print " *", sys._MEIPASS
-	print ""
+	print(" *", sys._MEIPASS)
+	print("")
 	app = Flask(__name__, static_folder=os.path.join(sys._MEIPASS, 'static'))
 else:
 	app = Flask(__name__)
 
-##### THIS IS MAGIC #####
-
-def renamer(name):
-	def actual_dec(f):
-		@wraps(f)
-		def wrapper(*args, **kwargs):
-			return f(*args, **kwargs)
-		wrapper.func_name = name
-		return wrapper
-	return actual_dec
-
 def make_get_route(route, module):
-	@app.route(route)
-	@renamer('_flask_handler_'+module)
-	def decorated(*args, **kwargs):
-		md = importlib.import_module(module)
-		return md.handle(request, state)
-	return decorated
+	decorated = lambda *args, **kwargs: importlib.import_module(module).handle(request, state)
+	decorated.__name__ = '_flask_handler_'+module
+	app.add_url_rule(route, view_func=decorated)
 
 def make_post_route(route, module):
-	@app.route(route, methods=['POST'])
-	@renamer('_flask_handler_'+module)
-	def decorated(*args, **kwargs):
-		md = importlib.import_module(module)
-		return md.handle(request, state)
-	return decorated
+	decorated = lambda *args, **kwargs: importlib.import_module(module).handle(request, state)
+	decorated.__name__ = '_flask_handler_'+module
+	app.add_url_rule(route, methods=['POST'], view_func=decorated)
 
 PREFIX = "api." # gunicorn
 PREFIX = "server.api." # for Flask
@@ -94,7 +77,6 @@ def api_post(module):
 # API
 
 api_post('load_toc')
-api_post('search_assets')
 api_post('extract_asset')
 api_post('asset_report')
 api_post('asset_editor')
@@ -104,6 +86,10 @@ api_get('editor.extract')
 api_get('editor.save_section')
 api_get('editor.save_strings')
 api_post('editor.edit_asset')
+api_post('thumbnails.list')
+api_get('thumbnails.get')
+api_post('textures.viewer')
+api_get('textures.get')
 
 #########################
 

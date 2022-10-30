@@ -24,12 +24,12 @@ class UintUintMapSection(Section):
 
 		ENTRY_SIZE = 8
 		count = len(data)//ENTRY_SIZE
-		self._entries = [struct.unpack("<II", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self._entries = [struct.unpack("<II", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 		self._map = {}
 		for (k, v) in self._entries:
 			if k in self._map:
-				print "[!] Map duplicated key: {:08X}={:08X} replaced with {:08X}={:08X}".format(k, self._map[k], k, v)
+				print("[!] Map duplicated key: {:08X}={:08X} replaced with {:08X}={:08X}".format(k, self._map[k], k, v))
 
 			self._map[k] = v
 
@@ -50,7 +50,7 @@ class StringsSection(Section):
 			offset += len(s) + 1
 
 	def get_string(self, offset):
-		print offset, self._strings_map
+		print("{} {}".format(offset, self._strings_map))
 		return self._strings_map.get(offset, None)
 
 ###
@@ -102,14 +102,14 @@ class SerializedSection(Section):
 
 		zero, unknown, children_count, data_len = struct.unpack("<IIII", f.read(16))
 		if zero != 0 or unknown != 0x03150044:
-			print "[!] Strange serialized object header: zero={}, unknown={:08X}".format(zero, unknown)
+			print("[!] Strange serialized object header: zero={}, unknown={:08X}".format(zero, unknown))
 
 		start = f.tell()
-		children = [struct.unpack("<IHBB", f.read(8)) for i in xrange(children_count)]
+		children = [struct.unpack("<IHBB", f.read(8)) for i in range(children_count)]
 		# (hash, flags, unknown, node_type)
-		children_offsets = [struct.unpack("<I", f.read(4)) for i in xrange(children_count)]
+		children_offsets = [struct.unpack("<I", f.read(4)) for i in range(children_count)]
 
-		for i in xrange(children_count):
+		for i in range(children_count):
 			name = self._dat1.get_string(children_offsets[i][0])
 
 			items_count = children[i][1] >> 4
@@ -125,14 +125,14 @@ class SerializedSection(Section):
 		finish = f.tell()
 		left = data_len - (finish - start)
 		if left < 0:
-			print "[!] Read more data ({}) than expected ({})".format(finish - start, data_len)
+			print("[!] Read more data ({}) than expected ({})".format(finish - start, data_len))
 		elif left > 0:
 			f.read(left)
 
 		return result
 
 	def _deserialize_array(self, f, item_type, items_count):
-		return [self._deserialize_node(f, item_type) for i in xrange(items_count)]
+		return [self._deserialize_node(f, item_type) for i in range(items_count)]
 
 	def _deserialize_node(self, f, item_type):
 		if item_type == self.NT_UINT8:
@@ -172,7 +172,7 @@ class SerializedSection(Section):
 			f.read(1)
 			return None
 
-		print "[!] Unknown node_type={}".format(item_type)
+		print("[!] Unknown node_type={}".format(item_type))
 		return None
 
 	def _deserialize_string(self, f):
@@ -180,7 +180,7 @@ class SerializedSection(Section):
 		v = f.read(length)
 		f.read(1) # nullbyte
 		self._align(f, 4)
-		return v
+		return v.decode('ascii')
 
 	def _align(self, f, a):
 		r = f.tell() % a
@@ -203,7 +203,7 @@ class SerializedSection(Section):
 
 	def _serialize_object(self, f, obj):
 		if type(obj) != dict:
-			print "[!] Serialization error: object expected, got '{}'".format(type(obj))
+			print("[!] Serialization error: object expected, got '{}'".format(type(obj)))
 			return
 
 		children = obj.items()
@@ -228,7 +228,7 @@ class SerializedSection(Section):
 				if rmn <= mn and mx <= rmx:
 					return rt
 
-			print "[!] Serialization error: provided int (in range {}..{}) can't fit any of supported types".format(mn, mx)
+			print("[!] Serialization error: provided int (in range {}..{}) can't fit any of supported types".format(mn, mx))
 			return self.NT_INSTANCE_ID
 
 		def get_item_type(v):
@@ -242,7 +242,7 @@ class SerializedSection(Section):
 			if t == float:
 				return self.NT_FLOAT
 
-			if t == str or t == unicode:
+			if t == str:
 				return self.NT_STRING
 
 			if t == dict:
@@ -250,7 +250,7 @@ class SerializedSection(Section):
 
 			if t == list:
 				if len(v) == 0:
-					print "[!] Serialization error: can't find type of empty list"
+					print("[!] Serialization error: can't find type of empty list")
 
 				t2 = type(v[0])
 				if t2 == int:
@@ -260,7 +260,7 @@ class SerializedSection(Section):
 			if t == int:
 				return get_int_type(v, v)
 
-			print "[!] Serialization error: can't serialize '{}'".format(t)
+			print("[!] Serialization error: can't serialize '{}'".format(t))
 			return self.NT_NULL
 
 		children_types = [get_item_type(v) for k, v in children]
@@ -339,19 +339,20 @@ class SerializedSection(Section):
 			return
 
 		if item_type == self.NT_NULL:
-			f.write('\0')
+			f.write(b'\0')
 			return
 
-		print "[!] Serialization error: unknown node_type={}".format(item_type)
-		f.write('\0')
+		print("[!] Serialization error: unknown node_type={}".format(item_type))
+		f.write(b'\0')
 
 	def _serialize_string(self, f, s):
 		s = str(s)
 		f.write(struct.pack("<IIQ", len(s), crc32.hash(s, False), crc64.hash(s)))
-		f.write(s + '\0')
+		f.write(s.encode('ascii'))
+		f.write(b'\0')
 		self._pad(f, 4)
 
 	def _pad(self, f, a):
 		r = f.tell() % a
 		if r != 0:
-			f.write('\0' * (a - r))
+			f.write(b'\0' * (a - r))

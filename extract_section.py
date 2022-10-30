@@ -1,12 +1,13 @@
 import dat1lib
 import sys
+import traceback
 
 def main(argv):
 	if len(argv) < 3:
-		print "Usage:"
-		print "$ {} <filename> <section index or tag>".format(argv[0])
-		print ""
-		print "Read a supported file and extract specified section into a separate file."
+		print("Usage:")
+		print("$ {} <filename> <section index or tag>".format(argv[0]))
+		print("")
+		print("Read a supported file and extract specified section into a separate file.")
 		return
 
 	#
@@ -17,14 +18,15 @@ def main(argv):
 		with open(fn, "rb") as f:
 			obj = dat1lib.read(f)
 	except Exception as e:
-		print "[!] Couldn't open '{}'".format(fn)
-		print e
+		print("[!] Couldn't open '{}'".format(fn))
+		print(e)
+		print(traceback.format_exc())
 		return
 
 	#
 	
 	if obj is None:
-		print "[!] Couldn't comprehend '{}'".format(fn)
+		print("[!] Couldn't comprehend '{}'".format(fn))
 		return
 	
 	#
@@ -45,15 +47,15 @@ def main(argv):
 		s = obj.get_section(i)
 
 	if s is None:
-		print "[!] Section {:08X} was not found".format(i)
+		print("[!] Section {:08X} was not found".format(i))
 		return
 
 	try:
 		with open(fn + ".{:08X}".format(s.TAG), "wb") as f:
 			f.write(s._raw)
 	except Exception as e:
-		print "[!] Failed"
-		print e
+		print("[!] Failed")
+		print(e)
 
 if __name__ == "__main__":
 	main(sys.argv)	

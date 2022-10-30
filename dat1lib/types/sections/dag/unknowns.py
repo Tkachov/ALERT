@@ -42,17 +42,17 @@ class AssetTypeSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Types        | {:6} bytes".format(self.TAG, len(self.entries))
+		print("{:08X} | Types        | {:6} bytes".format(self.TAG, len(self.entries)))
 
 		if DEBUG_RANGE is not None:
-			print ""
+			print("")
 			#######........ | 123  123
-			print "           #      v  type"
-			print "         ----------------"
+			print("           #      v  type")
+			print("         ----------------")
 			for i in DEBUG_RANGE:
 				l = self.entries[i]
-				print "         - {:<3}  {:3}  {}".format(i, l, self.KNOWN_TYPES.get(l, '?'))
-			print ""
+				print("         - {:<3}  {:3}  {}".format(i, l, self.KNOWN_TYPES.get(l, '?')))
+			print("")
 
 #
 
@@ -65,24 +65,24 @@ class x933C0D32_Section(dat1lib.types.sections.Section): # 8 bytes per entry
 
 		ENTRY_SIZE = 8
 		count = len(data) // ENTRY_SIZE
-		self.entries = [struct.unpack("<II", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.entries = [struct.unpack("<II", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def get_short_suffix(self):
 		return "? ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | pairs?       | {:6} pairs".format(self.TAG, len(self.entries))
+		print("{:08X} | pairs?       | {:6} pairs".format(self.TAG, len(self.entries)))
 
 		if DEBUG_RANGE is not None:
-			print ""
+			print("")
 			#######........ | 123  12345678  12345678
-			print "           #           a         b"
-			print "         -------------------------"
+			print("           #           a         b")
+			print("         -------------------------")
 			for i in DEBUG_RANGE:
 				l = self.entries[i]
-				print "         - {:<3}  {:08X}  {:08X}".format(i, l[0], l[1])
-			print ""
+				print("         - {:<3}  {:08X}  {:08X}".format(i, l[0], l[1]))
+			print("")
 
 #
 
@@ -95,20 +95,20 @@ class AssetNamesSection(dat1lib.types.sections.Section): # 4 bytes per entry
 
 		ENTRY_SIZE = 4
 		count = len(data) // ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def get_short_suffix(self):
 		return "names ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Names        | {:6} values".format(self.TAG, len(self.entries))
+		print("{:08X} | Names        | {:6} values".format(self.TAG, len(self.entries)))
 
 		if DEBUG_RANGE is not None:
-			print ""
+			print("")
 			#######........ | 123
-			print "           #    name"
-			print "         -----------"
+			print("           #    name")
+			print("         -----------")
 			for i in DEBUG_RANGE:
 				l = self.entries[i]
 
@@ -116,12 +116,12 @@ class AssetNamesSection(dat1lib.types.sections.Section): # 4 bytes per entry
 				if s is None:
 					s = "<str at {}>".format(l)
 
-				# print "         - {:<3}  {:08X}".format(i, l)
+				# print("         - {:<3}  {:08X}".format(i, l))
 				if False:
-					print "         - {:<3}  {:016X} {:08X}  {}".format(i, crc64.hash(s), crc32.hash(s), s)
+					print("         - {:<3}  {:016X} {:08X}  {}".format(i, crc64.hash(s), crc32.hash(s), s))
 				else:
-					print "         - {:<3}  {}".format(i, s)
-			print ""
+					print("         - {:<3}  {}".format(i, s))
+			print("")
 
 #
 
@@ -134,24 +134,24 @@ class DependenciesSection(dat1lib.types.sections.Section): # 4 bytes index to wh
 
 		ENTRY_SIZE = 4
 		count = len(data) // ENTRY_SIZE
-		self.entries = [struct.unpack("<i", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<i", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def get_short_suffix(self):
 		return "parents ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Dependencies | {:6} values".format(self.TAG, len(self.entries))
+		print("{:08X} | Dependencies | {:6} values".format(self.TAG, len(self.entries)))
 
 		if DEBUG_RANGE is not None:
-			print ""
+			print("")
 			#######........ | 123  12345678
-			print "           #           v"
-			print "         ---------------"
+			print("           #           v")
+			print("         ---------------")
 			for i in DEBUG_RANGE:
 				l = self.entries[i]
-				print "         - {:<3}  {:8}".format(i, l)
-			print ""
+				print("         - {:<3}  {:8}".format(i, l))
+			print("")
 #
 
 class xBC91D1CC_Section(dat1lib.types.sections.Section): # longest section, looks like string offsets
@@ -163,19 +163,19 @@ class xBC91D1CC_Section(dat1lib.types.sections.Section): # longest section, look
 
 		ENTRY_SIZE = 8
 		count = len(data) // ENTRY_SIZE
-		self.entries = [struct.unpack("<ii", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.entries = [struct.unpack("<ii", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def get_short_suffix(self):
 		return "? ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | ?            | {:6} values".format(self.TAG, len(self.entries))
+		print("{:08X} | ?            | {:6} values".format(self.TAG, len(self.entries)))
 
 		"""
 		COLS_PER_ROW = 4
-		for rows in xrange(4):
-			print " ".join(["{:8} {:8}".format(*self.entries[rows*COLS_PER_ROW + cols]) for cols in xrange(COLS_PER_ROW)])
+		for rows in range(4):
+			print(" ".join(["{:8} {:8}".format(*self.entries[rows*COLS_PER_ROW + cols]) for cols in range(COLS_PER_ROW)]))
 		"""
 		def get_s(l):
 			s = self._dat1.get_string(l)
@@ -183,16 +183,16 @@ class xBC91D1CC_Section(dat1lib.types.sections.Section): # longest section, look
 				s = "<str at {}>".format(l)
 			return s
 
-		for i in xrange(7):
+		for i in range(7):
 			a, b = self.entries[i]
 			sa, sb = get_s(a), get_s(b)
-			print "  {:<3}  {:6} {}".format(i, a, sa)
-			print "       {:6} {}".format(b, sb)
-		print ""
+			print("  {:<3}  {:6} {}".format(i, a, sa))
+			print("       {:6} {}".format(b, sb))
+		print("")
 
 		mna, mxa = -1, -1
 		mnb, mxb = -1, -1
-		for i in xrange(len(self.entries)):
+		for i in range(len(self.entries)):
 			a, b = self.entries[i]
 			if a != -1:
 				if mna == -1 or self.entries[mna][0] > a:
@@ -205,10 +205,10 @@ class xBC91D1CC_Section(dat1lib.types.sections.Section): # longest section, look
 				if mxb == -1 or self.entries[mxb][0] < b:
 					mxb = i
 
-		print "min at #{} = {}".format(mna, self.entries[mna])
-		print "max at #{} = {}".format(mxa, self.entries[mxa])
-		print "min at #{} = {}".format(mnb, self.entries[mnb])
-		print "max at #{} = {}".format(mxb, self.entries[mxb])
+		print("min at #{} = {}".format(mna, self.entries[mna]))
+		print("max at #{} = {}".format(mxa, self.entries[mxa]))
+		print("min at #{} = {}".format(mnb, self.entries[mnb]))
+		print("max at #{} = {}".format(mxb, self.entries[mxb]))
 
 #
 
@@ -221,29 +221,29 @@ class xBFEC699F_Section(dat1lib.types.sections.Section): # shortest section, som
 
 		ENTRY_SIZE = 4
 		count = len(data) // ENTRY_SIZE
-		self.entries = [struct.unpack("<i", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<i", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def get_short_suffix(self):
 		return "? ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | ?            | {:6} values".format(self.TAG, len(self.entries))
+		print("{:08X} | ?            | {:6} values".format(self.TAG, len(self.entries)))
 
 		if False:
 			COLS_PER_ROW = 1
-			for i in xrange(2, 10):
+			for i in range(2, 10):
 				if len(self.entries) % i == 0:
 					COLS_PER_ROW = i
-			print ""
-			for rows in xrange(len(self.entries) // COLS_PER_ROW):
-				print " ".join(["{:7}".format(self.entries[rows*COLS_PER_ROW + cols]) for cols in xrange(COLS_PER_ROW)])
-			print ""
+			print("")
+			for rows in range(len(self.entries) // COLS_PER_ROW):
+				print(" ".join(["{:7}".format(self.entries[rows*COLS_PER_ROW + cols]) for cols in range(COLS_PER_ROW)]))
+			print("")
 
 		mn, mx = -1, -1
 		prev = None
 		only_asc = True
-		for i in xrange(len(self.entries)):
+		for i in range(len(self.entries)):
 			if self.entries[i] == -1:
 				continue
 			if mn == -1 or self.entries[mn] > self.entries[i]:
@@ -256,6 +256,6 @@ class xBFEC699F_Section(dat1lib.types.sections.Section): # shortest section, som
 						only_asc = False
 				prev = self.entries[i]
 
-		print "min at #{} = {}".format(mn, self.entries[mn])
-		print "max at #{} = {}".format(mx, self.entries[mx])
-		print "values always ascend = {} (ignoring -1s)".format(only_asc)
+		print("min at #{} = {}".format(mn, self.entries[mn]))
+		print("max at #{} = {}".format(mx, self.entries[mx]))
+		print("values always ascend = {} (ignoring -1s)".format(only_asc))

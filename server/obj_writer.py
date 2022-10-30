@@ -82,7 +82,7 @@ class ObjHelper(object):
 				self.start_mesh("mesh{:02}".format(i))
 
 				faces_count = mesh.indexCount // 3
-				for j in xrange(mesh.indexStart, mesh.indexStart + mesh.indexCount, 3):
+				for j in range(mesh.indexStart, mesh.indexStart + mesh.indexCount, 3):
 					self.output += "f {} {} {}\n".format(indexes[j]+1, indexes[j+1]+1, indexes[j+2]+1)
 
 				self.end_mesh()
@@ -92,7 +92,7 @@ class ObjHelper(object):
 			for i, mesh in enumerate(meshes):
 				self.start_mesh("mesh{:02}".format(i))
 
-				for vi in xrange(mesh.vertexStart, mesh.vertexStart + mesh.vertexCount):
+				for vi in range(mesh.vertexStart, mesh.vertexStart + mesh.vertexCount):
 					v = vertexes[vi]
 					self.write_vertex(v.x, v.y, v.z)
 					# TODO: v.u, v.v
@@ -100,7 +100,7 @@ class ObjHelper(object):
 				#
 
 				faces_count = mesh.indexCount // 3
-				for j in xrange(faces_count):
+				for j in range(faces_count):
 					index_index = mesh.indexStart + j*3
 					deindex = mesh.indexStart
 					deindex = indexes[deindex]

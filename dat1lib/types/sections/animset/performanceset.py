@@ -17,7 +17,7 @@ class ClipsListSection(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 24
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<IIQQ", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.entries = [struct.unpack("<IIQQ", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 		# sorted by e[0]
 		# e[1] mostly 0, but can be crc32-like
 		# e[2] .performanceclip asset_id
@@ -35,12 +35,12 @@ class ClipsListSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Clips List   | {:6} .performanceclips".format(self.TAG, len(self.entries))
+		print("{:08X} | Clips List   | {:6} .performanceclips".format(self.TAG, len(self.entries)))
 
 		if config.get("web", False):
 			##### "  - 123  12345678 12345678 1234567812345678 1234567812345678
-			print "      #         ?        ? .performanceclip        .animclip"
-			print "  ----------------------------------------------------------"
+			print("      #         ?        ? .performanceclip        .animclip")
+			print("  ----------------------------------------------------------")
 			for i, x in enumerate(self.entries):
-				print "  - {:<3}  {:08X} {:08X} {:016X} {:016X}".format(i, *x)
-			print ""
+				print("  - {:<3}  {:08X} {:08X} {:016X} {:016X}".format(i, *x))
+			print("")

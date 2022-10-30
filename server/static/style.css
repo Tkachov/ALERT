@@ -318,6 +318,15 @@ html, body {
 	cursor: pointer;
 }
 
+#details .links .separator {
+	display: inline-block;
+}
+
+#details .links .separator::before {
+	content: '----';
+	color: #999;
+}
+
 /* model viewer */
 
 #model_renderer {
@@ -423,7 +432,7 @@ html, body {
 .hex_view th {
 	font-weight: normal;
 	user-select: none;
-	margin-bottom: 4pt;
+	padding-bottom: 4pt;
 }
 
 .hex_view td:first-child, .hex_view td:last-child {
@@ -431,8 +440,8 @@ html, body {
 }
 
 .hex_view td:nth-child(2) {
-	margin-left: 4pt;
-	margin-right: 4pt;
+	padding-left: 4pt;
+	padding-right: 4pt;
 }
 
 /* asset editor */
@@ -581,6 +590,57 @@ html, body {
 #asset_editor .edited .section > textarea {
 	margin: 8pt 0 4pt 0;
 	width: calc(100% - 2*2pt - 2*1px);
+}
+
+/* texture viewer */
+
+#texture_viewer > div {
+	width: 80%;
+	height: 80%;
+	transform: none;
+	background: #FFF;
+	color: #000;
+	display: flex;
+	flex-direction: row;
+}
+
+#texture_viewer .preview, #texture_viewer .controls {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+#texture_viewer .preview {
+	width: 80%;
+	background: #999;
+	position: relative;
+}
+
+#texture_viewer .preview > img {
+	display: block;
+	position: absolute;
+	transform: translate(-50%, -50%);
+	left: 50%;
+	top: 50%;
+	max-width: 100%;
+	max-height: 100%;
+
+	background: linear-gradient(45deg, rgba(0, 0, 0, 0.0980392) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.0980392) 75%, rgba(0, 0, 0, 0.0980392) 0), linear-gradient(45deg, rgba(0, 0, 0, 0.0980392) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.0980392) 75%, rgba(0, 0, 0, 0.0980392) 0), white;
+	background-repeat: repeat, repeat;
+	background-position: 0px 0, 8px 8px;
+	background-origin: padding-box, padding-box;
+	background-clip: border-box, border-box;
+	background-size: 16px 16px, 16px 16px;
+}
+
+#texture_viewer .controls {
+	width: calc(20% - 2*10pt);
+	padding: 10pt;
+}
+
+#texture_viewer .controls a {
+	font-size: 10pt;
+	margin-top: 5pt;
 }
 
 /**/
@@ -852,6 +912,24 @@ html, body {
 	margin-left: 26pt;
 }
 
+.contents > .file.with_thumbnail::before {
+	display: none !important;
+}
+
+.contents > .file.with_thumbnail::after {
+	display: none !important;
+}
+
+.contents > .file.with_thumbnail > img {
+	width: 40pt;
+	height: 40pt;
+	padding: 0;
+	position: absolute;
+	margin: 1pt 20pt;
+	object-fit: contain;
+	filter: drop-shadow(0px 0px 3px #999);
+}
+
 .contents > .file > .multiple_badge {
 	position: absolute;
 	margin: 1pt 25pt;
@@ -866,6 +944,10 @@ html, body {
 	font-size: 8pt;
 	text-align: center;
 	line-height: 10pt;
+}
+
+.contents > .file.with_thumbnail > .multiple_badge {
+	margin-left: 52pt;
 }
 
 .contents > .directory {

@@ -18,7 +18,7 @@ class x04C19E69_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -35,7 +35,7 @@ class x04C19E69_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 04C19E69     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 04C19E69     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -53,7 +53,7 @@ class x027795C5_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -70,7 +70,7 @@ class x027795C5_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 027795C5     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 027795C5     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -88,7 +88,7 @@ class x032D450A_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -105,7 +105,7 @@ class x032D450A_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 032D450A     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 032D450A     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -130,7 +130,7 @@ class x06ABCAB2_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 06ABCAB2     | {:6} bytes".format(self.TAG, len(self._raw))
+		print("{:08X} | 06ABCAB2     | {:6} bytes".format(self.TAG, len(self._raw)))
 
 #
 
@@ -155,7 +155,7 @@ class x041071EF_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 041071EF     | {:6} bytes".format(self.TAG, len(self._raw))
+		print("{:08X} | 041071EF     | {:6} bytes".format(self.TAG, len(self._raw)))
 
 #
 
@@ -173,7 +173,7 @@ class x24E206C8_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -190,7 +190,7 @@ class x24E206C8_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 24E206C8     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 24E206C8     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -208,7 +208,7 @@ class xA903D8F1_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -225,7 +225,7 @@ class xA903D8F1_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | A903D8F1     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | A903D8F1     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -250,7 +250,7 @@ class x2D1E19C6_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 2D1E19C6     | {:6} bytes".format(self.TAG, len(self._raw))
+		print("{:08X} | 2D1E19C6     | {:6} bytes".format(self.TAG, len(self._raw)))
 
 #
 
@@ -268,7 +268,7 @@ class x1951BA1F_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -285,7 +285,7 @@ class x1951BA1F_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 1951BA1F     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 1951BA1F     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -303,7 +303,7 @@ class x2300D240_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -320,7 +320,7 @@ class x2300D240_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 2300D240     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 2300D240     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -338,7 +338,7 @@ class x3D8DBDB8_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -355,7 +355,7 @@ class x3D8DBDB8_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 3D8DBDB8     | = {:08X} aka {}".format(self.TAG, self.entries[0], self.entries[0])
+		print("{:08X} | 3D8DBDB8     | = {:08X} aka {}".format(self.TAG, self.entries[0], self.entries[0]))
 
 #
 
@@ -373,7 +373,7 @@ class x57D25F50_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -390,7 +390,7 @@ class x57D25F50_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 57D25F50     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 57D25F50     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -408,7 +408,7 @@ class xD124430B_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -425,7 +425,7 @@ class xD124430B_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | D124430B     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | D124430B     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -443,7 +443,7 @@ class x0CF58A6E_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -460,7 +460,7 @@ class x0CF58A6E_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 0CF58A6E     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 0CF58A6E     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -478,7 +478,7 @@ class x30DADA09_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -495,7 +495,7 @@ class x30DADA09_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 30DADA09     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 30DADA09     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -513,7 +513,7 @@ class x17AFFFCE_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -530,7 +530,7 @@ class x17AFFFCE_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 17AFFFCE     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 17AFFFCE     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -548,7 +548,7 @@ class x8E401376_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -565,7 +565,7 @@ class x8E401376_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 8E401376     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 8E401376     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -583,7 +583,7 @@ class x3D5E2FEF_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -600,7 +600,7 @@ class x3D5E2FEF_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 3D5E2FEF     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 3D5E2FEF     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -618,7 +618,7 @@ class x4D7BC1C7_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -635,7 +635,7 @@ class x4D7BC1C7_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 4D7BC1C7     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 4D7BC1C7     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -653,7 +653,7 @@ class x2FFB5E42_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -670,7 +670,7 @@ class x2FFB5E42_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 2FFB5E42     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 2FFB5E42     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -688,7 +688,7 @@ class x557013E9_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -705,7 +705,7 @@ class x557013E9_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 557013E9     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 557013E9     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -723,7 +723,7 @@ class xCB8D34F9_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -740,7 +740,7 @@ class xCB8D34F9_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | CB8D34F9     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | CB8D34F9     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -758,7 +758,7 @@ class xEDFA607D_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -775,7 +775,7 @@ class xEDFA607D_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | EDFA607D     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | EDFA607D     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -793,7 +793,7 @@ class xDC311FC3_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -810,7 +810,7 @@ class xDC311FC3_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | DC311FC3     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | DC311FC3     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -828,7 +828,7 @@ class x50EDC53D_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -845,7 +845,7 @@ class x50EDC53D_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 50EDC53D     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 50EDC53D     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -863,7 +863,7 @@ class xB6A0B72A_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -880,7 +880,7 @@ class xB6A0B72A_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | B6A0B72A     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | B6A0B72A     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -898,7 +898,7 @@ class x58F861B6_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -915,7 +915,7 @@ class x58F861B6_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 58F861B6     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 58F861B6     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -933,7 +933,7 @@ class x5E54ACCF_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -950,7 +950,7 @@ class x5E54ACCF_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 5E54ACCF     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 5E54ACCF     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -968,7 +968,7 @@ class x457BE3C8_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -985,7 +985,7 @@ class x457BE3C8_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 457BE3C8     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 457BE3C8     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1003,7 +1003,7 @@ class x6987F172_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1020,7 +1020,7 @@ class x6987F172_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 6987F172     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 6987F172     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1038,7 +1038,7 @@ class x70682CB8_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1055,7 +1055,7 @@ class x70682CB8_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 70682CB8     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 70682CB8     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1073,7 +1073,7 @@ class x4A07420E_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1090,7 +1090,7 @@ class x4A07420E_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 4A07420E     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 4A07420E     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1108,7 +1108,7 @@ class x78684035_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1125,7 +1125,7 @@ class x78684035_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 78684035     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 78684035     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1143,7 +1143,7 @@ class xBDAB2B0D_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1160,7 +1160,7 @@ class xBDAB2B0D_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | BDAB2B0D     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | BDAB2B0D     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1178,7 +1178,7 @@ class x5736A46F_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1195,7 +1195,7 @@ class x5736A46F_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 5736A46F     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 5736A46F     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1213,7 +1213,7 @@ class x80D29828_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1230,7 +1230,7 @@ class x80D29828_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 80D29828     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 80D29828     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1248,7 +1248,7 @@ class x81999057_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1265,7 +1265,7 @@ class x81999057_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 81999057     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 81999057     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1283,7 +1283,7 @@ class x657512BB_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1300,7 +1300,7 @@ class x657512BB_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 657512BB     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 657512BB     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1318,7 +1318,7 @@ class x927C4EC3_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1335,7 +1335,7 @@ class x927C4EC3_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 927C4EC3     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 927C4EC3     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1353,7 +1353,7 @@ class xC6A5905E_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1370,7 +1370,7 @@ class xC6A5905E_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | C6A5905E     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | C6A5905E     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1388,7 +1388,7 @@ class xDC625B3D_Section(dat1lib.types.sections.Section): # aka zone_actor_names
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1405,10 +1405,10 @@ class xDC625B3D_Section(dat1lib.types.sections.Section): # aka zone_actor_names
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | DC625B3D     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | DC625B3D     | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
-			print "  - {:<3}  {}".format(i, self._dat1.get_string(x))
-		print ""
+			print("  - {:<3}  {}".format(i, self._dat1.get_string(x)))
+		print("")
 
 #
 
@@ -1426,7 +1426,7 @@ class xBEAB52E7_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1443,7 +1443,7 @@ class xBEAB52E7_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | BEAB52E7     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | BEAB52E7     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1461,7 +1461,7 @@ class xC51500F1_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1478,7 +1478,7 @@ class xC51500F1_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | C51500F1     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | C51500F1     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1496,7 +1496,7 @@ class x758BAFBD_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1513,7 +1513,7 @@ class x758BAFBD_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 758BAFBD     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 758BAFBD     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1531,7 +1531,7 @@ class x97FF6EB5_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1548,7 +1548,7 @@ class x97FF6EB5_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 97FF6EB5     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 97FF6EB5     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1566,7 +1566,7 @@ class xD86A7934_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1583,7 +1583,7 @@ class xD86A7934_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | D86A7934     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | D86A7934     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1601,7 +1601,7 @@ class x91DE11D9_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1618,7 +1618,7 @@ class x91DE11D9_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 91DE11D9     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 91DE11D9     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1636,7 +1636,7 @@ class xEF8637D5_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1653,7 +1653,7 @@ class xEF8637D5_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | EF8637D5     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | EF8637D5     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1671,7 +1671,7 @@ class xBCF43558_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1688,7 +1688,7 @@ class xBCF43558_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | BCF43558     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | BCF43558     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1706,7 +1706,7 @@ class xC4968A44_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1723,7 +1723,7 @@ class xC4968A44_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | C4968A44     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | C4968A44     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1741,7 +1741,7 @@ class xDE61C274_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1758,7 +1758,7 @@ class xDE61C274_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | DE61C274     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | DE61C274     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1776,7 +1776,7 @@ class x9CCAA06F_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1793,7 +1793,7 @@ class x9CCAA06F_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 9CCAA06F     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 9CCAA06F     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1811,7 +1811,7 @@ class xE4158AC3_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1828,7 +1828,7 @@ class xE4158AC3_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | E4158AC3     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | E4158AC3     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1846,7 +1846,7 @@ class xF435AE9C_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -1863,5 +1863,5 @@ class xF435AE9C_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | F435AE9C     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | F435AE9C     | {:6} entries".format(self.TAG, len(self.entries)))
 

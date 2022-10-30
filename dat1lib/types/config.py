@@ -5,7 +5,7 @@ import struct
 
 class Config(object):
 	MAGIC = 0x21A56F68
-	EMPTY_DATA = struct.pack("<II", 0x21A56F68, len(dat1lib.types.dat1.DAT1.EMPTY_DATA)) + '\0'*28 + dat1lib.types.dat1.DAT1.EMPTY_DATA
+	EMPTY_DATA = struct.pack("<II", 0x21A56F68, len(dat1lib.types.dat1.DAT1.EMPTY_DATA)) + b'\0'*28 + dat1lib.types.dat1.DAT1.EMPTY_DATA
 
 	def __init__(self, f):
 		# 2521 occurrences
@@ -19,7 +19,7 @@ class Config(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad Config magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad Config magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -38,12 +38,12 @@ class Config(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "Config {:08X}".format(self.magic)
+		print("-------")
+		print("Config {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "- size   = {}".format(self.dat1_size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("- size   = {}".format(self.dat1_size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)

@@ -29,15 +29,15 @@ def read_toc(fn):
 			toc = dat1lib.read(f)
 
 		if not isinstance(toc, dat1lib.types.toc.TOC):
-			print "[!] Not a toc"
+			print("[!] Not a toc")
 			return (False, None)
 
 		return (True, toc)
 	except Exception as e:
-		print "[!] Exception:", e
+		print("[!] Exception:", e)
 		return (False, None)
 
-	print "[!] Unknown error occurred while reading 'toc'"
+	print("[!] Unknown error occurred while reading 'toc'")
 	return (False, None)
 
 def new_archive(toc, fn):
@@ -74,12 +74,12 @@ def apply_mod_patch(toc, mod_info, archive_index):
 					_, asset_id, archive_offset, asset_size = instruction
 					asset_index = find_asset_index(asset_id)
 					if asset_index == -1:
-						print "[!] Asset {:X} not found".format(asset_id)
+						print("[!] Asset {:X} not found".format(asset_id))
 						return False
 
-					print sizes.entries[asset_index].value, '=>', asset_size
-					print offsets.entries[asset_index].archive_index, '=>', archive_index
-					print offsets.entries[asset_index].offset, '=>', archive_offset
+					print(sizes.entries[asset_index].value, '=>', asset_size)
+					print(offsets.entries[asset_index].archive_index, '=>', archive_index)
+					print(offsets.entries[asset_index].offset, '=>', archive_offset)
 
 					sizes.entries[asset_index].value = asset_size
 					offsets.entries[asset_index].archive_index = archive_index
@@ -102,12 +102,12 @@ SPIDERMAN_BODY = 9767039763554194594
 
 def main(argv):
 	if len(argv) < 3:
-		print "Usage:"
-		print "$ {} <asset_archive_path> <model>".format(argv[0])
-		print ""
-		print "Save the model as 'hero.mod' and add it to 'toc'"
-		print ".model will replace 'characters/hero/hero_spiderman/hero_spiderman_body.model' ({:X})".format(SPIDERMAN_BODY)
-		print "backup of 'toc' will be stored as 'toc.orig'"
+		print("Usage:")
+		print("$ {} <asset_archive_path> <model>".format(argv[0]))
+		print("")
+		print("Save the model as 'hero.mod' and add it to 'toc'")
+		print(".model will replace 'characters/hero/hero_spiderman/hero_spiderman_body.model' ({:X})".format(SPIDERMAN_BODY))
+		print("backup of 'toc' will be stored as 'toc.orig'")
 		return
 
 	#
@@ -122,7 +122,7 @@ def main(argv):
 	
 	success, toc = read_toc(toc_orig_fn)
 	if not success:
-		print "error1"
+		print("error1")
 		return
 
 	#
@@ -148,7 +148,7 @@ def main(argv):
 
 	index = new_archive(toc, fn)
 	if not apply_mod_patch(toc, info, index):
-		print "error"
+		print("error")
 	save_toc(toc, toc_fn)
 
 if __name__ == "__main__":

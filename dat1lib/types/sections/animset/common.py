@@ -35,7 +35,7 @@ class x212BD372_Section(dat1lib.types.sections.Section):
 
 		cnt = self.count
 		self.values = []
-		for i in xrange(cnt):
+		for i in range(cnt):
 			self.values += [struct.unpack("<Q", data[off:off+8])[0]]
 			off += 8
 
@@ -44,9 +44,9 @@ class x212BD372_Section(dat1lib.types.sections.Section):
 			rest = data[off:]
 			ENTRY_SIZE = 4
 			count = len(data)//ENTRY_SIZE
-			self.values2 = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+			self.values2 = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 		else:
-			for i in xrange(cnt):
+			for i in range(cnt):
 				self.values2 += [struct.unpack("<I", data[off:off+4])[0]]
 				off += 4		
 
@@ -58,16 +58,16 @@ class x212BD372_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 212BD372     | {:6} entries".format(self.TAG, len(self.values))
-		print "  {} {} {:08X} {} {} {:08X} {} {}".format(self.version, self.count, self.ab, self.c, self.d, self.unk2, self.count2, self.count3)
+		print("{:08X} | 212BD372     | {:6} entries".format(self.TAG, len(self.values)))
+		print("  {} {} {:08X} {} {} {:08X} {} {}".format(self.version, self.count, self.ab, self.c, self.d, self.unk2, self.count2, self.count3))
 		if self.version == 1:
-			for i in xrange(len(self.values)):
-				print "  - {:<3}  {:016X}".format(i, self.values[i])
-			print self.values2
+			for i in range(len(self.values)):
+				print("  - {:<3}  {:016X}".format(i, self.values[i]))
+			print(self.values2)
 		else:
-			for i in xrange(len(self.values)):
-				print "  - {:<3}  {:016X} {}".format(i, self.values[i], self.values2[i])
-		print ""
+			for i in range(len(self.values)):
+				print("  - {:<3}  {:016X} {}".format(i, self.values[i], self.values2[i]))
+		print("")
 
 #
 
@@ -86,7 +86,7 @@ class x6C69A660_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 2
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<h", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<h", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -103,9 +103,9 @@ class x6C69A660_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 6C69A660     | {:6} values".format(self.TAG, len(self.entries))
-		print self.entries
-		print ""
+		print("{:08X} | 6C69A660     | {:6} values".format(self.TAG, len(self.entries)))
+		print(self.entries)
+		print("")
 
 #
 
@@ -124,7 +124,7 @@ class x66CA6C6F_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 80
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<" + "I"*14 + "f"*4 + "I"*2, data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.entries = [struct.unpack("<" + "I"*14 + "f"*4 + "I"*2, data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -141,15 +141,15 @@ class x66CA6C6F_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 66CA6C6F     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 66CA6C6F     | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
 			# (3971249573, 4, 0, 96, 0, 1, 0, 0, 0, 0, 0, 0, 0, 20, 1048576000, 1048576000, 1048576000, 1048576000, 191, 0)
 			# (2049150217, 3, 4, 96, 0, 1, 0, 0, 0, 0, 0, 0, 0, 44, 1048576000, 1048576000, 1048576000, 1048576000, 187, 0)
 			# (3449407077, 5, 4, 96, 0, 1, 0, 0, 0, 0, 0, 0, 0, 60, 1048576000, 1048576000, 1048576000, 1048576000, 195, 0)
 			# sorted by tag
 			tag,     a, b, always96, c, d, _, _, _, _, _, _, _, pos, float_r, float_g, float_b, float_a, e, f = x
-			print "  - {:<3}  {:08X} {:4} | {:2} {:3} {:4} {:4} {:3} {:4} {:1} | {} {} {} {}".format(i, tag, pos, a, b, always96, c, d, e, f, float_r, float_g, float_b, float_a)
-		print ""
+			print("  - {:<3}  {:08X} {:4} | {:2} {:3} {:4} {:4} {:3} {:4} {:1} | {} {} {} {}".format(i, tag, pos, a, b, always96, c, d, e, f, float_r, float_g, float_b, float_a))
+		print("")
 
 #
 
@@ -168,7 +168,7 @@ class xB79CF1D7_Section(dat1lib.types.sections.Section): # aka anim_clip_lookup
 		
 		ENTRY_SIZE = 24
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<IIiQI", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.entries = [struct.unpack("<IIiQI", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 		# e[0] is used as e[12] in 0x73CEE17F, if e[1] == 0
 		# e[0] is unknown if e[1] == 32768
 		# e[2] == -1
@@ -190,10 +190,10 @@ class xB79CF1D7_Section(dat1lib.types.sections.Section): # aka anim_clip_lookup
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | B79CF1D7     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | B79CF1D7     | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
-			print "  - {:<3}  {:08X} {:5} {} {:016X} {}".format(i, *x)
-		print ""
+			print("  - {:<3}  {:08X} {:5} {} {:016X} {}".format(i, *x))
+		print("")
 
 #
 
@@ -214,7 +214,7 @@ class x73CEE17F_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 96
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<Ihh" + 'f'*9 + "I" + 'f'*11 + 'hh', data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.entries = [struct.unpack("<Ihh" + 'f'*9 + "I" + 'f'*11 + 'hh', data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -231,11 +231,11 @@ class x73CEE17F_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 73CEE17F     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 73CEE17F     | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
-			print "  - {:<3}  {:08X}  {:3} {:3}  {:08X}".format(i, x[0], x[1], x[2], x[12])
-			# print "         {}".format(x)
-		print ""
+			print("  - {:<3}  {:08X}  {:3} {:3}  {:08X}".format(i, x[0], x[1], x[2], x[12]))
+			# print("         {}".format(x))
+		print("")
 #
 
 class xA40B51D2_Section(dat1lib.types.sections.Section):
@@ -256,7 +256,7 @@ class xA40B51D2_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<IIII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.entries = [struct.unpack("<IIII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -273,10 +273,10 @@ class xA40B51D2_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | A40B51D2     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | A40B51D2     | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
-			print "  - {:<3}  {}".format(i, x)
-		print ""
+			print("  - {:<3}  {}".format(i, x))
+		print("")
 
 #
 
@@ -303,8 +303,8 @@ class x9FD19C20_Section(dat1lib.types.sections.Section): # aka anim_clip_data
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Inner DAT1   | {:6} bytes".format(self.TAG, len(self._raw))
+		print("{:08X} | Inner DAT1   | {:6} bytes".format(self.TAG, len(self._raw)))
 
-		print "=" * 40
+		print("=" * 40)
 		self.inner_dat1.print_info(config)
-		print "=" * 40
+		print("=" * 40)

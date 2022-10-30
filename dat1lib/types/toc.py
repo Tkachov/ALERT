@@ -24,13 +24,13 @@ class TOC(object):
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad 'toc' magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad 'toc' magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 		
 		dec = zlib.decompressobj(0)
 		data = dec.decompress(f.read())
 
 		if len(data) != self.size:
-			print "[!] Actual decompressed size {} isn't equal to one written in the file {}".format(len(data), self.size)
+			print("[!] Actual decompressed size {} isn't equal to one written in the file {}".format(len(data), self.size))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(data), self)
 
@@ -51,12 +51,12 @@ class TOC(object):
 		f.write(compressed)
 
 	def print_info(self, config):
-		print "-------"
-		print "TOC {:08X}".format(self.magic)
+		print("-------")
+		print("TOC {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -75,15 +75,16 @@ class TOC(object):
 			return self._archives[index]
 
 		if self._archives_dir is None:
-			print "[!] Can't open archive when 'asset_archive' is not specified"
+			print("[!] Can't open archive when 'asset_archive' is not specified")
 			return (None, False)
 
 		s = self.get_archives_section()
 		fn = s.archives[index].filename
 
-		i = fn.index('\0')
+		i = fn.index(b'\0')
 		if i != -1:
 			fn = fn[:i]
+		fn = fn.decode('ascii')
 		fn = fn.replace("\\", "/")
 
 		f = open(os.path.join(self._archives_dir, fn), "rb")
@@ -115,7 +116,7 @@ class TOC(object):
 		results = []
 
 		asset_ids = self.get_assets_section().ids
-		for i in xrange(len(asset_ids)): # linear search =\
+		for i in range(len(asset_ids)): # linear search =\
 			if asset_ids[i] == aid:
 				results += [self.get_asset_entry_by_index(i)]
 				if stop_on_first:
@@ -154,7 +155,7 @@ class TOC(object):
 		asset_offset = entry.offset
 		asset_end = asset_offset + entry.size
 
-		data = ""
+		data = bytearray()
 
 		# TODO: binary search starting block index and ending block index
 		# (because this code anyways assumes blocks are sorted by real_offset asc)
@@ -185,29 +186,29 @@ class TOC(object):
 
 	def _decompress(self, comp_data, real_size):
 		comp_size = len(comp_data)
-		real_data = ['\0' for i in xrange(real_size)]
+		real_data = [b'\0' for i in range(real_size)]
 		real_i = 0
 		comp_i = 0
 
 		while real_i <= real_size and comp_i < comp_size:
 			# direct
 
-			a, b = ord(comp_data[comp_i]), 0
+			a, b = comp_data[comp_i], 0
 			comp_i += 1
 
 			if (a & 240) == 240:
-				b = ord(comp_data[comp_i])
+				b = comp_data[comp_i]
 				comp_i += 1
 
 			direct = (a >> 4) + b
 			while direct >= 270 and (direct - 15) % 255 == 0:
-				v = ord(comp_data[comp_i])
+				v = comp_data[comp_i]
 				comp_i += 1
 				direct += v
 				if v == 0:
 					break
 
-			for i in xrange(direct):
+			for i in range(direct):
 				if real_i + i >= real_size or comp_i + i >= comp_size:
 					break
 				real_data[real_i + i] = comp_data[comp_i + i]
@@ -221,26 +222,26 @@ class TOC(object):
 
 			# reverse
 
-			a, b = ord(comp_data[comp_i]), ord(comp_data[comp_i + 1])
+			a, b = comp_data[comp_i], comp_data[comp_i + 1]
 			comp_i += 2
 
 			reverse_offset = a + (b << 8)
 			if reverse == 19:
-				reverse += ord(comp_data[comp_i])
+				reverse += comp_data[comp_i]
 				comp_i += 1
 
 				while reverse >= 274 and (reverse - 19) % 255 == 0:
-					v = ord(comp_data[comp_i])
+					v = comp_data[comp_i]
 					comp_i += 1
 					reverse += v
 					if v == 0:
 						break
 
-			for i in xrange(reverse):
+			for i in range(reverse):
 				try:
 					real_data[real_i + i] = real_data[real_i - reverse_offset + i]
 				except:
 					pass
 			real_i += reverse
 
-		return "".join(real_data)
+		return bytearray(real_data)

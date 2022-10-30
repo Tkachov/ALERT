@@ -26,7 +26,7 @@ class ActorModelNameSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Model Name   | {}".format(self.TAG, self._dat1.get_string(self.value))
+		print("{:08X} | Model Name   | {}".format(self.TAG, self._dat1.get_string(self.value)))
 
 ###
 
@@ -44,7 +44,7 @@ class ComponentsSection(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<QII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.entries = [struct.unpack("<QII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 		# hash(s), string_offset(s), component_type?
 
 	def save(self):
@@ -59,16 +59,16 @@ class ComponentsSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Components   | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | Components   | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
 			s = self._dat1.get_string(x[1])
-			print "  - {:<2}  {:08X}  {:016X} {}".format(i, x[2], x[0], s)
+			print("  - {:<2}  {:08X}  {:016X} {}".format(i, x[2], x[0], s))
 			if config.get("section_warnings", True):
 				if s is not None:
 					real_hash = crc64.hash(s)
 					if real_hash != x[0]:
-						print "        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, x[0])
-		print ""
+						print("        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, x[0]))
+		print("")
 
 ###
 
@@ -86,7 +86,7 @@ class ComponentDefinitionsSection(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 32
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<IIIIIIII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.entries = [struct.unpack("<IIIIIIII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -100,15 +100,15 @@ class ComponentDefinitionsSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Comp. Defs   | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | Comp. Defs   | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
 			s = self._dat1.get_string(x[2])
 			h = crc64.hash(s)
-			print ""
-			print "  - {:<3}  {}".format(i, s)
-			print "         {:08X} {:08X} {:08X}".format(x[0], x[1], x[3])
-			print "         0={}, offset={}, size={}, 0={}".format(x[4], x[5], x[6], x[7])
-		print ""
+			print("")
+			print("  - {:<3}  {}".format(i, s))
+			print("         {:08X} {:08X} {:08X}".format(x[0], x[1], x[3]))
+			print("         0={}, offset={}, size={}, 0={}".format(x[4], x[5], x[6], x[7]))
+		print("")
 
 ###
 
@@ -144,7 +144,7 @@ class ComponentsDataSection(dat1lib.types.sections.Section):
 				comp_data = data[offset+16:offset+size]
 
 				if data_len != size-16:
-					print "[!] size={}, data_len={}, expected data_len={}".format(size, data_len, size-16)
+					print("[!] size={}, data_len={}, expected data_len={}".format(size, data_len, size-16))
 
 				self.entries += [(a, b, c, data_len, comp_data)]
 			except:
@@ -155,9 +155,9 @@ class ComponentsDataSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Comp. Data   | {:6} entries".format(self.TAG, len(self.entries))		
+		print("{:08X} | Comp. Data   | {:6} entries".format(self.TAG, len(self.entries))		)
 		for i, x in enumerate(self.entries):
 			a, b, c, data_len, comp_data = x
-			print "  - {:<3}  {:08X} {:08X} {:08X}".format(i, a, b, c)
-		print ""
+			print("  - {:<3}  {:08X} {:08X} {:08X}".format(i, a, b, c))
+		print("")
 

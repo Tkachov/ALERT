@@ -18,7 +18,7 @@ class Actor(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad Actor magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad Actor magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -30,13 +30,13 @@ class Actor(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "Actor {:08X}".format(self.magic)
+		print("-------")
+		print("Actor {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -57,7 +57,7 @@ class AnimClip(object): # animclip/performanceclip
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad AnimClip_PerformanceClip magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad AnimClip_PerformanceClip magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -69,13 +69,13 @@ class AnimClip(object): # animclip/performanceclip
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "AnimClip/PerformanceClip {:08X}".format(self.magic)
+		print("-------")
+		print("AnimClip/PerformanceClip {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -96,7 +96,7 @@ class AnimSet(object): # animset/performanceset
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad AnimSet_PerformanceSet magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad AnimSet_PerformanceSet magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -108,13 +108,13 @@ class AnimSet(object): # animset/performanceset
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "AnimSet/PerformanceSet {:08X}".format(self.magic)
+		print("-------")
+		print("AnimSet/PerformanceSet {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -135,7 +135,7 @@ class Cinematic2(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad Cinematic2 magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad Cinematic2 magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -147,13 +147,13 @@ class Cinematic2(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "Cinematic2 {:08X}".format(self.magic)
+		print("-------")
+		print("Cinematic2 {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -174,7 +174,7 @@ class Conduit(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad Conduit magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad Conduit magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -186,13 +186,13 @@ class Conduit(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "Conduit {:08X}".format(self.magic)
+		print("-------")
+		print("Conduit {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -213,7 +213,7 @@ class Level(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad Level magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad Level magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -225,13 +225,13 @@ class Level(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "Level {:08X}".format(self.magic)
+		print("-------")
+		print("Level {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -252,7 +252,7 @@ class LevelLight(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad LevelLight magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad LevelLight magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -264,13 +264,13 @@ class LevelLight(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "LevelLight {:08X}".format(self.magic)
+		print("-------")
+		print("LevelLight {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 #
@@ -290,7 +290,7 @@ class Localization(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad Localization magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad Localization magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -302,13 +302,13 @@ class Localization(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "Localization {:08X}".format(self.magic)
+		print("-------")
+		print("Localization {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -329,7 +329,7 @@ class MaterialGraph(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad MaterialGraph magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad MaterialGraph magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -341,13 +341,13 @@ class MaterialGraph(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "MaterialGraph {:08X}".format(self.magic)
+		print("-------")
+		print("MaterialGraph {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -372,7 +372,7 @@ class Texture(object):
 		# <zero> <zero> <zero>
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad Texture magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad Texture magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -384,13 +384,13 @@ class Texture(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "Texture {:08X}".format(self.magic)
+		print("-------")
+		print("Texture {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -411,7 +411,7 @@ class VisualEffect(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad VisualEffect magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad VisualEffect magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -423,13 +423,13 @@ class VisualEffect(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "VisualEffect {:08X}".format(self.magic)
+		print("-------")
+		print("VisualEffect {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -450,7 +450,7 @@ class WwiseLookup(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad WwiseLookup magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad WwiseLookup magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -462,13 +462,13 @@ class WwiseLookup(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "WwiseLookup {:08X}".format(self.magic)
+		print("-------")
+		print("WwiseLookup {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -491,7 +491,7 @@ class Zone(object):
 		# <magic> <size of first dat1> <size of second dat1> <zeros...>
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad Zone magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad Zone magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -503,12 +503,12 @@ class Zone(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "Zone {:08X}".format(self.magic)
+		print("-------")
+		print("Zone {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)

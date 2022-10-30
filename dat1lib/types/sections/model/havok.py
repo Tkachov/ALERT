@@ -6,9 +6,9 @@ import struct
 class HavokStruct(object):
 	def __init__(self, f):
 		self.magic = f.read(1)
-		self.len = (ord(f.read(1)) << 16)
-		self.len |= (ord(f.read(1)) << 8)
-		self.len |= (ord(f.read(1)))
+		self.len = (f.read(1)[0] << 16)
+		self.len |= (f.read(1)[0] << 8)
+		self.len |= (f.read(1)[0])
 		self.name = f.read(4)
 		if self.len > 8:
 			self.data = f.read(self.len - 8)
@@ -52,4 +52,4 @@ class HavokSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Havok Data   |".format(self.TAG)
+		print("{:08X} | Havok Data   |".format(self.TAG))

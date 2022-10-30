@@ -20,8 +20,8 @@ def handle(request, db):
 		if index is None:
 			raise Exception("Missing 'index' field!")
 
-		asset, sz = db.extract_asset(int(index))
-		ret = {"error": False, "asset": make_asset_details_json(asset, sz)}
+		asset, sz, thumbnail = db.extract_asset(int(index))
+		ret = {"error": False, "asset": make_asset_details_json(asset, sz), "thumbnail": thumbnail}
 
 	except Exception as e:
 		traceback.print_exc()

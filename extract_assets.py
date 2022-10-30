@@ -2,13 +2,14 @@ import dat1lib
 import dat1lib.types.toc
 import os
 import sys
+import traceback
 
 def main(argv):
 	if len(argv) < 2:
-		print "Usage:"
-		print "$ {} <asset_archive path>".format(argv[0])
-		print ""
-		print "Interactive assets extractor."
+		print("Usage:")
+		print("$ {} <asset_archive path>".format(argv[0]))
+		print("")
+		print("Interactive assets extractor.")
 		return
 
 	#
@@ -20,30 +21,30 @@ def main(argv):
 		with open(toc_fn, "rb") as f:
 			toc = dat1lib.read(f)
 	except Exception as e:
-		print "[!] Couldn't open '{}'".format(toc_fn)
-		print e
+		print("[!] Couldn't open '{}'".format(toc_fn))
+		print(e)
 		return
 
 	#
 	
 	if toc is None:
-		print "[!] Couldn't comprehend '{}'".format(toc_fn)
+		print("[!] Couldn't comprehend '{}'".format(toc_fn))
 		return
 
 	if not isinstance(toc, dat1lib.types.toc.TOC):
-		print "[!] Not a toc"
+		print("[!] Not a toc")
 		return
 	
 	#
 
 	archs = toc.get_archives_section()
 	aids = toc.get_assets_section() # lul
-	print "TOC: {} archives, {} assets".format(len(archs.archives), len(aids.ids))
+	print("TOC: {} archives, {} assets".format(len(archs.archives), len(aids.ids)))
 	toc.set_archives_dir(asset_archive_path)
 
 	while True:
-		print ""
-		aid = raw_input("Enter asset id to extract: ")
+		print("")
+		aid = input("Enter asset id to extract: ")
 
 		if aid is None or aid == "":
 			break
@@ -51,26 +52,27 @@ def main(argv):
 		try:
 			aid = int(aid, 16)
 		except:
-			print "[!] Invalid input, try again"
+			print("[!] Invalid input, try again")
 			continue
 
 		entries = toc.get_asset_entries_by_assetid(aid)
 		if len(entries) == 0:
-			print "[!] Asset {:016X} not found".format(aid)
+			print("[!] Asset {:016X} not found".format(aid))
 			continue
 
 		entry = entries[0]
 		if len(entries) > 1:
-			print "[i] {} entries for {:016X} were found, first one was selected".format(len(entries), aid)
+			print("[i] {} entries for {:016X} were found, first one was selected".format(len(entries), aid))
 
 		try:
 			data = toc.extract_asset(entry)
 			with open("{:016X}".format(aid), "wb") as f:
 				f.write(data)
-			print "{:016X} extracted ({} bytes written)".format(aid, len(data))
+			print("{:016X} extracted ({} bytes written)".format(aid, len(data)))
 		except Exception as e:
-			print "[!] Failed"
-			print e
+			print("[!] Failed")
+			print(e)
+			print(traceback.format_exc())
 
 if __name__ == "__main__":
 	main(sys.argv)	

@@ -12,9 +12,9 @@ class ArchiveFileEntry(object):
 		data = struct.pack("<II", bucket, chunk)
 		f = io.BytesIO()
 		f.write(data)
-		f.write(filename)
+		f.write(filename.encode('ascii'))
 		if len(filename) < 64:
-			f.write('\0' * (64 - len(filename)))
+			f.write(b'\0' * (64 - len(filename)))
 		f.seek(0)
 		return cls(f.read())
 
@@ -27,7 +27,7 @@ class ArchivesSection(dat1lib.types.sections.Section):
 
 		ENTRY_SIZE = 72
 		count = len(data)//ENTRY_SIZE
-		self.archives = [ArchiveFileEntry(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.archives = [ArchiveFileEntry(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -35,11 +35,11 @@ class ArchivesSection(dat1lib.types.sections.Section):
 			of.write(struct.pack("<II", e.install_bucket, e.chunkmap))
 			of.write(e.filename)
 		of.seek(0)
-		return of.read()
+		return bytearray(of.read())
 
 	def get_short_suffix(self):
 		return "archives ({})".format(len(self.archives))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Archives Map | {:6} entries".format(self.TAG, len(self.archives))
+		print("{:08X} | Archives Map | {:6} entries".format(self.TAG, len(self.archives)))

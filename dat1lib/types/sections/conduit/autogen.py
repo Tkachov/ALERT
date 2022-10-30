@@ -18,7 +18,7 @@ class x2F4056CE_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -35,7 +35,7 @@ class x2F4056CE_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 2F4056CE     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 2F4056CE     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -54,7 +54,7 @@ class xCEB30E68_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -71,5 +71,5 @@ class xCEB30E68_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | CEB30E68     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | CEB30E68     | {:6} entries".format(self.TAG, len(self.entries)))
 

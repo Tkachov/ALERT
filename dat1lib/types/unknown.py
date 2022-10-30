@@ -15,11 +15,11 @@ class UnknownAsset(object):
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
 	def print_info(self, config):
-		print "-------"
-		print "Asset? {:08X}".format(self.magic)
-		print "- size?  = {}".format(self.likely_is_dat1_size)
-		utils.print_bytes_formatted([ord(c) for c in self.unk], "- ", 2)
-		print "-------"
-		print ""
+		print("-------")
+		print("Asset? {:08X}".format(self.magic))
+		print("- size?  = {}".format(self.likely_is_dat1_size))
+		utils.print_bytes_formatted(self.unk, "- ", 2)
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)

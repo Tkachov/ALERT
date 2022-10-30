@@ -42,7 +42,7 @@ def __list_classes(module):
 
 #
 
-import types.sections
+import dat1lib.types.sections
 types.sections.KNOWN_SECTIONS = {}
 
 def __import_sections(module, directory):
@@ -66,7 +66,7 @@ for d in os.listdir(mdir):
 
 #
 
-import types
+import dat1lib.types
 types.KNOWN_TYPES = {}
 
 for md in __import_submodules(types):
@@ -79,7 +79,7 @@ for md in __import_submodules(types):
 #
 
 import struct
-import types.unknown
+import dat1lib.types.unknown
 
 def read(f, try_unknown=True):
 	magic, = struct.unpack("<I", f.read(4))

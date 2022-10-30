@@ -57,9 +57,9 @@ def make_files_list(paths):
 
 	result = sorted(list(set(result))) # unique + sort
 
-	print message
-	print "{} files total".format(len(result))
-	print ""
+	print(message)
+	print("{} files total".format(len(result)))
+	print("")
 
 	return result
 
@@ -85,15 +85,15 @@ def read_toc(fn):
 			toc = dat1lib.read(f)
 
 		if not isinstance(toc, dat1lib.types.toc.TOC):
-			print "[!] Not a toc"
+			print("[!] Not a toc")
 			return (False, None)
 
 		return (True, toc)
 	except Exception as e:
-		print "[!] Exception:", e
+		print("[!] Exception:", e)
 		return (False, None)
 
-	print "[!] Unknown error occurred while reading 'toc'"
+	print("[!] Unknown error occurred while reading 'toc'")
 	return (False, None)
 
 def new_archive(toc):
@@ -105,13 +105,13 @@ def new_archive(toc):
 	return (new_archive_index, fn)
 
 def new_offset_entry(archive_index, offset):
-	e = dat1lib.types.sections.toc.offsets.OffsetEntry("\x00"*8)
+	e = dat1lib.types.sections.toc.offsets.OffsetEntry(b"\x00"*8)
 	e.archive_index = archive_index
 	e.offset = offset
 	return e
 
 def new_size_entry(size, index):
-	e = dat1lib.types.sections.toc.sizes.SizeEntry("\x00"*12)
+	e = dat1lib.types.sections.toc.sizes.SizeEntry(b"\x00"*12)
 	e.always1 = 1
 	e.value = size
 	e.index = index
@@ -125,8 +125,8 @@ def save_toc(toc, fn):
 
 def main(argv):
 	if len(argv) < 2:
-		print "Usage:"
-		print "$ {} <file1> [<file2>] [...]".format(argv[0])
+		print("Usage:")
+		print("$ {} <file1> [<file2>] [...]".format(argv[0]))
 		return
 
 	do_replace = False
@@ -153,7 +153,7 @@ def main(argv):
 	# TODO: verbose absolute -> internal
 
 	if len(files) == 0:
-		print "[!] No files found"
+		print("[!] No files found")
 		return
 
 	#
@@ -162,8 +162,8 @@ def main(argv):
 	toc_fn = "toc"
 	if not os.path.exists(toc_orig_fn):
 		shutil.copyfile(toc_fn, toc_orig_fn)
-		print "[i] Made a backup of '{}' in '{}'".format(toc_fn, toc_orig_fn)
-		print ""
+		print("[i] Made a backup of '{}' in '{}'".format(toc_fn, toc_orig_fn))
+		print("")
 	
 	success, toc = read_toc(toc_fn)
 	if not success:
@@ -175,11 +175,11 @@ def main(argv):
 	assets = toc.get_assets_section()
 	sizes = toc.get_sizes_section()
 	offsets = toc.dat1.get_section(SECTION_OFFSET_ENTRIES)
-	print "TOC: {} archives, {} assets".format(len(archives.archives), len(assets.ids))
-	print ""
+	print("TOC: {} archives, {} assets".format(len(archives.archives), len(assets.ids)))
+	print("")
 
 	existing_assets = {}
-	for i in xrange(len(assets.ids)):
+	for i in range(len(assets.ids)):
 		aid = assets.ids[i]
 		if aid not in existing_assets:
 			existing_assets[aid] = i
@@ -193,8 +193,8 @@ def main(argv):
 	replacements = 0
 
 	###### 0123456789 0123456789 0123456789012345  ...
-	print "Offset     Size       Asset ID          Name"
-	print "-"*79
+	print("Offset     Size       Asset ID          Name")
+	print("-"*79)
 
 	offset = 0
 	for f, n in zip(files, names):
@@ -213,14 +213,14 @@ def main(argv):
 				replacements += 1
 				replace_original_asset = True
 
-		print "{:<10} {:<10} {:016X}  {}".format(offset, size, aid, n)
+		print("{:<10} {:<10} {:016X}  {}".format(offset, size, aid, n))
 
 		if replace_original_asset:
 			asset_index = existing_assets[aid]
 			if do_verbose and False:
-				print "\t", sizes.entries[asset_index].value, '=>', size
-				print "\t", offsets.entries[asset_index].archive_index, '=>', ndx
-				print "\t", offsets.entries[asset_index].offset, '=>', offset
+				print("\t", sizes.entries[asset_index].value, '=>', size)
+				print("\t", offsets.entries[asset_index].archive_index, '=>', ndx)
+				print("\t", offsets.entries[asset_index].offset, '=>', offset)
 
 			sizes.entries[asset_index].value = size
 			offsets.entries[asset_index].archive_index = ndx
@@ -234,23 +234,23 @@ def main(argv):
 
 		offset += size
 
-	print ""
+	print("")
 
 	message = "{} records added".format(len(files) - replacements)
 	if len(ids_clashed) > 0:
 		message += ", {} IDs clashes, {} replaced".format(len(ids_clashed), replacements)
 
-	print message
-	print ""
+	print(message)
+	print("")
 
 	if do_verbose:
-		print "Clashed files:"
+		print("Clashed files:")
 		###### 0123456789012345  ...
-		print "Asset ID          Name"
-		print "-"*79
+		print("Asset ID          Name")
+		print("-"*79)
 		for fn in ids_clashed:
-			print "{:016X}  {}".format(crc64.hash(fn), fn)
-		print ""
+			print("{:016X}  {}".format(crc64.hash(fn), fn))
+		print("")
 
 	archive_file.close()
 
@@ -261,12 +261,12 @@ def main(argv):
 	toc.dat1.refresh_section_data(SECTION_ASSET_IDS)
 	save_toc(toc, toc_fn)
 
-	print "TOC: {} archives, {} assets".format(len(archives.archives), len(assets.ids))
+	print("TOC: {} archives, {} assets".format(len(archives.archives), len(assets.ids)))
 
 	#
 
 	if do_interactive:
-		print ""
+		print("")
 		a = raw_input("Press Enter to close...")
 
 if __name__ == "__main__":

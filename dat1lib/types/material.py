@@ -18,7 +18,7 @@ class Material(object):
 		self._raw_dat1 = f.read()
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad Material magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad Material magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
@@ -30,12 +30,12 @@ class Material(object):
 		self.dat1.save(f)
 
 	def print_info(self, config):
-		print "-------"
-		print "Material {:08X}".format(self.magic)
+		print("-------")
+		print("Material {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "size: {}".format(self.size)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)

@@ -17,7 +17,7 @@ def handle(request, db):
 	ret = {"error": True, "message": "unknown error"}
 
 	try:
-		return send_file(db.edited_asset, as_attachment=True, attachment_filename=db.edited_asset_name, mimetype='application/octet-stream')
+		return send_file(db.edited_asset, as_attachment=True, download_name=db.edited_asset_name, mimetype='application/octet-stream')
 
 	except Exception as e:
 		traceback.print_exc()

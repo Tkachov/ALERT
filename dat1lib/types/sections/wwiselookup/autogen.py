@@ -18,7 +18,7 @@ class x52B343E8_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -35,7 +35,7 @@ class x52B343E8_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 52B343E8     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 52B343E8     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -53,7 +53,7 @@ class x739B21E0_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -70,7 +70,7 @@ class x739B21E0_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 739B21E0     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 739B21E0     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -87,7 +87,7 @@ class x7F9A96AA_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -104,5 +104,5 @@ class x7F9A96AA_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 7F9A96AA     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 7F9A96AA     | {:6} entries".format(self.TAG, len(self.entries)))
 

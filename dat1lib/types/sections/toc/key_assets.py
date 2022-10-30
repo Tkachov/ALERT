@@ -11,18 +11,18 @@ class KeyAssetsSection(dat1lib.types.sections.Section):
 
 		ENTRY_SIZE = 8
 		count = len(data)//ENTRY_SIZE
-		self.ids = [struct.unpack("<Q", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.ids = [struct.unpack("<Q", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
 		for aid in self.ids:
 			of.write(struct.pack("<Q", aid))
 		of.seek(0)
-		return of.read()
+		return bytearray(of.read())
 
 	def get_short_suffix(self):
 		return "key assets ({})".format(len(self.ids))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Key Assets   | {:6} entries".format(self.TAG, len(self.ids))
+		print("{:08X} | Key Assets   | {:6} entries".format(self.TAG, len(self.ids)))

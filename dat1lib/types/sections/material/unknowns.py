@@ -25,7 +25,7 @@ class xF5260180_Section(dat1lib.types.sections.Section):
 
 		ENTRY_SIZE = 8
 		count = self.materials_count
-		self.materials = [struct.unpack("<II", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.materials = [struct.unpack("<II", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 		self.strings = rest[self.materials_count*8:] # TODO: use dat1lib.types.sections.StringsSection here?
 
@@ -48,37 +48,37 @@ class xF5260180_Section(dat1lib.types.sections.Section):
 
 	def _get_string(self, start):
 		i = start
-		s = ""
+		s = bytearray()
 		while i < len(self.strings):
 			b = self.strings[i]
-			if b == '\0':
+			if b == 0:
 				break
-			s += b
+			s.append(b)
 			i += 1
-		return s
+		return s.decode('ascii')
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Materials    | {:6} values".format(self.TAG, len(self.materials))
+		print("{:08X} | Materials    | {:6} values".format(self.TAG, len(self.materials)))
 
-		print self.data_size, self.unk1, self.unk2, self.unk3, self.unk4
-		print self.materials_count, self.unk5, self.unk6, self.unk7, self.unk8
-		print " ".join(["{:02X}".format(ord(c)) for c in self.unk9])
+		print(self.data_size, self.unk1, self.unk2, self.unk3, self.unk4)
+		print(self.materials_count, self.unk5, self.unk6, self.unk7, self.unk8)
+		print(" ".join(["{:02X}".format(c) for c in self.unk9]))
 
 		
-		print ""
+		print("")
 		#######........ | 123
-		print "           #    name"
-		print "         -----------"
-		for i in xrange(len(self.materials)):
+		print("           #    name")
+		print("         -----------")
+		for i in range(len(self.materials)):
 			spos, shash = self.materials[i]
 
 			s = self._get_string(spos)
 			if s is None:
 				s = "<str at {}>".format(spos)
 
-			print "         - {:<3}  {:08X} {:08X}  {:<4}  {}".format(i, shash, crc32.hash(s, False), spos, repr(s))
-		print ""
+			print("         - {:<3}  {:08X} {:08X}  {:<4}  {}".format(i, shash, crc32.hash(s, False), spos, repr(s)))
+		print("")
 
 #
 
@@ -96,7 +96,7 @@ class xD9B12454_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -113,7 +113,7 @@ class xD9B12454_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | D9B12454     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | D9B12454     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -131,7 +131,7 @@ class x3E45AA13_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -148,7 +148,7 @@ class x3E45AA13_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | 3E45AA13     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | 3E45AA13     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -167,7 +167,7 @@ class xE1275683_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -184,4 +184,4 @@ class xE1275683_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | E1275683     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | E1275683     | {:6} entries".format(self.TAG, len(self.entries)))

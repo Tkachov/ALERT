@@ -20,7 +20,7 @@ class JointsMapSection(dat1lib.types.sections.UintUintMapSection): # aka model_j
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Joints Map   | {:6} joints".format(self.TAG, len(self._map))
+		print("{:08X} | Joints Map   | {:6} joints".format(self.TAG, len(self._map)))
 
 ###
 
@@ -46,26 +46,26 @@ class JointsSection(dat1lib.types.sections.Section): # aka model_joint
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
-		self.joints = [JointDefinition(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.joints = [JointDefinition(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def get_short_suffix(self):
 		return "joints ({})".format(len(self.joints))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Joint Defs   | {:6} joints".format(self.TAG, len(self.joints))
+		print("{:08X} | Joint Defs   | {:6} joints".format(self.TAG, len(self.joints)))
 
-		print ""
+		print("")
 		#######........ | 123  12345678  12345678901234567890123456789012  1234  1234  1234  1234
-		print "           #        hash  name                            parent   ndx     ?     ?"
-		print "         -------------------------------------------------------------------------"
+		print("           #        hash  name                            parent   ndx     ?     ?")
+		print("         -------------------------------------------------------------------------")
 		for i, l in enumerate(self.joints):
 			name = self._dat1.get_string(l.string_offset)
 
-			print "         - {:<3}  {:08X}  {}{}  {:4}  {:4}  {:4}  {:4}".format(i, l.hash, name[:32], " "*(32 - len(name[:32])), l.parent, l.index, l.unknown1, l.unknown2)
+			print("         - {:<3}  {:08X}  {}{}  {:4}  {:4}  {:4}  {:4}".format(i, l.hash, name[:32], " "*(32 - len(name[:32])), l.parent, l.index, l.unknown1, l.unknown2))
 			if config.get("section_warnings", True):
 				nhsh = crc32.hash(name, False)
 				if nhsh != l.hash:
-					print "        [!] name real hash {:08X} is not equal to one written in the struct {:08X}".format(nhsh, l.hash)
+					print("        [!] name real hash {:08X} is not equal to one written in the struct {:08X}".format(nhsh, l.hash))
 
-		print ""
+		print("")

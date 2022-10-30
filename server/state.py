@@ -1,12 +1,22 @@
 import base64
 import dat1lib
 import dat1lib.types.toc
+import dat1lib.types.autogen
+import dat1lib.types.sections.texture.autogen
 import io
-import obj_writer
+import os
 import os.path
-import sys
-import StringIO
+import platform
+import server.obj_writer
 import struct
+import subprocess
+import sys
+import traceback
+import zlib
+from flask import send_file
+from PIL import Image
+
+DEBUG_DDS = False
 
 class State(object):
 	def __init__(self):
@@ -27,6 +37,8 @@ class State(object):
 
 		self.edited_asset = None
 		self.edited_asset_name = None
+
+		self.has_texconv = False
 
 	def _insert_path(self, path, aid):
 		parts = path.split("/")
@@ -81,7 +93,7 @@ class State(object):
 
 		# TODO: toc is not None
 
-		asset_archive_path = os.path.basename(path)
+		asset_archive_path = os.path.dirname(path)
 		toc_fn = path
 
 		if os.path.isdir(path):
@@ -121,21 +133,27 @@ class State(object):
 		self.toc = toc
 		self.toc_path = toc_fn
 
-		s = self.toc.get_assets_section()
-		s2 = self.toc.get_offsets_section()
-		ids = s.ids
-		for i in xrange(len(ids)):
+		assets_section = self.toc.get_assets_section()
+		offsets_section = self.toc.get_offsets_section()
+		ids = assets_section.ids
+		for i in range(len(ids)):
 			aid = "{:016X}".format(ids[i])
 			if aid in self._known_paths:
-				self._add_index_to_tree(aid, i, s2.entries[i].archive_index)
+				self._add_index_to_tree(aid, i, offsets_section.entries[i].archive_index)
 			else:
 				if aid in self.hashes:
-					self.hashes[aid] += [[i, s2.entries[i].archive_index]]
+					self.hashes[aid] += [[i, offsets_section.entries[i].archive_index]]
 				else:
-					self.hashes[aid] = [[i, s2.entries[i].archive_index]] # ["", [i]]
+					self.hashes[aid] = [[i, offsets_section.entries[i].archive_index]] # ["", [i]]
 
-		s3 = self.toc.get_archives_section()
-		self.archives = ["{}".format(a.filename) for a in s3.archives]
+		archives_section = self.toc.get_archives_section()
+		self.archives = ["{}".format(a.filename.decode('ascii')).replace("\x00", "") for a in archives_section.archives]
+
+		#
+		
+		os.makedirs(".cache/thumbnails/", exist_ok=True)
+		if platform.system() == "Windows" and os.path.exists("texconv.exe"):
+			self.has_texconv = True
 
 	def _read_asset(self, index):
 		data = None
@@ -146,15 +164,13 @@ class State(object):
 			error_msg = "{}".format(e)
 
 			if "Errno 2" in error_msg and "No such file or directory" in error_msg:
-				def rindex(lst, value):
-					return len(lst) - lst[::-1].index(value) - 1
+				ri = len(error_msg)-1
+				while ri >= 0:
+					if error_msg[ri] == '/' or error_msg[ri] == '\\':
+						break
+					ri -= 1
 
-				ri1 = rindex(error_msg, '/')
-				ri2 = rindex(error_msg, '\\')
-				if ri1 < ri2:
-					ri1 = ri2
-
-				raise Exception("missing archive '{}".format(error_msg[ri1+1:]))
+				raise Exception("missing archive '{}".format(error_msg[ri+1:]))
 
 			raise
 
@@ -176,24 +192,42 @@ class State(object):
 			return os.path.basename(self._known_paths[aid])
 		return aid
 
+	def _get_asset_metahash(self, index):
+		assets_section = self.toc.get_assets_section()
+		archives_section = self.toc.get_archives_section()
+		offsets_section = self.toc.get_offsets_section()
+		sizes_section = self.toc.get_sizes_section()
+		archive_index = offsets_section.entries[index].archive_index
+		checksum = zlib.crc32(archives_section.archives[archive_index].filename, 0)
+		checksum = zlib.crc32(struct.pack("<QII", assets_section.ids[index], offsets_section.entries[index].offset, sizes_section.entries[index].value), checksum)
+		return checksum
+
+	def _get_thumbnail_path(self, aid, index):
+		return ".cache/thumbnails/{}.{:08X}.png".format(aid, self._get_asset_metahash(index))
+
 	def extract_asset(self, index):
 		# TODO: what if I want to force reload?
 		s = self.toc.get_sizes_section()
 		sz = s.entries[index].value
 
 		if self.currently_extracted_asset_index == index:
-			return self.currently_extracted_asset, sz
+			return self.currently_extracted_asset, sz, None
 
 		data, obj = self._read_asset(index)
 		self.currently_extracted_asset = obj
 		self.currently_extracted_asset_index = index
 		self.currently_extracted_asset_data = data
 
-		return self.currently_extracted_asset, sz
+		s = self.toc.get_assets_section()
+		aid = "{:016X}".format(s.ids[index])
+		made_thumbnail = self._try_making_thumbnail(aid, index)
+		thumbnail = aid if made_thumbnail else None
+
+		return self.currently_extracted_asset, sz, thumbnail
 
 	def get_model(self, index):
 		data, asset = self._get_asset_by_index(index)
-		return obj_writer.write(asset)
+		return server.obj_writer.write(asset)
 
 	def get_asset_data(self, index):
 		data, asset = self._get_asset_by_index(index)
@@ -229,7 +263,7 @@ class State(object):
 					if "web_repr" in dir(section):
 						report["sections"][s.tag] = section.web_repr()
 					else:
-						captured = StringIO.StringIO()
+						captured = io.StringIO()
 						sys.stdout = captured
 						section.print_verbose(CONFIG)
 						report["sections"][s.tag] = {"name": "{:08X}".format(s.tag), "type": "text", "readonly": True, "content": captured.getvalue()}
@@ -239,7 +273,7 @@ class State(object):
 							if report["sections"][s.tag]["content"] == "": # TODO: make it part of web_repr()
 								report["sections"][s.tag]["type"] = "bytes"
 								report["sections"][s.tag]["offset"] = 0 # TODO: make it absolute, not section-relative
-								report["sections"][s.tag]["content"] = base64.b64encode(section._raw)
+								report["sections"][s.tag]["content"] = base64.b64encode(section._raw).decode('ascii')
 						except:
 							pass
 			except:
@@ -278,7 +312,7 @@ class State(object):
 		#
 
 		report["header"]["magic"], report["header"]["size"] = struct.unpack("<II", data[:8])
-		report["header"]["rest"] = [struct.unpack("<I", data[8+i*4:12+i*4])[0] for i in xrange(7)]
+		report["header"]["rest"] = [struct.unpack("<I", data[8+i*4:12+i*4])[0] for i in range(7)]
 
 		report["strings"]["count"] = len(asset.dat1._strings_map)
 		report["strings"]["size"] = len(asset.dat1._raw_strings_data)
@@ -344,3 +378,263 @@ class State(object):
 
 		self.edited_asset = f
 		self.edited_asset_name = self._get_asset_name(asset_index)
+
+	def get_thumbnails_list(self, path):
+		parts = path.split("/")
+		
+		node = self.tree
+		for p in parts:
+			if p == "":
+				continue
+			if p not in node:
+				node = None
+				break
+			node = node[p]
+
+		if node is None:
+			return []
+
+		result = []
+		s = self.toc.get_assets_section()
+		for k in node:
+			if isinstance(node[k], list):
+				aid, variants = node[k][0], node[k][1]
+				for index, archive_index in variants:
+					aid = "{:016X}".format(s.ids[index])
+					fn = self._get_thumbnail_path(aid, index)
+					if os.path.exists(fn):
+						result += [aid]
+
+		return result
+
+	def _get_node_by_aid(self, aid):
+		path = self._known_paths[aid]
+		parts = path.split("/")
+		dirs, file = parts[:-1], parts[-1]
+		
+		node = self.tree
+		for d in dirs:
+			if d not in node:
+				node[d] = {}
+			node = node[d]
+
+		return node[file]
+
+	def get_thumbnail(self, aid):
+		node = self._get_node_by_aid(aid)
+		aid, variants = node[0], node[1]
+		for index, archive_index in variants:
+			fn = self._get_thumbnail_path(aid, index)
+			if os.path.exists(fn):
+				f = open(fn, "rb")
+				return (send_file(f, mimetype='image/png'), 200)
+
+		return ("", 404)
+
+	def make_thumbnail(self, aid):
+		node = self._get_node_by_aid(aid)
+		aid, variants = node[0], node[1]
+
+		for index, archive_index in variants:
+			if self._try_making_thumbnail(aid, index):
+				return True
+
+		return False
+
+	def _try_making_thumbnail(self, aid, index):
+		try:
+			fn = self._get_thumbnail_path(aid, index)
+			data, asset = self._get_asset_by_index(index)
+
+			if isinstance(asset, dat1lib.types.autogen.Texture):
+				img = self._load_dds_mipmap(asset, None, 0)
+				if img is None:
+					return False
+
+				if DEBUG_DDS:
+					img.save(".cache/thumbnails/orig_{}.png".format(aid))
+
+				w, h = img.size
+				max_side = w
+				if h > max_side:
+					max_side = h
+				scale = 64/max_side
+				new_width = int(w * scale)
+				new_height = int(h * scale)
+				img = img.resize((new_width, new_height), Image.ANTIALIAS)
+				img.save(fn)
+				return True
+		except:
+			print(traceback.format_exc())
+
+		return False
+
+	def _load_dds_mipmap(self, texture_asset, hd_data, mipmap_index):
+		try:
+			if isinstance(texture_asset, dat1lib.types.autogen.Texture):
+				info = texture_asset.dat1.get_section(dat1lib.types.sections.texture.autogen.TextureHeaderSection.TAG)
+
+				if DEBUG_DDS:
+					print("{}x{}, fmt={}".format(info.sd_width, info.sd_height, info.fmt))
+
+				mipmaps = []
+				hd_bpp = 0
+				if hd_data is not None:
+					w, h = info.hd_width, info.hd_height
+					for i in range(info.hd_mipmaps):
+						hd_bpp += w*h
+						mipmaps += [(w, h)]
+						w = w // 2
+						h = h // 2
+
+				sd_bpp = 0				
+				w, h = info.sd_width, info.sd_height
+				for i in range(info.sd_mipmaps):
+					sd_bpp += w*h
+					mipmaps += [(w, h)]
+					w = w // 2
+					h = h // 2
+
+				if hd_bpp > 0:
+					hd_bpp = info.hd_len / hd_bpp
+				if sd_bpp > 0:
+					sd_bpp = info.sd_len / sd_bpp
+
+				w, h = mipmaps[mipmap_index]
+
+				dds_data = b"\x44\x44\x53\x20\x7C\x00\x00\x00\x07\x10\x0A\x00"
+				dds_data += struct.pack("<II", h, w)
+
+				# pitch / depth / mipmaps
+				# pitch value is "unreliable", as specified in https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide, so I'm computing it badly
+				pitch = (w * 32 + 7) // 8
+				dds_data += struct.pack("<III", pitch, 0, 0)
+
+				# reserved: 11 uint32s
+				dds_data += b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+
+				# pixelformat: size / flags / fourcc / bitcount / rgba masks / dwcaps[4] / reserved
+				"""
+				DDSCAPS_COMPLEX = 0x8
+				DDSCAPS_TEXTURE = 0x1000
+				DDSCAPS_MIPMAP = 0x400000
+				"""
+				DWCAPS0 = b"\x00\x10\x00\x00" # b"\x08\x10\x40\x00"
+				dds_data += b"\x20\x00\x00\x00\x04\x00\x00\x00\x44\x58\x31\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+				dds_data += DWCAPS0
+				dds_data += b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+
+				# dxt10: format / dimension / misc / arraysize / misc flags
+				dds_data += struct.pack("<5I", info.fmt, 3 if h > 1 else 2, 0, 1, 0)
+
+				pixels_written = False
+				hd_mipmaps_count = 0
+				if hd_data is not None:
+					hd_mipmaps_count = info.hd_mipmaps
+					if mipmap_index < info.hd_mipmaps:
+						offset = 0
+						for i in range(mipmap_index):
+							mw, mh = mipmaps[i]
+							offset += int(hd_bpp * mw * mh)
+						dds_data += hd_data[offset:]
+						pixels_written = True
+					else:
+						mipmap_index -= info.hd_mipmaps
+
+				if not pixels_written:
+					offset = 0x80 - 36
+					for i in range(mipmap_index):
+						mw, mh = mipmaps[i + hd_mipmaps_count]
+						offset += int(sd_bpp * mw * mh)
+					dds_data += texture_asset._raw_dat1[offset:]
+				
+				if self.has_texconv:
+					def _remove_file(fn):
+						try:
+							os.remove(fn)
+						except:
+							pass
+
+					try:
+						f = open(".cache/mipmap.dds", "wb")
+						f.write(dds_data)
+						f.close()
+
+						p = subprocess.Popen("texconv.exe mipmap.dds -ft png -y", cwd='.cache')
+						try:
+							p.wait(15)
+						except:
+							try:
+								p.kill()
+							except:
+								pass
+							return None
+
+						image = Image.open(".cache/mipmap.png")
+
+						_remove_file(".cache/mipmap.dds")
+						_remove_file(".cache/mipmap.png")
+
+						return image
+					except:					
+						print(traceback.format_exc())
+
+				return Image.open(io.BytesIO(dds_data))
+		except:
+			print(traceback.format_exc())
+			
+		return None
+
+	def get_texture_viewer(self, index):
+		data, asset = self._get_asset_by_index(index)
+		info = asset.dat1.get_section(dat1lib.types.sections.texture.autogen.TextureHeaderSection.TAG)
+
+		mipmaps = []
+
+		w, h = info.hd_width, info.hd_height
+		for i in range(info.hd_mipmaps):
+			mipmaps += [(w, h)]
+			w = w // 2
+			h = h // 2
+
+		w, h = info.sd_width, info.sd_height
+		for i in range(info.sd_mipmaps):
+			mipmaps += [(w, h)]
+			w = w // 2
+			h = h // 2
+
+		return {"mipmaps": mipmaps}
+
+	def get_texture_mipmap(self, index, mipmap_index):
+		data, asset = self._get_asset_by_index(index)
+		info = asset.dat1.get_section(dat1lib.types.sections.texture.autogen.TextureHeaderSection.TAG)
+
+		hd_data = None
+		if mipmap_index < info.hd_mipmaps:
+			s = self.toc.get_assets_section()
+			aid = "{:016X}".format(s.ids[index])
+			path = self._known_paths[aid]
+			parts = path.split("/")
+			dirs, file = parts[:-1], parts[-1]
+			
+			node = self.tree
+			for d in dirs:
+				if d not in node:
+					node[d] = {}
+				node = node[d]
+			
+			variants = node[file][1]
+			if len(variants) == 2:
+				hd_index = variants[0][0]
+				if hd_index == index:
+					hd_index = variants[1][0]		
+			
+			hd_data, ha = self._read_asset(hd_index)
+		else:
+			mipmap_index -= info.hd_mipmaps
+
+		img = self._load_dds_mipmap(asset, hd_data, mipmap_index)
+		f = io.BytesIO()
+		img.save(f, format="png")
+		f.seek(0)
+		return (send_file(f, mimetype='image/png'), 200)

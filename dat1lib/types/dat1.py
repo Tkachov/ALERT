@@ -25,9 +25,15 @@ class DAT1SectionHeader(object):
 class DAT1Header(object):
 	def __init__(self, f):
 		self.magic, self.unk1, self.size = utils.read_struct(f, "<III")
-		sections_count, self.unk2 = utils.read_struct(f, "<HH")
+		sections_count, unknown_count = utils.read_struct(f, "<HH")
 		self.sections = utils.read_class_N_array(f, sections_count, DAT1SectionHeader)
 		# self.sections = sorted(self.sections, key=lambda x: x.offset)
+		self.unknowns = b""
+		if unknown_count > 0:
+			self.unknowns = f.read(8 * unknown_count)
+
+	def get_offset(self):
+		return 16 + 12 * len(self.sections) + len(self.unknowns)
 
 ###
 
@@ -56,15 +62,16 @@ class DAT1(object):
 			self._raw_strings_data = f.read(min_offset - f.tell())
 		else:
 			self._raw_strings_data = f.read()
+		self._raw_strings_data = bytearray(self._raw_strings_data)
 
 		self._read_strings(self._raw_strings_data)
 
 		for i, s in enumerate(self.header.sections):
 			f.seek(s.offset)
-			self._sections_data += [f.read(s.size)]
+			self._sections_data += [bytearray(f.read(s.size))]
 			self._sections_map[s.tag] = i
 
-			#print s.tag, s.offset, s.size, len(self._sections_data[-1]), repr(self._sections_data[-1][:100])
+			#print(s.tag, s.offset, s.size, len(self._sections_data[-1]), repr(self._sections_data[-1][:100]))
 
 			KNOWN_SECTIONS = dat1lib.types.sections.KNOWN_SECTIONS
 			if s.tag in KNOWN_SECTIONS:
@@ -77,13 +84,13 @@ class DAT1(object):
 		i = 0
 		start = 0
 		while i < len(data):
-			if data[i] == '\0' or i == len(data)-1:
+			if data[i] == 0 or i == len(data)-1:
 				if start == i:					
 					i += 1
 					start = i
 					continue
 
-				s = data[start:i]
+				s = data[start:i].decode('ascii')
 				self._strings_map[start] = s
 				self._strings_inverse_map[s] = start
 				start = i+1
@@ -91,11 +98,11 @@ class DAT1(object):
 			i += 1
 
 	def get_string(self, offset):
-		offset -= 16 + 12 * len(self.header.sections)
+		offset -= self.header.get_offset()
 		return self._strings_map.get(offset, None)
 
 	def add_string(self, s):
-		offset = 16 + 12 * len(self.header.sections)
+		offset = self.header.get_offset()
 
 		s = str(s)
 		if s in self._strings_inverse_map:
@@ -104,7 +111,8 @@ class DAT1(object):
 		start = len(self._raw_strings_data)
 		self._strings_map[start] = s
 		self._strings_inverse_map[s] = start
-		self._raw_strings_data += s + '\0'
+		self._raw_strings_data.extend(s.encode('ascii'))
+		self._raw_strings_data.extend(b'\0')
 		return offset + start
 
 	def get_section(self, tag):
@@ -145,7 +153,7 @@ class DAT1(object):
 			self.header.sections += [DAT1SectionHeader.make(tag, self.header.size, 0)]
 
 		ndx = self._sections_map[tag]
-		self._sections_data[ndx] = ""
+		self._sections_data[ndx] = bytearray(b"")
 		self.sections[ndx] = obj
 
 		self.recalculate_section_headers()
@@ -159,7 +167,7 @@ class DAT1(object):
 		self.recalculate_section_headers()
 
 	def recalculate_section_headers(self):
-		offset_to_first_section = 16 + 12 * len(self.header.sections) + len(self._raw_strings_data)
+		offset_to_first_section = self.header.get_offset() + len(self._raw_strings_data)
 		sections_order = [s.tag for s in self.header.sections]
 
 		if self._recalc_strat == RECALCULATE_PRESERVE_PADDING or self._recalc_strat == RECALCULATE_ORIGINAL_ORDER:
@@ -169,7 +177,7 @@ class DAT1(object):
 
 		original_padding = []
 		if self._recalc_strat == RECALCULATE_PRESERVE_PADDING:
-			for i in xrange(len(self.header.sections)):
+			for i in range(len(self.header.sections)):
 				if i == 0:
 					original_padding += [self.header.sections[i].offset - offset_to_first_section]
 				else:
@@ -192,24 +200,25 @@ class DAT1(object):
 		self.header.sections = sorted(self.header.sections, key=lambda x: sections_order.index(x.tag))
 
 	def save(self, out):
-		#print self.header.size
+		#print(self.header.size)
 		self.recalculate_section_headers()
-		#print self.header.size
+		#print(self.header.size)
 
 		h = self.header
-		out.write(struct.pack("<IIIHH", h.magic, h.unk1, h.size, len(h.sections), h.unk2))
+		out.write(struct.pack("<IIIHH", h.magic, h.unk1, h.size, len(h.sections), len(h.unknowns)))
 		for s in h.sections:
 			out.write(struct.pack("<III", s.tag, s.offset, s.size))
+		out.write(h.unknowns)
 
 		out.write(self._raw_strings_data)
 
-		cur_offset = 16 + 12 * len(self.header.sections) + len(self._raw_strings_data)
+		cur_offset = self.header.get_offset() + len(self._raw_strings_data)
 		sorted_sections = [(s.tag, s.offset) for s in h.sections]
 		sorted_sections = sorted(sorted_sections, key=lambda x: x[1])
 		for s in sorted_sections:
 			if cur_offset < s[1]:
 				padding = s[1] - cur_offset
-				out.write('\0' * padding)
+				out.write(b'\0' * padding)
 				cur_offset += padding
 
 			ndx = self._sections_map[s[0]]
@@ -252,11 +261,11 @@ class DAT1(object):
 		if unk1 in UNK1_KNOWN_VALUES:
 			suffix = " ({})".format(UNK1_KNOWN_VALUES[unk1])
 
-		print "-------"
-		print "DAT1 {:08X}{}".format(self.header.unk1, suffix)
+		print("-------")
+		print("DAT1 {:08X}{}".format(self.header.unk1, suffix))
 		if self.header.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "-------"
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("-------")
 
 	def _print_sections(self, config):
 		if not config.get("sections", True):
@@ -264,20 +273,20 @@ class DAT1(object):
 
 		sections = self.header.sections
 
-		print ""
-		print "Sections: {}".format(len(sections))
+		print("")
+		print("Sections: {}".format(len(sections)))
 
 		if len(sections) > 0:
 			sections_types = set([0 if s is None else s.TYPE for s in self.sections])
 			multiple_types = len(sections_types) > 1
 
-			print "-------------------------------------------"
+			print("-------------------------------------------")
 			#######  12 12345678  12345678  12345678  12345678
-			print "  #  `tag`       offset      size   ends at"
-			print "-------------------------------------------"
+			print("  #  `tag`       offset      size   ends at")
+			print("-------------------------------------------")
 			for i, section_header in enumerate(sections):
 				suffix = self._make_short_section_suffix(config, multiple_types, section_header, self.sections[i])
-				print "- {:<2} {:08X}  {:8}  {:8}  {:8}{}".format(i, section_header.tag, section_header.offset, section_header.size, section_header.offset + section_header.size - 1, suffix)
+				print("- {:<2} {:08X}  {:8}  {:8}  {:8}{}".format(i, section_header.tag, section_header.offset, section_header.size, section_header.offset + section_header.size - 1, suffix))
 
 			self._print_sections_verbose(config)
 
@@ -310,7 +319,7 @@ class DAT1(object):
 		if not config.get("sections_verbose", True):
 			return
 
-		order = xrange(len(self.sections))
+		order = range(len(self.sections))
 		if config.get("sections_verbose_offset_sorted", True):
 			order = [(i, s.offset) for i, s in enumerate(self.header.sections)]
 			order = sorted(order, key=lambda x: x[1])
@@ -322,19 +331,19 @@ class DAT1(object):
 			if section is None:
 				if config.get("sections_verbose_unknown", False):
 					if first_section:
-						print ""
+						print("")
 						first_section = False
 
 					##### "{:08X} | ............ | {:6} ..."
-					print "{:08X} | Unknown      | {:6} bytes".format(self.header.sections[ndx].tag, len(self._sections_data[ndx]))
+					print("{:08X} | Unknown      | {:6} bytes".format(self.header.sections[ndx].tag, len(self._sections_data[ndx])))
 					if len(self._sections_data[ndx]) < config.get("sections_verbose_unknown_bytes_limit", 1024):
-						utils.print_bytes_formatted([ord(c) for c in self._sections_data[ndx]], " "*11)
-						print ""
+						utils.print_bytes_formatted(self._sections_data[ndx], " "*11)
+						print("")
 
 				continue
 
 			if first_section:
-				print ""
+				print("")
 				first_section = False
 
 			section.print_verbose(config)

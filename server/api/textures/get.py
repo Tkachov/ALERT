@@ -1,5 +1,4 @@
-from flask import Response, send_file
-import io
+from flask import Response
 import json
 import traceback
 
@@ -21,8 +20,11 @@ def handle(request, db):
 		if index is None:
 			raise Exception("Missing 'index' field!")
 
-		data, basename = db.get_asset_strings(int(index))
-		return send_file(io.BytesIO(data), as_attachment=True, download_name=basename, mimetype='application/octet-stream')
+		mmi = request.args.get("mipmap_index", None)
+		if mmi is None:
+			raise Exception("Missing 'mipmap_index' field!")
+
+		return db.get_texture_mipmap(int(index), int(mmi))
 
 	except Exception as e:
 		traceback.print_exc()

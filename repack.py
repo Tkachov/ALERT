@@ -8,11 +8,11 @@ import dat1lib.types.model
 
 def main(argv):
 	if len(argv) < 2:
-		print "Usage:"
-		print "$ {} <filename>".format(argv[0])
-		print ""
-		print "Read the .model and save it as .model.repacked"
-		print "Resulting file should work in game as usual"
+		print("Usage:")
+		print("$ {} <filename>".format(argv[0]))
+		print("")
+		print("Read the .model and save it as .model.repacked")
+		print("Resulting file should work in game as usual")
 		return
 
 	#
@@ -23,18 +23,18 @@ def main(argv):
 		with open(fn, "rb") as f:
 			model = dat1lib.read(f)
 	except Exception as e:
-		print "[!] Couldn't open '{}'".format(fn)
-		print e
+		print("[!] Couldn't open '{}'".format(fn))
+		print(e)
 		return
 
 	#
 	
 	if model is None:
-		print "[!] Couldn't comprehend '{}'".format(fn)
+		print("[!] Couldn't comprehend '{}'".format(fn))
 		return
 
 	if not isinstance(model, dat1lib.types.model.Model): # TODO: should 'repack' only work on models?
-		print "[!] Not a model"
+		print("[!] Not a model")
 		return
 
 	#

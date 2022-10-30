@@ -1,5 +1,4 @@
-from flask import Response, send_file
-import io
+from flask import Response
 import json
 import traceback
 
@@ -17,12 +16,11 @@ def handle(request, db):
 	ret = {"error": True, "message": "unknown error"}
 
 	try:
-		index = request.args.get("index", None)
-		if index is None:
-			raise Exception("Missing 'index' field!")
-
-		data, basename = db.get_asset_strings(int(index))
-		return send_file(io.BytesIO(data), as_attachment=True, download_name=basename, mimetype='application/octet-stream')
+		path = request.form.get("path", None)
+		if path is None:
+			raise Exception("Missing 'path' field!")
+		
+		ret = {"error": False, "list": db.get_thumbnails_list(path)}
 
 	except Exception as e:
 		traceback.print_exc()

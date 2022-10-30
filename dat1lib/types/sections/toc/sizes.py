@@ -15,30 +15,30 @@ class SizesSection(dat1lib.types.sections.Section):
 
 		ENTRY_SIZE = 12
 		count = len(data)//ENTRY_SIZE
-		self.entries = [SizeEntry(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in xrange(count)]
+		self.entries = [SizeEntry(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
 		for e in self.entries:
 			of.write(struct.pack("<III", e.always1, e.value, e.index))
 		of.seek(0)
-		return of.read()
+		return bytearray(of.read())
 
 	def get_short_suffix(self):
 		return "sizes ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | Size Entries | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | Size Entries | {:6} entries".format(self.TAG, len(self.entries)))
 
 		if config.get("section_warnings", True):
 			had_warnings = False
 			for j, e in enumerate(self.entries):
 				if j != e.index:
-					print "    [!] #{} bad index: {}".format(j, e.index)
+					print("    [!] #{} bad index: {}".format(j, e.index))
 					had_warnings = True
 				if e.always1 != 1:
-					print "    [!] #{} always1 == {}".format(j, e.always1)
+					print("    [!] #{} always1 == {}".format(j, e.always1))
 					had_warnings = True
 			if had_warnings:
-				print ""
+				print("")

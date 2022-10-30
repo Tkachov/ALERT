@@ -7,10 +7,6 @@ const POSSIBLE_STATES = ["editor"];
 // TODO: fix bigger models
 // TODO: model viewer materials preview
 // 80C52396F2470510 -- so many sections in /edit
-/*
-- fix asset_archive directory path so it opens archives correctly
-- fix state.py:148 rindex() to work if needle
-*/
 
 var viewer = { ready: false };
 var controller = {
@@ -47,6 +43,11 @@ var controller = {
 			index: null,
 			report: null,
 			edited: null
+		},
+
+		texture: {
+			index: null,
+			viewer: null
 		}
 	},
 
@@ -213,6 +214,7 @@ var controller = {
 		*/
 
 		this._render_asset_editor();
+		this._render_texture_viewer();
 	},
 
 	_render_asset_editor: function () {
@@ -334,7 +336,7 @@ var controller = {
 			original.appendChild(s);
 		}
 
-		a = createElementWithTextNode("a", "Extract asset (" + this.editor.editor.report.total_size + " bytes)");
+		a = createElementWithTextNode("a", "Save original as...");
 		a.className = "bottom_button";
 		a.href = "/api/editor/extract?index=" + this.editor.editor.index;
 		a.target = "_blank";
@@ -552,10 +554,72 @@ var controller = {
 			edited.appendChild(section.dom);
 		}
 
-		a = createElementWithTextNode("a", "Save edited asset");
+		a = createElementWithTextNode("a", "Save edited as...");
 		a.className = "bottom_button";
 		a.onclick = function () { self.edit_asset(); }
 		edited.appendChild(a);
+	},
+
+	_render_texture_viewer: function () {
+		var e = document.getElementById("texture_viewer");
+		var show = (this.editor.texture.index != null);
+		
+		if (show) e.classList.add("open");
+		else e.classList.remove("open");
+		
+		if (!show) return;
+
+		var self = this;
+		e.onclick = function (ev) {
+			if (ev.target == e) {
+				self.editor.texture.index = null;
+				self.render();
+			}
+		};
+
+		//
+		
+		e.innerHTML = "";
+
+		var d = document.createElement("div");
+		e.appendChild(d);
+
+		var preview = document.createElement("div");
+		preview.className = "preview";
+		d.appendChild(preview);
+
+		var img = document.createElement("img");
+		img.src = "/api/textures/get?index=" + this.editor.texture.index + "&mipmap_index=0";
+		preview.appendChild(img);
+
+		var controls = document.createElement("div");
+		controls.className = "controls";
+		d.appendChild(controls);
+
+		function make_option(text, value) {
+			var o = createElementWithTextNode("option", text);
+			o.value = value;
+			return o;
+		}
+
+		var select = document.createElement("select");
+		for (var i=0; i<this.editor.texture.viewer.mipmaps.length; ++i) {
+			var w = this.editor.texture.viewer.mipmaps[i][0];
+			var h = this.editor.texture.viewer.mipmaps[i][1];
+			select.appendChild(make_option(w + " × " + h, i));
+		}
+		select.selectedIndex = 0;
+		controls.appendChild(select);
+
+		var btn = createElementWithTextNode("a", "Open in new tab");
+		btn.target = "_blank";
+		btn.href = img.src;
+		controls.appendChild(btn);
+
+		select.onchange = function () {
+			img.src = "/api/textures/get?index=" + self.editor.texture.index + "&mipmap_index=" + select.selectedIndex;
+			btn.href = img.src;
+		};
 	},
 
 	/* search */
@@ -615,18 +679,33 @@ var controller = {
 
 		if (this.assets.has(entry.index)) {
 			var info = this.assets.get(entry.index);
-			e.appendChild(document.createElement("hr"));
-			e.appendChild(createElementWithTextNode("p", "size: " + info.size));
-			if (info.type != null) {
-				e.appendChild(createElementWithTextNode("p", "type: " + info.type));
-				e.appendChild(createElementWithTextNode("p", "magic: " + info.magic));
-				e.appendChild(createElementWithTextNode("p", "sections: " + info.sections));
 
-				e.appendChild(document.createElement("hr"));
+			e.appendChild(document.createElement("hr"));
+			var desc = "";
+			var links = document.createElement("p");
+			links.className = "links";
+
+			// generic
+			desc = filesize(info.size);
+
+			{
+				var btn = createElementWithTextNode("a", "Save as...");
+				btn.href = "/api/editor/extract?index=" + entry.index;
+				btn.target = "_blank";
+				links.appendChild(btn);
+			}
+
+			// dat1
+			if (info.type != null) {
+				desc = info.type + " (" + info.sections + " sections)\n" + desc;
+
+				var sep = document.createElement("span");
+				sep.className = "separator";
+				links.appendChild(sep);
 
 				{
 					var btn = createElementWithTextNode("a", "Sections report");
-					e.appendChild(btn);
+					links.appendChild(btn);
 					var self = this;
 					btn.onclick = function () {
 						self.get_asset_report(entry.index);
@@ -634,26 +713,63 @@ var controller = {
 				}
 
 				{
-					var btn = createElementWithTextNode("a", "Edit asset");
-					e.appendChild(btn);
+					var btn = createElementWithTextNode("a", "Edit sections");
+					links.appendChild(btn);
 					var self = this;
 					btn.onclick = function () {
 						self.get_asset_editor(entry.index);
 					};
 				}
-
-				if (info.type == "Model") {
-					var btn = createElementWithTextNode("a", "Open in viewer");
-					e.appendChild(btn);
-					var self = this;
-					btn.onclick = function () {
-						viewer.show_mesh("/api/model?index=" + entry.index);
-					};
-				}
 			}
+
+			// model
+			if (info.type == "Model") {
+				var sep = document.createElement("span");
+				sep.className = "separator";
+				links.appendChild(sep);
+
+				var btn = createElementWithTextNode("a", "View");
+				links.appendChild(btn);
+				var self = this;
+				btn.onclick = function () {
+					viewer.show_mesh("/api/model?index=" + entry.index);
+				};
+			}
+
+			// texture
+			if (info.type == "Texture") {
+				var sep = document.createElement("span");
+				sep.className = "separator";
+				links.appendChild(sep);
+
+				var btn = createElementWithTextNode("a", "View");
+				links.appendChild(btn);
+				var self = this;
+				btn.onclick = function () {
+					self.get_texture_viewer(entry.index);
+				};
+			}
+
+			var p = document.createElement("p");
+			var parts = desc.split("\n");
+			for (var i=0; i<parts.length; ++i) {
+				if (i > 0)
+					p.appendChild(document.createElement("br"));
+				p.appendChild(document.createTextNode(parts[i]));
+			}
+
+			e.appendChild(p);
+			e.appendChild(links);
 		} else {
 			var self = this;
-			this.extract_asset(entry.index, function () { self.make_asset_details(entry); }, function () {});
+			this.extract_asset(
+				entry.index,
+				function () { self.make_asset_details(entry); },
+				function (error_message) {
+					e.appendChild(document.createElement("hr"));
+					e.appendChild(createElementWithTextNode("b", error_message));
+				}
+			);
 		}
 	},
 
@@ -684,7 +800,8 @@ var controller = {
 			crumbs: [],
 			is_file: false,
 			aid: "",
-			basedir: ""
+			basedir: "",
+			thumbnails_info: null
 		};
 
 		if (path != "") result.crumbs = path.split("/");
@@ -732,6 +849,8 @@ var controller = {
 	},
 
 	_browser_made_for_entry: null,
+	_browser_thumbnails_path: null,
+	_browser_known_thumbnails: new Set(),
 
 	make_content_browser: function (entry) {
 		var remake_browser = true;
@@ -775,6 +894,37 @@ var controller = {
 				}
 			}
 
+			if (this._browser_thumbnails_path != entry.basedir) {
+				this._browser_thumbnails_path = entry.basedir;
+
+				var self = this;
+				ajax.postAndParseJson(
+					"api/thumbnails/list", {
+						path: full_path
+					},
+					function(r) {
+						if (r.error) {
+							// TODO: self.editor.search.error = r.message;
+							return;
+						}
+
+						// TODO: self.editor.search.error = null;
+						for (var taid of r.list) {
+							self._browser_known_thumbnails.add(taid);
+						}
+						if (r.list.length > 0) {
+							if (self._browser_made_for_entry != null && self._browser_made_for_entry.basedir == entry.basedir) {
+								self._browser_made_for_entry = null; // to trigger remake
+								self.make_content_browser(entry);
+							}
+						}
+					},
+					function(e) {				
+						// TODO: self.editor.search.error = e;
+					}
+				);
+			}
+
 			var directories = [];
 			var files = [];
 			var n = entry.tree_node;
@@ -806,6 +956,15 @@ var controller = {
 				item.className = "file" + (is_multiple ? " multiple" : "");
 				item.appendChild(createElementWithTextNode("span", f));
 				item.onclick = this.make_entry_onclick(entry.basedir + f, true);
+
+				var aid = entry.tree_node[f][0];
+				if (this._browser_known_thumbnails.has(aid)) {
+					var thumb = document.createElement("img");
+					thumb.src = "/api/thumbnails/get?aid=" + aid;
+					item.appendChild(thumb);
+					item.className += " with_thumbnail";
+				}
+
 				if (is_multiple) {
 					var badge = createElementWithTextNode("span", "" + entry.tree_node[f][1].length);
 					badge.className = "multiple_badge";
@@ -1004,7 +1163,7 @@ var controller = {
 		d.appendChild(sp);
 
 		var self = this;
-		var oe = createElementWithTextNode("a", "Edit asset");
+		var oe = createElementWithTextNode("a", "Edit sections");
 		oe.className = "editor_button";
 		oe.onclick = function () { self.get_asset_editor(index); };
 		h.appendChild(oe);
@@ -1194,37 +1353,6 @@ var controller = {
 		var e = document.getElementById("search");
 		var v = e.value;
 
-		/*
-		this.sending_input = true;
-
-		var self = this;
-		ajax.postAndParseJson(
-			"api/search_assets", {
-				needle: v
-			},
-			function(r) {
-				self.sending_input = false;
-
-				if (r.error) {
-					self.editor.search.error = r.message;
-					self.render();
-					return;
-				}
-
-				self.editor.search.error = null;
-				self.editor.search.results = r.entries;
-				self.render();
-			},
-			function(e) {
-				self.sending_input = false;
-				self.editor.search.error = e;
-				self.render();
-			}
-		);
-
-		this.render();
-		*/
-
 		function add_results(self, array, aid, path) {
 			if (path == "") {
 				for (var i of self.toc.assets_map[aid])
@@ -1289,7 +1417,7 @@ var controller = {
 
 		this.render();
 
-		if (this.editor.search.results.length == 1) {
+		if (this.editor.search.results.length >= 1) {
 			var e = document.getElementById("results");
 			e = e.querySelector(".result_entry");
 			if (e != null) e.onclick();
@@ -1307,17 +1435,26 @@ var controller = {
 			function(r) {
 				if (r.error) {
 					// TODO: self.editor.search.error = r.message;
-					failure_cb();
+					failure_cb(r.message);
 					return;
 				}
 
 				// TODO: self.editor.search.error = null;
 				self.assets.set(index, r.asset);
 				success_cb();
+
+				if (r.thumbnail != null) {
+					self._browser_known_thumbnails.add(r.thumbnail);
+
+					// refresh content browser now
+					var entry = self._browser_made_for_entry;
+					self._browser_made_for_entry = null;
+					self.make_content_browser(entry);
+				}
 			},
 			function(e) {				
 				// TODO: self.editor.search.error = e;
-				failure_cb();
+				failure_cb(e);
 			}
 		);
 	},
@@ -1413,6 +1550,29 @@ var controller = {
 				// TODO: self.editor.search.error = e;
 			}
 		);
+	},
+
+	get_texture_viewer: function (index) {
+		var self = this;
+		ajax.postAndParseJson(
+			"api/textures/viewer", {
+				index: index
+			},
+			function(r) {
+				if (r.error) {
+					// TODO: self.editor.search.error = r.message;
+					return;
+				}
+
+				// TODO: self.editor.search.error = null;
+				self.editor.texture.index = index;
+				self.editor.texture.viewer = r.viewer;
+				self.render();
+			},
+			function(e) {				
+				// TODO: self.editor.search.error = e;
+			}
+		);
 	}
 };
 
@@ -1449,4 +1609,27 @@ function hexToLuma(hex) {
 	const g = parseInt(hex.substr(2, 2), 16);
 	const b = parseInt(hex.substr(4, 2), 16);
 	return [0.299 * r, 0.587 * g, 0.114 * b].reduce((a, b) => a + b) / 255;
+}
+
+function filesize(sz) {
+	var units = "bytes";
+	
+	if (sz > 1024) {
+		sz = sz / 1024;
+		units = "KB";
+
+		if (sz > 1024) {
+			sz = sz / 1024;
+			units = "MB";
+
+			if (sz > 1024) {
+				sz = sz / 1024;
+				units = "GB";
+			}
+		}
+
+		sz = (Math.round(sz * 100) / 100.0);
+	}
+
+	return sz + " " + units;
 }

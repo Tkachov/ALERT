@@ -7,7 +7,7 @@ class Mod0Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
-		self.data = json.loads(data)
+		self.data = json.loads(data.decode('utf-8'))
 
 	def __str__(self):
 		return "{}".format(self.data)
@@ -17,4 +17,4 @@ class Mod0Section(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | MOD0 JSON    |".format(self.TAG)
+		print("{:08X} | MOD0 JSON    |".format(self.TAG))

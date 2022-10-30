@@ -23,7 +23,7 @@ class SomeBonesInfoSection(dat1lib.types.sections.Section):
 		while True:
 			a, b, c, d = struct.unpack("<IIhh", data[i:i+ENTRY_SIZE])
 			i += ENTRY_SIZE
-			# print a, b, c, d
+			# print(a, b, c, d)
 			if a == 0xFFFFFFFF and b == 0xFFFFFFFF and c == -1 and d == 0:
 				break
 			self.entries += [(a, b, c, d)]
@@ -32,7 +32,7 @@ class SomeBonesInfoSection(dat1lib.types.sections.Section):
 		self.values = []
 		while i < s.unk2:
 			a, b, c = struct.unpack("<III", data[i:i+ENTRY_SIZE])
-			print a, b, c
+			print(a, b, c)
 			i += ENTRY_SIZE
 			if len(self.values) > 0 and a == 0 and b == 0 and c == 0:
 				break
@@ -40,9 +40,9 @@ class SomeBonesInfoSection(dat1lib.types.sections.Section):
 
 		ENTRY_SIZE = 8
 		self.values2 = []
-		for j in xrange(len(self.values)):
+		for j in range(len(self.values)):
 			a, b = struct.unpack("<II", data[i:i+ENTRY_SIZE])
-			print a, b
+			print(a, b)
 			i += ENTRY_SIZE
 			self.values2 += [(a, b)]
 		"""
@@ -52,14 +52,14 @@ class SomeBonesInfoSection(dat1lib.types.sections.Section):
 
 	def _get_string(self, start):
 		i = start - self.rest_offset
-		s = ""
+		s = bytearray()
 		while i < len(self.rest):
 			b = self.rest[i]
-			if b == '\0':
+			if b == 0:
 				break
-			s += b
+			s.append(b)
 			i += 1
-		return s
+		return s.decode('ascii')
 
 	def get_short_suffix(self):
 		# return "some bones info ({}, {})".format(len(self.entries), len(self.values))
@@ -67,22 +67,22 @@ class SomeBonesInfoSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		# print "{:08X} | Bones Info   | {:6} bones, {:6} entries".format(self.TAG, len(self.entries), len(self.values))
-		print "{:08X} | Bones Info   | {:6} bones".format(self.TAG, len(self.entries))
+		# print("{:08X} | Bones Info   | {:6} bones, {:6} entries".format(self.TAG, len(self.entries), len(self.values)))
+		print("{:08X} | Bones Info   | {:6} bones".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
 			s = self._get_string(x[1])
-			# print "  - {:<3}  {:3}  {}".format(i, x[2], s)
-			print "  - {:<3}  {:3}  {:08X} {}".format(i, x[2], x[0], s)
+			# print("  - {:<3}  {:3}  {}".format(i, x[2], s))
+			print("  - {:<3}  {:3}  {:08X} {}".format(i, x[2], x[0], s))
 
 			if config.get("section_warnings", True):
 				if s is not None:
 					real_hash = crc32.hash(s, False)
 					if real_hash != x[0]:
-						print "        [!] filename real hash {:08X} is not equal to one written in the struct {:08X}".format(real_hash, x[0])
+						print("        [!] filename real hash {:08X} is not equal to one written in the struct {:08X}".format(real_hash, x[0]))
 		"""
-		print ""
+		print("")
 		for i, ((a,b,c), (d,e)) in enumerate(zip(self.values, self.values2)):
-			print "  - {:<3}  {:08X}  {:08X}  {:08X}  |  {:08X}  {:08X}".format(i, a,b,c,d,e)
+			print("  - {:<3}  {:08X}  {:08X}  {:08X}  |  {:08X}  {:08X}".format(i, a,b,c,d,e))
 		"""
-		# print self.rest_offset, repr(self.rest)
-		print ""
+		# print(self.rest_offset, repr(self.rest))
+		print("")

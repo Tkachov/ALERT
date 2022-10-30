@@ -8,10 +8,10 @@ from dat1lib.types.sections.config.serialized import *
 
 def main(argv):
 	if len(argv) < 3:
-		print "Usage:"
-		print "$ {} <filename> <config type>".format(argv[0])
-		print ""
-		print "Reads .json and packs it into .config"
+		print("Usage:")
+		print("$ {} <filename> <config type>".format(argv[0]))
+		print("")
+		print("Reads .json and packs it into .config")
 		return
 
 	#
@@ -22,8 +22,8 @@ def main(argv):
 		with open(fn, "r") as f:
 			data = json.load(f)
 	except Exception as e:
-		print "[!] Couldn't open '{}'".format(fn)
-		print e
+		print("[!] Couldn't open '{}'".format(fn))
+		print(e)
 		return
 
 	#
@@ -34,7 +34,7 @@ def main(argv):
 
 	#
 
-	with open(fn + ".config", "w") as f:
+	with open(fn + ".config", "wb") as f:
 		config.save(f)
 
 if __name__ == "__main__":

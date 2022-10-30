@@ -20,7 +20,7 @@ class xD614B18B_Section(dat1lib.types.sections.Section):
 		rest = data[24:]
 		ENTRY_SIZE = 4
 		count = len(rest)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -37,11 +37,11 @@ class xD614B18B_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | D614B18B     | {:6} entries".format(self.TAG, len(self.entries))
-		print "bones={}, modelname_hash={:016X}, 0={}, ?={}, ?={}".format(self.bones_count, self.modelname_hash, self.unk1, self.unk2, self.unk3)
+		print("{:08X} | D614B18B     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("bones={}, modelname_hash={:016X}, 0={}, ?={}, ?={}".format(self.bones_count, self.modelname_hash, self.unk1, self.unk2, self.unk3))
 		for i, x in enumerate(self.entries):
-			print "  - {:<3}  {:08X} {:10} {}".format(i, x, x, self._dat1.get_string(x))
-		print ""
+			print("  - {:<3}  {:08X} {:10} {}".format(i, x, x, self._dat1.get_string(x)))
+		print("")
 
 #
 
@@ -59,7 +59,7 @@ class xDF74DA06_Section(dat1lib.types.sections.Section):
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in xrange(count)]
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -76,4 +76,4 @@ class xDF74DA06_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print "{:08X} | DF74DA06     | {:6} entries".format(self.TAG, len(self.entries))
+		print("{:08X} | DF74DA06     | {:6} entries".format(self.TAG, len(self.entries)))

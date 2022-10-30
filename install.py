@@ -76,15 +76,15 @@ def read_toc(fn):
 			toc = dat1lib.read(f)
 
 		if not isinstance(toc, dat1lib.types.toc.TOC):
-			print "[!] Not a toc"
+			print("[!] Not a toc")
 			return (False, None)
 
 		return (True, toc)
 	except Exception as e:
-		print "[!] Exception:", e
+		print("[!] Exception:", e)
 		return (False, None)
 
-	print "[!] Unknown error occurred while reading 'toc'"
+	print("[!] Unknown error occurred while reading 'toc'")
 	return (False, None)
 
 def new_archive(toc, fn):
@@ -121,7 +121,7 @@ def apply_mod_patch(toc, mod_info, archive_index):
 					_, asset_id, archive_offset, asset_size = instruction
 					asset_index = find_asset_index(asset_id)
 					if asset_index == -1:
-						print "[!] Asset {:X} not found".format(asset_id)
+						print("[!] Asset {:X} not found".format(asset_id))
 						return False
 
 					sizes.entries[asset_index].value = asset_size
@@ -143,11 +143,11 @@ def save_toc(toc, fn):
 
 def main(argv):
 	if len(argv) < 2:
-		print "Usage:"
-		print "$ {} <asset_archive_path>".format(argv[0])
-		print ""
-		print "Install all MOD0 mods on top of 'toc.orig'"
-		print "backup of 'toc' will be stored as 'toc.orig'"
+		print("Usage:")
+		print("$ {} <asset_archive_path>".format(argv[0]))
+		print("")
+		print("Install all MOD0 mods on top of 'toc.orig'")
+		print("backup of 'toc' will be stored as 'toc.orig'")
 		return
 
 	#
@@ -169,20 +169,20 @@ def main(argv):
 			continue
 
 		f.seek(-8 - size, io.SEEK_END)
-		info = json.loads(f.read(size))
+		info = json.loads(f.read(size).decode('utf-8'))
 		fhash = calculate_hash(f)
 		f.close()
 
 		detected_mods[fn] = (fn, info, fhash)
 
 	if len(detected_mods) == 0:
-		print "No mods detected."
+		print("No mods detected.")
 	else:
-		print "Detected mods:"
+		print("Detected mods:")
 		for k in detected_mods:
 			fn, info, _ = detected_mods[k]
-			print " ", fn, "|", pretty_info(info)
-	print ""
+			print(" ", fn, "|", pretty_info(info))
+	print("")
 
 	#
 
@@ -210,9 +210,9 @@ def main(argv):
 	mods_list = get_mods_list(mods_info)
 
 	if len(mods_list) == 0:
-		print "No mods installed."
+		print("No mods installed.")
 	else:
-		print "Installed mods:"
+		print("Installed mods:")
 		for m in mods_info["mods_list"]:
 			mod_filename, mod_filehash = m
 			status = ""
@@ -226,9 +226,9 @@ def main(argv):
 			else:
 				status = "Not found"
 
-			print " ", mod_filename, "|", status
+			print(" ", mod_filename, "|", status)
 
-	print ""
+	print("")
 
 	#
 
@@ -244,12 +244,12 @@ def main(argv):
 	}
 	for k in detected_mods:
 		fn, info, fhash = detected_mods[k]
-		print "Installing '{}'...".format(fn)
+		print("Installing '{}'...".format(fn))
 		index = new_archive(toc, fn)
 		apply_mod_patch(toc, info, index)
 		new_mods_info["mods_list"] += [[fn, fhash]]
 
-	toc.dat1.add_section(SECTION_MOD, json.dumps(new_mods_info))
+	toc.dat1.add_section(SECTION_MOD, json.dumps(new_mods_info).encode('utf-8'))
 	save_toc(toc, toc_fn)
 
 if __name__ == "__main__":

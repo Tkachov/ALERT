@@ -11,23 +11,23 @@ class DAG(object):
 		self.magic, self.size, self.unk1 = struct.unpack("<III", f.read(12))
 
 		if self.magic != self.MAGIC:
-			print "[!] Bad 'dag' magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC)
+			print("[!] Bad 'dag' magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 		
 		dec = zlib.decompressobj(0)
 		data = dec.decompress(f.read())
 
 		if len(data) != self.size:
-			print "[!] Actual decompressed size {} isn't equal to one written in the file {}".format(len(data), self.size)
+			print("[!] Actual decompressed size {} isn't equal to one written in the file {}".format(len(data), self.size))
 
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(data), self)
 
 	def print_info(self, config):
-		print "-------"
-		print "DAG {:08X}".format(self.magic)
+		print("-------")
+		print("DAG {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
-			print "[!] Unknown magic, should be {}".format(self.MAGIC)
-		print "-------"
-		print ""
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("-------")
+		print("")
 
 		self.dat1.print_info(config)
 
@@ -39,8 +39,8 @@ class DAG(object):
 
 		if False:
 			# some entries
-			print ""
-			print "Entries:"
+			print("")
+			print("Entries:")
 			for i in DEBUG_RANGE:
 				t, (a, b), n, p = types.entries[i], pairs.entries[i], names.entries[i], prnts.entries[i]
 
@@ -48,16 +48,16 @@ class DAG(object):
 				if name is None:
 					name = "<str at {}>".format(n)
 
-				# print "  - {:<4}  {:016X}  {}".format(i, q[0], matfile if matfile is not None else "<str at {}>".format(self.string_offsets[i][0]))
-				# print "          {:<8}{:08X}  {}".format(q[2], q[1], matname if matname is not None else "<str at {}>".format(self.string_offsets[i][1]))
-				print "- {:<4}  {}".format(i, name[-64:])
-				print "        {:<8}  {:08X}  {:08X}  {:3}  {}".format(p, a, b, t, types.KNOWN_TYPES.get(t, '?'))
-				print ""
+				# print("  - {:<4}  {:016X}  {}".format(i, q[0], matfile if matfile is not None else "<str at {}>".format(self.string_offsets[i][0])))
+				# print("          {:<8}{:08X}  {}".format(q[2], q[1], matname if matname is not None else "<str at {}>".format(self.string_offsets[i][1])))
+				print("- {:<4}  {}".format(i, name[-64:]))
+				print("        {:<8}  {:08X}  {:08X}  {:3}  {}".format(p, a, b, t, types.KNOWN_TYPES.get(t, '?')))
+				print("")
 
 		if False:
 			# dependency chain for a file
 			ndx = -1
-			for i in xrange(len(prnts.entries)):
+			for i in range(len(prnts.entries)):
 				t, (a, b), n, p = types.entries[i], pairs.entries[i], names.entries[i], prnts.entries[i]
 
 				name = self.dat1.get_string(n)
@@ -77,34 +77,34 @@ class DAG(object):
 				if name is None:
 					name = "<str at {}>".format(n)
 
-				print ""
-				print "- {:<4}  {}".format(i, name[-64:])
-				print "        {:<8}  {:08X}  {:08X}  {:3}  {}".format(p, a, b, t, types.KNOWN_TYPES.get(t, '?'))
+				print("")
+				print("- {:<4}  {}".format(i, name[-64:]))
+				print("        {:<8}  {:08X}  {:08X}  {:3}  {}".format(p, a, b, t, types.KNOWN_TYPES.get(t, '?')))
 
 		if False:
 			# reverse graph
 			"""
 			graph = {}
 			cnt = len(prnts.entries)
-			for i in xrange(cnt):
+			for i in range(cnt):
 				p = prnts.entries[i]
 				graph[p] = graph.get(p, []) + [i]
-				print "{}%...".format(int(i * 1000.0 / cnt) * 0.1)		
+				print("{}%...".format(int(i * 1000.0 / cnt) * 0.1)		)
 
-			print "files that have deps:", len(graph)
-			print "files in root:", len(graph[-1])
+			print("files that have deps:", len(graph))
+			print("files in root:", len(graph[-1]))
 			"""
 
-			print ""
-			print "Building graph..."
-			print "0 %                                          100 %" # 50 chars		
+			print("")
+			print("Building graph...")
+			print("0 %                                          100 %" # 50 chars		)
 			cnt = len(prnts.entries)
 			root = []
 			graph = []
-			for i in xrange(cnt):
+			for i in range(cnt):
 				graph += [[]]
 			prev_percent = 0
-			for i in xrange(cnt):
+			for i in range(cnt):
 				p = prnts.entries[i]
 				if p == -1:
 					root += [i]
@@ -118,8 +118,8 @@ class DAG(object):
 					sys.stdout.write('.')
 					sys.stdout.flush()
 					prev_percent = percent
-			print ""
-			print ""
+			print("")
+			print("")
 
 
 			"""
@@ -137,8 +137,8 @@ class DAG(object):
 			   10 (0 children)
 			"""
 
-			print "files in root: ", len(root)
-			print "other files: ", cnt - len(root)
+			print("files in root: ", len(root))
+			print("other files: ", cnt - len(root))
 
 			MAX_LEN = 0
 			q = [(-1, -1)]
@@ -153,9 +153,9 @@ class DAG(object):
 					children = root
 				elif v < len(graph):
 					children = graph[v]				
-				# print "  " * depth, v, "({} children)".format(len(children))
+				# print("  " * depth, v, "({} children)".format(len(children)))
 				if v != -1:
-					print "{}- {}: {}".format("  " * depth, v, self.dat1.get_string(names.entries[v]))
+					print("{}- {}: {}".format("  " * depth, v, self.dat1.get_string(names.entries[v])))
 				lines_printed += 1
 				q += [(c, depth+1) for c in children[::-1]]
 				if lines_printed >= MAX_LEN:

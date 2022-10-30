@@ -5,10 +5,10 @@ def read_struct(f, fmt):
 	return struct.unpack(fmt, f.read(sz))
 
 def read_struct_N_array(f, N, struct_fmt):
-	return [read_struct(f, struct_fmt)[0] for i in xrange(N)]
+	return [read_struct(f, struct_fmt)[0] for i in range(N)]
 
 def read_class_N_array(f, N, struct_class):
-	return [struct_class(f) for i in xrange(N)]
+	return [struct_class(f) for i in range(N)]
 
 def read_struct_array(f, size_fmt, struct_fmt):
 	return read_struct_N_array(f, read_struct(f, size_fmt)[0], struct_fmt)
@@ -18,7 +18,7 @@ def read_class_array(f, size_fmt, struct_class):
 
 def read_struct_N_array_data(data, N, fmt):
 	sz = struct.calcsize(fmt)
-	return [struct.unpack(fmt, data[i*sz:(i+1)*sz])[0] for i in xrange(N)]
+	return [struct.unpack(fmt, data[i*sz:(i+1)*sz])[0] for i in range(N)]
 
 ###
 
@@ -31,11 +31,11 @@ def print_table(arr, fmt, entries_per_line):
 		s += fmt.format(x)
 		cnt += 1
 		if cnt == entries_per_line:
-			print s
+			print(s)
 			s = ""
 			cnt = 0
 	if s != "":
-		print s
+		print(s)
 
 def format_bytes(bytes_arr):
 	return " ".join(["{:02X}".format(x) for x in bytes_arr])
@@ -49,11 +49,11 @@ def print_bytes_formatted(bytes_arr, prefix="", columns=4, bytes_per_column=4):
 	i = 0
 	while i < N:
 		line = prefix
-		for j in xrange(columns):
+		for j in range(columns):
 			if i >= N:
 				break
 
 			line += format_bytes(bytes_arr[i:i+bytes_per_column])
 			line += "  "
 			i += bytes_per_column
-		print line
+		print(line)
