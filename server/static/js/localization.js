@@ -29,7 +29,7 @@ const ROOT_DIRECTORY = {
 		},
 
 		"splashes": {
-			"load_toc": {
+			"boot_splash": {
 				"form_description": {
 					"en": "Select 'toc' location:"
 				},
@@ -41,7 +41,7 @@ const ROOT_DIRECTORY = {
 		},
 
 		"editor": {
-			"asset_editor": {
+			"sections_editor": {
 				"section_edit_option_keep": {
 					"en": "Keep as is"
 				},

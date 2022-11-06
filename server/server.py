@@ -6,7 +6,6 @@ from functools import wraps
 
 from server.state import State
 
-state = State()
 app = None
 
 def print_self(filename):
@@ -51,47 +50,9 @@ if getattr(sys, 'frozen', False):
 else:
 	app = Flask(__name__)
 
-def make_get_route(route, module):
-	decorated = lambda *args, **kwargs: importlib.import_module(module).handle(request, state)
-	decorated.__name__ = '_flask_handler_'+module
-	app.add_url_rule(route, view_func=decorated)
-
-def make_post_route(route, module):
-	decorated = lambda *args, **kwargs: importlib.import_module(module).handle(request, state)
-	decorated.__name__ = '_flask_handler_'+module
-	app.add_url_rule(route, methods=['POST'], view_func=decorated)
-
-PREFIX = "api." # gunicorn
-PREFIX = "server.api." # for Flask
-
-def api_get(module):
-	route = '/'.join(module.split('.'))
-	make_get_route('/api/' + route, PREFIX + module)
-
-def api_post(module):
-	route = '/'.join(module.split('.'))
-	make_post_route('/api/' + route, PREFIX + module)
-
-#########################
-
 # API
 
-api_post('load_toc')
-api_post('extract_asset')
-api_post('asset_report')
-api_post('asset_editor')
-api_get('model')
-api_get('editor.edited_asset')
-api_get('editor.extract')
-api_get('editor.save_section')
-api_get('editor.save_strings')
-api_post('editor.edit_asset')
-api_post('thumbnails.list')
-api_get('thumbnails.get')
-api_post('textures.viewer')
-api_get('textures.get')
-
-#########################
+state = State(app)
 
 # static stuff
 

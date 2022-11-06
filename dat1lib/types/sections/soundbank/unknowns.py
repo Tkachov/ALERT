@@ -7,7 +7,7 @@ import struct
 class Event(object):
 	def __init__(self, data):
 		self.ulid, self.small, self.flags, self.zero, self.flags2, self.a, self.b = struct.unpack("<IHHHHHH", data)
-		# a == b most of the time
+		# a == b most of the time (if not, a < b)
 
 class EventsSection(dat1lib.types.sections.Section):
 	TAG = 0x0E19E37F
@@ -93,4 +93,5 @@ class HeaderSection(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Header?      |".format(self.TAG))
 		print(" "*11 + "{}  {}  {}".format(self.a, self.b, self.bnk_section_size))
+		print(" "*11 + " ".join(["{}".format(x) for x in self.entries]))
 		print("")

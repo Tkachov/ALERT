@@ -6,43 +6,44 @@
 		<link rel="stylesheet" type="text/css" href="style.css"/>
 	</head>
 	<body>
-		<div id="load_toc" class="splash">
-			<div>
+		<div id="boot_splash" class="splash">
+			<div id="load_toc">
 				<p id="form_description">Select 'toc' location:</p>
 				<form id="load_toc_form">
 					<input id="toc_path" type="text" value="" placeholder="asset_archive/toc" />
 					<p id="load_toc_warning" class="warning"></p>
 				</form>
 			</div>
-		</div>
-		<div id="toc_loading" class="splash">
-			<div>
+			<div id="toc_loading">
 				<p id="toc_loading_label">Loading 'toc'...</p>
 			</div>
 		</div>
 		<div id="editor">
-			<div class="workspace">
-				<div id="menu"></div>
-				<div id="columns">
-					<div id="left_column"></div>
-					<div id="middle_column">
-						<div id="main">
-							<form id="search_form">
-								<input id="search" type="text" value="" placeholder="asset name or hex ID" />
-								<!-- TODO: filters: by type, by archive -->
-							</form>
-							<div id="results"></div>
+			<div id="windows">
+				<div id="main_window" class="workspace window">
+					<div id="menu"></div>
+					<div id="columns">
+						<div id="left_column"></div>
+						<div id="middle_column">
+							<div id="main">
+								<form id="search_form">
+									<input id="search" type="text" value="" placeholder="asset name or hex ID" />
+									<!-- TODO: filters: by type, by archive -->
+								</form>
+								<div id="results"></div>
+							</div>
+							<div id="browser"></div>
 						</div>
-						<div id="browser"></div>
-					</div>
-					<div id="right_column">
-						<div id="details"></div>
+						<div id="right_column">
+							<div id="details"></div>
+						</div>
 					</div>
 				</div>
 			</div>
+			<div id="windows_bar"></div>
 			<div id="tooltip"></div>
 		</div>
-		<div id="settings">
+		<div id="settings_window">
 			<div>
 				<p id="settings_title">Options</p>
 				<div class="setting">
@@ -53,12 +54,6 @@
 				</div>
 			</div>
 		</div>
-		<div id="model_viewer" class="splash">
-			<div id="model_renderer"></div>
-		</div>
-		<div id="asset_report" class="splash"></div>
-		<div id="asset_editor" class="splash"></div>
-		<div id="texture_viewer" class="splash"></div>
 		
 		<script async src="js/vendor/es-module-shims@1.3.6.js"></script>
 		<script type="importmap">
@@ -72,8 +67,18 @@
 		</script>
 
 		<script src="js/utils/ajax.js"></script>
+		<script src="js/utils/utils.js"></script>
 		<script src="js/localization.js"></script>
 		<script src="js/app.js"></script>
-		<script type="module" src="js/viewer.js"></script>
+		<script src="js/assets_browser.js"></script>
+		<script src="js/boot_splash.js"></script>
+		<script type="module" src="js/models_viewer.js"></script>
+		<script src="js/sections_editor.js"></script>
+		<script src="js/sections_viewer.js"></script>
+		<script src="js/settings_window.js"></script>
+		<script src="js/textures_viewer.js"></script>
+		<script src="js/windows.js"></script>
+
+		<script>controller.localize();</script>
 	</body>
 </html>
