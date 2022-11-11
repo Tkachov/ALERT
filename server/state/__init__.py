@@ -4,6 +4,7 @@ import io
 import os.path
 
 import server.state.assets
+import server.state.configs_editor
 import server.state.models_viewer
 import server.state.sections_editor
 import server.state.sections_viewer
@@ -16,6 +17,7 @@ class State(object):
 	def __init__(self, app):
 		self.toc_loader = server.state.toc_loader.TocLoader(self)
 		self.assets = server.state.assets.Assets(self)
+		self.configs_editor = server.state.configs_editor.ConfigsEditor(self)
 		self.models_viewer = server.state.models_viewer.ModelsViewer(self)
 		self.sections_editor = server.state.sections_editor.SectionsEditor(self)
 		self.sections_viewer = server.state.sections_viewer.SectionsViewer(self)
@@ -38,6 +40,7 @@ class State(object):
 		make_post_json_route(app, "/api/boot", self.boot)
 
 		self.assets.make_api_routes(app)
+		self.configs_editor.make_api_routes(app)
 		self.models_viewer.make_api_routes(app)
 		self.sections_editor.make_api_routes(app)
 		self.sections_viewer.make_api_routes(app)

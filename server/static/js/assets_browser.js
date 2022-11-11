@@ -179,6 +179,20 @@ assets_browser = {
 				}
 			}
 
+			// config
+			if (info.type == "Config" && controller.user.__configs_editor_enabled) {
+				var sep = document.createElement("span");
+				sep.className = "separator";
+				links.appendChild(sep);
+
+				var btn = createElementWithTextNode("a", "Edit");
+				links.appendChild(btn);
+				btn.onclick = function () {
+					let [shortname, fullname] = get_asset_names(self);
+					configs_editor.show_editor(entry.index, shortname, fullname);
+				};
+			}
+
 			// model
 			if (info.type == "Model") {
 				var sep = document.createElement("span");

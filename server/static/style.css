@@ -1148,3 +1148,153 @@ html, body {
 .window_button.selected:hover {
 	background: rgba(255, 255, 255, 0.5);
 }
+
+/* configs editor */
+
+.configs_editor {
+	height: 100%;
+	overflow-y: auto;
+}
+
+.configs_editor > div {
+	background: #FFF;
+	color: #000;
+	padding: 10pt;
+
+	font-family: monospace;
+	font-size: 11pt;
+}
+
+.configs_editor .object {
+	display: flex;
+	/* padding: 2pt; */
+	width: 100%;
+}
+
+.configs_editor .object_type {
+	display: block;
+}
+
+.configs_editor .object_type > select {	
+	width: 58pt;
+	height: 14pt;
+	box-sizing: content-box;
+
+	font-family: monospace;
+	/*font-weight: bold;*/
+	background: #FFF;
+	color: #555;
+
+	border: 1px solid rgba(0,0,0,0);
+	border-bottom: 1px solid #555;
+	padding: 1pt 1pt 2pt 1pt;
+}
+
+.configs_editor .object_type > select:hover,
+.configs_editor .object_type > select:focus {
+	color: #333;
+	border-bottom: 1px solid #333;
+	font-weight: bold;
+}
+
+.configs_editor .object_value {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	margin-left: 4pt;
+}
+
+.configs_editor .object_value > .container_mark {
+	height: 14pt;
+	box-sizing: content-box;
+	border: 1px solid rgba(0,0,0,0);
+	padding: 1pt 1pt 2pt 1pt;
+	line-height: 15.5pt;
+}
+
+.configs_editor .object_value > .object_contents {
+	margin-left: 4pt;
+	padding-left: 8pt;
+}
+
+.configs_editor .object_value > input {
+	display: inline-block;
+
+	height: 14pt;
+	box-sizing: content-box;
+	
+	font-family: monospace;
+	/*font-weight: bold;*/
+	color: #111;
+
+	border: 1px solid rgba(0,0,0,0);
+	border-bottom: 1px solid #111;
+	padding: 1pt 3pt 2pt 3pt;
+}
+
+.configs_editor .object_value > input:hover,
+.configs_editor .object_value > input:focus {
+	color: #000;
+	border-bottom: 1px solid #000;
+	font-weight: bold;
+}
+
+.type_string > input {
+	color: #172 !important;
+	border-bottom: 1px solid #172 !important;
+}
+
+.type_boolean > input,
+.type_float > input,
+.type_uint8 > input, .type_uint16 > input, .type_uint32 > input,
+.type_int8 > input, .type_int16 > input, .type_int32 > input {
+	color: #A20 !important;
+	border-bottom: 1px solid #A20 !important;
+}
+
+.configs_editor .object_field {
+	display: block;
+	/* padding: 2pt; */
+	border: 0;
+	/* border-bottom: 1px solid #CCC; */
+	display: flex;
+	flex-direction: row;
+	flex-grow: 1;
+}
+
+.configs_editor .object_field_name {
+	display: inline-block;
+
+	width: 90pt;
+	height: 14pt;
+	box-sizing: content-box;
+	
+	font-family: monospace;
+	/*font-weight: bold;*/
+	color: #09E;
+
+	border: 1px solid rgba(0,0,0,0);
+	border-bottom: 1px solid #09E;
+	padding: 1pt 3pt 2pt 3pt;
+}
+
+.configs_editor .object_field_name:hover,
+.configs_editor .object_field_name:focus {
+	color: #0AF;
+	border-bottom: 1px solid #0AF;
+	font-weight: bold;
+}
+
+/* objects/arrays highlight */
+
+.configs_editor .object_field:hover > .object > .object_value > .container_mark {
+	font-weight: bold;
+}
+
+.configs_editor .object_field > .object > .object_value > .object_contents {
+	border: 1px solid rgba(0,0,0,0);
+}
+
+.configs_editor .object_field:hover > .object > .object_value > .object_contents {
+	border-left: 1px dotted #CCC;
+}

@@ -1,4 +1,4 @@
-const USER_STORED_FIELDS = ["toc_path", "locale", "history", "favorites"];
+const USER_STORED_FIELDS = ["toc_path", "locale", "history", "favorites", "__configs_editor_enabled"];
 const USER_STORAGE_KEY = "user";
 
 // TODO: make windows title path a link to browse back to the details
@@ -7,6 +7,7 @@ const USER_STORAGE_KEY = "user";
 // TODO: scaleable and moveable windows?
 
 var assets_browser = { ready: false };
+var configs_editor = { ready: false };
 var models_viewer = { ready: false };
 var sections_editor = { ready: false };
 var sections_viewer = { ready: false };
@@ -22,7 +23,9 @@ var controller = {
 			limit: 10,
 			entries: [] // [[asset, timestamp], ...]
 		},
-		favorites: []
+		favorites: [],
+
+		__configs_editor_enabled: false
 	},
 
 	init: function () {
