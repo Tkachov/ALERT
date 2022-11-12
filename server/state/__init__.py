@@ -8,6 +8,7 @@ import server.state.configs_editor
 import server.state.models_viewer
 import server.state.sections_editor
 import server.state.sections_viewer
+import server.state.suits_editor
 import server.state.textures
 import server.state.thumbnails
 import server.state.toc_loader
@@ -21,6 +22,7 @@ class State(object):
 		self.models_viewer = server.state.models_viewer.ModelsViewer(self)
 		self.sections_editor = server.state.sections_editor.SectionsEditor(self)
 		self.sections_viewer = server.state.sections_viewer.SectionsViewer(self)
+		self.suits_editor = server.state.suits_editor.SuitsEditor(self)
 		self.textures = server.state.textures.Textures(self)
 		self.thumbnails = server.state.thumbnails.Thumbnails(self)
 
@@ -44,6 +46,7 @@ class State(object):
 		self.models_viewer.make_api_routes(app)
 		self.sections_editor.make_api_routes(app)
 		self.sections_viewer.make_api_routes(app)
+		self.suits_editor.make_api_routes(app)
 		self.textures.make_api_routes(app)
 		self.thumbnails.make_api_routes(app)
 
@@ -55,6 +58,7 @@ class State(object):
 		# work
 
 		self.toc_loader.load_toc(toc_path)
+		self.suits_editor.boot()
 		self.textures.boot()
 		self.thumbnails.boot()
 

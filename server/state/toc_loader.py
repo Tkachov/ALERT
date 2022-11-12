@@ -135,3 +135,19 @@ class TocLoader(object):
 
 		archives_section = self.toc.get_archives_section()
 		self.archives = ["{}".format(a.filename.decode('ascii')).replace("\x00", "") for a in archives_section.archives]
+
+	def _get_node_by_aid(self, aid):
+		if aid not in self._known_paths:
+			return aid, self.hashes[aid]
+		
+		path = self._known_paths[aid]
+		parts = path.split("/")
+		dirs, file = parts[:-1], parts[-1]
+		
+		node = self.tree
+		for d in dirs:
+			if d not in node:
+				node[d] = {}
+			node = node[d]
+
+		return node[file]

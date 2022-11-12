@@ -80,21 +80,8 @@ class Thumbnails(object):
 
 		return result
 
-	def _get_node_by_aid(self, aid):
-		path = self.state.toc_loader._known_paths[aid]
-		parts = path.split("/")
-		dirs, file = parts[:-1], parts[-1]
-		
-		node = self.state.toc_loader.tree
-		for d in dirs:
-			if d not in node:
-				node[d] = {}
-			node = node[d]
-
-		return node[file]
-
 	def _get_thumbnail(self, aid):
-		node = self._get_node_by_aid(aid)
+		node = self.state.toc_loader._get_node_by_aid(aid)
 		aid, variants = node[0], node[1]
 		for index, archive_index in variants:
 			fn = self._get_thumbnail_path(aid, index)
@@ -105,7 +92,7 @@ class Thumbnails(object):
 		return ("", 404)
 
 	def make_thumbnail(self, aid):
-		node = self._get_node_by_aid(aid)
+		node = self.state.toc_loader._get_node_by_aid(aid)
 		aid, variants = node[0], node[1]
 
 		for index, archive_index in variants:

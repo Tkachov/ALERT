@@ -193,6 +193,19 @@ assets_browser = {
 				};
 			}
 
+			// configs/system/system_progression.config
+			if (entry.aid == "9C9C72A303FCFA30") {
+				var sep = document.createElement("span");
+				sep.className = "separator";
+				links.appendChild(sep);
+
+				var btn = createElementWithTextNode("a", "Edit suits");
+				links.appendChild(btn);
+				btn.onclick = function () {
+					suits_editor.show_editor();
+				};
+			}
+
 			// model
 			if (info.type == "Model") {
 				var sep = document.createElement("span");

@@ -163,10 +163,12 @@ sections_editor = {
 				var size_input = input;
 				size_input.onchange = function () { self.edited.header.size = size_input.value; }
 
+				var cb_id = "recalculate_size_" + Date.now();
+
 				input = document.createElement("input");
 				input.type = "checkbox";
 				input.name = "recalculate_size";
-				input.id = "recalculate_size";
+				input.id = cb_id;
 				input.checked = this.edited.header.recalculate_size;
 				h.appendChild(input);
 
@@ -177,7 +179,7 @@ sections_editor = {
 				}
 
 				var label = createElementWithTextNode("label", "Put final size in this field automatically");
-				label.htmlFor = "recalculate_size";
+				label.htmlFor = cb_id;
 				h.appendChild(label);
 
 				h.appendChild(document.createElement("br"));

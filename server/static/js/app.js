@@ -11,8 +11,9 @@ var configs_editor = { ready: false };
 var models_viewer = { ready: false };
 var sections_editor = { ready: false };
 var sections_viewer = { ready: false };
-var textures_viewer = { ready: false };
 var settings_window = { ready: false };
+var suits_editor = { ready: false };
+var textures_viewer = { ready: false };
 var windows = { ready: false };
 
 var controller = {
