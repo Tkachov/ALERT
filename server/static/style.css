@@ -1404,9 +1404,52 @@ html, body {
 }
 
 .suits_editor .popup > div {
-	width: 80%;
+	width: 22%;
 	height: 80%;
 	margin: auto;
 	background: #FFF;
 	padding: 10pt;
+	display: flex;
+	flex-direction: column;
+}
+
+.suits_editor .popup .install_suit {
+
+}
+
+.install_suit .install_form {
+	display: flex;
+	flex-direction: column;
+	font-size: 10pt;
+	text-align: center;
+}
+
+.install_suit .install_form > * {
+	margin: 0;
+	margin-bottom: 10pt;
+}
+
+.install_suit .install_form > b {
+	font-size: 14pt;
+	text-align: left;
+}
+
+.install_suit .post_install {
+	display: flex;
+	flex-direction: column;
+	font-size: 10pt;
+
+	border: 0;
+	border-top: 1px solid #CCC;
+	padding-top: 10pt;
+	flex-grow: 1;
+}
+
+.install_suit .post_install > textarea {
+	display: flex;
+	flex-grow: 1;
+	margin-bottom: 10pt;
+	resize: none;
+	padding: 3pt 4pt;
+	color: #000;
 }

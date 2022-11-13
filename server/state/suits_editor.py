@@ -7,6 +7,7 @@ import dat1lib.crc64 as crc64
 import io
 import os
 import os.path
+import shutil
 import struct
 import zipfile
 
@@ -38,7 +39,11 @@ SECTION_OFFSET_ENTRIES = dat1lib.types.sections.toc.offsets.OffsetsSection.TAG
 SECTION_SIZE_ENTRIES = dat1lib.types.sections.toc.sizes.SizesSection.TAG
 SECTION_SPAN_ENTRIES = dat1lib.types.sections.toc.spans.SpansSection.TAG
 
+_install_suit_log = None
+
 def new_archive(toc, fn):
+	global _install_suit_log
+
 	s = toc.dat1.get_section(SECTION_ARCHIVES_MAP)
 	for i, a in enumerate(s.archives):
 		ndx = len(a.filename)
@@ -48,15 +53,18 @@ def new_archive(toc, fn):
 				break
 
 		arch_fn = a.filename[:ndx].decode('ascii')
-		print(repr(arch_fn), repr(fn), arch_fn == fn)
 		if arch_fn == fn:
 			return i
 
+	# _install_suit_log += "- added new archive entry '{}'\n".format(fn)
+	_install_suit_log += "- '{}' archive entry added\n".format(fn)
 	s.archives += [dat1lib.types.sections.toc.archives.ArchiveFileEntry.make(0, 10000 + len(s.archives), fn)]
 	toc.dat1.refresh_section_data(SECTION_ARCHIVES_MAP)
 	return len(s.archives)-1
 
 def add_or_reroute_asset(toc, asset_id, archive_offset, asset_size, archive_index, span_to_append_to, fail_if_not_found=False):
+	global _install_suit_log
+
 	assets = toc.dat1.get_section(SECTION_ASSET_IDS)
 	sizes = toc.dat1.get_section(SECTION_SIZE_ENTRIES)
 	offsets = toc.dat1.get_section(SECTION_OFFSET_ENTRIES)
@@ -86,6 +94,12 @@ def add_or_reroute_asset(toc, asset_id, archive_offset, asset_size, archive_inde
 
 		toc.dat1.refresh_section_data(SECTION_SPAN_ENTRIES)
 		toc.dat1.refresh_section_data(SECTION_ASSET_IDS)
+
+		# _install_suit_log += "- added asset '{:016X}'\n".format(asset_id)
+		_install_suit_log += "- '{:016X}' asset added\n".format(asset_id)
+	else:
+		# _install_suit_log += "- updated asset '{:016X}'\n".format(asset_id)
+		_install_suit_log += "- '{:016X}' asset updated\n".format(asset_id)
 
 	sizes.entries[asset_index].value = asset_size
 	offsets.entries[asset_index].archive_index = archive_index
@@ -255,6 +269,8 @@ class SuitsEditor(object):
 	#
 
 	def _install_suit(self, suit):
+		global _install_suit_log
+		_install_suit_log = ""
 		zf = zipfile.ZipFile(suit)
 
 		id_fn = None
@@ -263,6 +279,7 @@ class SuitsEditor(object):
 			if os.path.basename(n) == "id.txt":
 				id_fn = n
 				files_dir = os.path.dirname(n)
+				break
 
 		suitname = zf.read(id_fn).decode("ascii")
 		info = zf.read(files_dir + "/info.txt")
@@ -278,6 +295,8 @@ class SuitsEditor(object):
 		self._mod_progression(progression, suitname)
 		self._mod_loadout_list(loadout_list, suitname)
 		# base3 and base4 are the unmodded for some reason
+
+		_install_suit_log += "'toc':\n"
 
 		os.makedirs(os.path.join(self.state.toc_loader.toc._archives_dir, "Suits"), exist_ok=True)
 		self._reroute_asset_via_new_archive(SYSTEM_PROGRESSION_CONFIG_AID, progression, "Suits\\base1")
@@ -310,14 +329,26 @@ class SuitsEditor(object):
 
 		#
 
+		toc_fn = self.state.toc_loader.toc_path
+		toc_bak_fn = toc_fn + ".BAK"
+		if not os.path.exists(toc_bak_fn):
+			shutil.copyfile(toc_fn, toc_bak_fn)
+			_install_suit_log += "\nMade a backup of 'toc' in 'toc.BAK'.\n"
+
+		#
+
 		with open(self.state.toc_loader.toc_path, "wb") as f:
 			toc.save(f)
 
 		self.state.toc_loader.reboot() # TODO: update toc_loader's internals instead of requiring reload
+		_install_suit_log += "\nDone. Reload required to see changes in 'toc'.\n"
 
-		return {}
+		return {"log": _install_suit_log}
 
 	def _mod_progression(self, progression, suitname):
+		global _install_suit_log
+		_install_suit_log += "'system_progression.config':\n"
+
 		reward_reference = "configs\\inventory\\inv_reward_loadout_{}.config".format(suitname)
 		icon_reference = "ui\\textures\\pause\\character\\suit_{}.texture".format(suitname)
 		equip_reference = "configs\\equipment\\equip_techweb_suit_{}.config".format(suitname)
@@ -365,12 +396,22 @@ class SuitsEditor(object):
 				"Icon": "icon_tech_web_suit",
 				"Name": needle
 			}]
+			# _install_suit_log += "- added '{}' to 'Suits' list\n".format(needle)
+			_install_suit_log += "- '{}' added to 'Suits'\n".format(needle)
+		else:
+			# _install_suit_log += "- '{}' already present in 'Suits' list\n".format(needle)
+			_install_suit_log += "- '{}' already in 'Suits'\n".format(needle)
 
 		# UnlockForFree
 
 		uff = j["UnlockForFree"]
 		if needle not in uff:
 			uff += [needle]
+			# _install_suit_log += "- added '{}' to 'UnlockForFree'\n".format(needle)
+			_install_suit_log += "- '{}' added to 'UnlockForFree'\n".format(needle)
+		else:
+			# _install_suit_log += "- '{}' already present in 'UnlockForFree'\n".format(needle)
+			_install_suit_log += "- '{}' already in 'UnlockForFree'\n".format(needle)
 
 		# references
 
@@ -378,22 +419,19 @@ class SuitsEditor(object):
 		if s is None:
 			raise Exception("References section not found in system_progression.config!")
 
-		s.print_verbose({}) # TODO
-		print("adding ", reward_aid, 0xA9F149C4, reward_reference)
-		print("adding ", icon_aid, 0x95A3A227, icon_reference)
-		print("adding ", equip_aid, 0xA9F149C4, equip_reference)
-
 		self._add_reference(progression.dat1, s, reward_aid, 0xA9F149C4, reward_reference)
 		self._add_reference(progression.dat1, s, icon_aid, 0x95A3A227, icon_reference)
 		self._add_reference(progression.dat1, s, equip_aid, 0xA9F149C4, equip_reference)
 
-		s.print_verbose({}) # TODO
-
 		progression.dat1.refresh_section_data(CONFIG_CONTENT_TAG)
 		progression.dat1.refresh_section_data(CONFIG_REFERENCES_TAG)
 		progression.dat1.recalculate_section_headers()
+		_install_suit_log += "\n"
 
 	def _mod_loadout_list(self, loadout_list, suitname):
+		global _install_suit_log
+		_install_suit_log += "'masteritemloadoutlist.config':\n"
+
 		config_reference = "configs\\masteritemloadoutlist\\itemloadout_spiderman_{}.config".format(suitname)
 		config_normalized = self._normalize_path(config_reference)
 		config_aid = crc64.hash(config_normalized)
@@ -416,6 +454,11 @@ class SuitsEditor(object):
 
 		if config_normalized not in vanity_category_list:
 			vanity_category_list += [config_normalized]
+			# _install_suit_log += "- added '{}' to 'kVanity' category\n".format(config_normalized)
+			_install_suit_log += "- '{:016X}' added to 'kVanity'\n".format(config_aid)
+		else:
+			# _install_suit_log += "- '{}' already present in 'kVanity' category\n".format(config_normalized)
+			_install_suit_log += "- '{:016X}' already in 'kVanity'\n".format(config_aid)
 
 		# references
 
@@ -423,18 +466,15 @@ class SuitsEditor(object):
 		if s is None:
 			raise Exception("References section not found in masteritemloadoutlist.config!")
 
-		s.print_verbose({}) # TODO
-		print("adding ", config_aid, 0xA9F149C4, config_reference)
-
 		self._add_reference(loadout_list.dat1, s, config_aid, 0xA9F149C4, config_reference)
-
-		s.print_verbose({}) # TODO
 
 		loadout_list.dat1.refresh_section_data(CONFIG_CONTENT_TAG)
 		loadout_list.dat1.refresh_section_data(CONFIG_REFERENCES_TAG)
 		loadout_list.dat1.recalculate_section_headers()
+		_install_suit_log += "\n"
 
 	def _add_reference(self, dat1, section, aid, ext_c32, path):
+		global _install_suit_log
 		found = False
 		for e in section.entries:
 			if e[0] == aid:
@@ -443,6 +483,11 @@ class SuitsEditor(object):
 
 		if not found:
 			section.entries += [(aid, dat1.add_string(path), ext_c32)]
+			# _install_suit_log += "- added reference to '{:016X}' ('{}')\n".format(aid, path)
+			_install_suit_log += "- '{:016X}' added to references\n".format(aid)
+		else:
+			# _install_suit_log += "- reference to '{:016X}' ('{}') already present\n".format(aid, path)
+			_install_suit_log += "- '{:016X}' already in references\n".format(aid)
 
 	def _reroute_asset_via_new_archive(self, aid, asset, archive_name):
 		# save file

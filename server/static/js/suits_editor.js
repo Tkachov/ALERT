@@ -178,25 +178,118 @@ suits_editor = {
 			},
 
 			show_adding_popup: function () {
-				var e = this.container;
-				var d = document.createElement("div");
-				d.className = "popup";
-				d.onclick = function (ev) { if (ev.target == d) d.parentNode.removeChild(d); };
-				e.appendChild(d);
+				var popup = {
+					dom: null,
+					input_dom: null,
 
-				var d2 = document.createElement("div");
-				d2.className = "install_suit";
-				d.appendChild(d2);
+					sending: false,
+					sent_success: false,
+					log: "",
 
-				var input = document.createElement("input");
-				input.type = "file";
-				input.name = "suit";
-				d2.appendChild(input);
+					init: function (container) {
+						var d = document.createElement("div");
+						d.className = "popup";
+						container.appendChild(d);
+						this.dom = d;
 
-				var b = createElementWithTextNode("button", "Install");
-				d2.appendChild(b);
-				var self = this;
-				b.onclick = function () { self.install_suit(input); };
+						this.render();
+					},
+
+					render: function () {
+						var closable = (!this.sending && !this.sent_success);
+						var self = this;
+
+						var d = this.dom;
+						d.innerHTML = "";
+						if (closable)
+							d.onclick = function (ev) { if (ev.target == d) d.parentNode.removeChild(d); };
+						else
+							d.onclick = function () {};
+
+						var d2 = document.createElement("div");
+						d2.className = "install_suit";
+						d.appendChild(d2);
+
+						{
+							var f = document.createElement("div");
+							f.className = "install_form";
+							d2.appendChild(f);
+
+							var h = createElementWithTextNode("b", "Install suit");
+							f.appendChild(h);
+
+							if (this.input_dom == null) {
+								var input = document.createElement("input");
+								input.type = "file";
+								input.name = "suit";
+								this.input_dom = input;
+							}
+							this.input_dom.disabled = (!closable);
+							f.appendChild(this.input_dom);
+
+							if (this.sent_success) {
+								f.appendChild(createElementWithTextNode("span", "Installed!"));
+							} else {
+								var b = createElementWithTextNode("button", "Install");
+								b.disabled = (this.sending);
+								f.appendChild(b);
+								b.onclick = function () { self.install_suit(); };
+							}
+						}
+
+						if (this.sent_success) {
+							var f = document.createElement("div");
+							f.className = "post_install";
+							d2.appendChild(f);
+
+							var t = document.createElement("textarea");
+							t.readonly = "";
+							t.disabled = "";
+							t.value = this.log;
+							f.appendChild(t);
+
+							var b = createElementWithTextNode("button", "Reload");
+							f.appendChild(b);
+							b.onclick = function () { document.location = ""; };
+						}
+					},
+
+					install_suit: function () {
+						this.sending = true;
+
+						var input = this.input_dom;
+						var form_data = new FormData();
+						form_data.set(input.name, input.files[0]);
+
+						var self = this;
+						ajax.postFormAndParseJson(
+							"api/suits_editor/install_suit", form_data,
+							function(r) {
+								self.sending = false;
+								self.sent_success = false;
+
+								if (r.error) {
+									// TODO: self.editor.search.error = r.message;
+									return;
+								}
+
+								// TODO: self.editor.search.error = null;
+								self.sent_success = true;
+								self.log = r.log;
+								self.render();
+							},
+							function(e) {				
+								// TODO: self.editor.search.error = e;
+								self.sending = false;
+								self.sent_success = false;
+								self.render();
+							}
+						);
+
+						this.render();
+					}
+				};
+				popup.init(this.container);
 			},
 
 			//
@@ -215,27 +308,6 @@ suits_editor = {
 						// TODO: self.editor.search.error = null;
 						self.refreshing_icons = false;
 						self.render();
-					},
-					function(e) {				
-						// TODO: self.editor.search.error = e;
-					}
-				);
-			},
-
-			install_suit: function (input) {
-				var form_data = new FormData();
-				form_data.set(input.name, input.files[0]);
-
-				var self = this;
-				ajax.postFormAndParseJson(
-					"api/suits_editor/install_suit", form_data,
-					function(r) {
-						if (r.error) {
-							// TODO: self.editor.search.error = r.message;
-							return;
-						}
-
-						// TODO: self.editor.search.error = null;
 					},
 					function(e) {				
 						// TODO: self.editor.search.error = e;
