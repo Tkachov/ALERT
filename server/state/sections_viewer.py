@@ -51,7 +51,7 @@ class SectionsViewer(object):
 						try:
 							if report["sections"][s.tag]["content"] == "": # TODO: make it part of web_repr()
 								report["sections"][s.tag]["type"] = "bytes"
-								report["sections"][s.tag]["offset"] = 0 # TODO: make it absolute, not section-relative
+								report["sections"][s.tag]["offset"] = s.offset
 								report["sections"][s.tag]["content"] = base64.b64encode(section._raw).decode('ascii')
 						except:
 							pass

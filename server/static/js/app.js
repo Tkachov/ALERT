@@ -1,4 +1,4 @@
-const USER_STORED_FIELDS = ["toc_path", "locale", "history", "favorites", "__configs_editor_enabled"];
+const USER_STORED_FIELDS = ["toc_path", "locale", "history", "favorites", "__configs_editor_enabled", "__hexview_experimental"];
 const USER_STORAGE_KEY = "user";
 
 // TODO: make windows title path a link to browse back to the details
@@ -26,7 +26,11 @@ var controller = {
 		},
 		favorites: [],
 
-		__configs_editor_enabled: false
+		__configs_editor_enabled: false,
+		__hexview_experimental: {
+			enabled: false,
+			sections: {}
+		}
 	},
 
 	init: function () {

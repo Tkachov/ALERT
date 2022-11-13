@@ -395,14 +395,14 @@ html, body {
 	height: 20pt;
 }
 
-.sections_viewer .spoiler > div > span {
+.sections_viewer .spoiler > div:first-child > span {
 	display: inline-block;
 	line-height: 14pt;
 	margin: 3pt;
 	vertical-align: top;
 }
 
-.sections_viewer .spoiler > div > span:first-child {
+.sections_viewer .spoiler > div:first-child > span:first-child {
 	width: 14pt;
 	height: 14pt;
 }
@@ -412,11 +412,11 @@ html, body {
 	cursor: pointer;
 }
 
-.sections_viewer .spoiler > div + * {
+.sections_viewer .spoiler > div:first-child + * {
 	display: none;
 }
 
-.sections_viewer .spoiler.open > div + * {
+.sections_viewer .spoiler.open > div:first-child + * {
 	display: block;
 	margin: 4pt;
 	overflow: auto;
@@ -424,6 +424,10 @@ html, body {
 
 .hex_view {
 	font-family: monospace;
+}
+
+.hex_view th, .hex_view td {
+	white-space: nowrap;
 }
 
 .hex_view th {
@@ -439,6 +443,49 @@ html, body {
 .hex_view td:nth-child(2) {
 	padding-left: 4pt;
 	padding-right: 4pt;
+}
+
+.hex_view_controls {
+	padding: 6pt 12pt;
+	border: 1px solid #EEE;
+	margin: 0;
+	margin-bottom: 8pt;
+	font-size: 10pt;
+	display: inline-block;
+	border-radius: 4px;
+}
+
+.hex_view_controls > span {
+	display: inline-block;
+	white-space: nowrap;
+	margin: 0;
+	margin-right: 40pt;
+}
+
+.hex_view_controls .hex_view_absolute > input {
+	margin: 0;
+	margin-right: 4pt;
+}
+
+.hex_view_controls .hex_view_width > input {
+	width: 40pt;
+	margin: 0;
+	margin-left: 10pt;
+	padding: 0;
+	padding-left: 1pt;
+}
+
+.hex_view_controls > button {
+	min-width: 65pt;
+}
+
+.hex_view_controls > .separator {
+	color: #CCC;
+	margin: 0 30pt;
+}
+
+.hex_view_controls > .separator::before {
+	content: '|';
 }
 
 /* sections editor */
