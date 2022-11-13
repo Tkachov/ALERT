@@ -70,12 +70,6 @@ suits_editor = {
 				var suits_count = this.info.suits.length;
 				for (var i=0; i<suits_count; ++i) {
 					var s = this.info.suits[i];
-					/*
-					if (!this.display_default_suits && BUILTIN_SUITS.includes(s.Name)) {
-						continue;
-					}
-					*/
-
 					var suit_button = document.createElement("img");
 					suit_button.className = "suit" + (i == this.selected_suit ? " selected" : "") + (BUILTIN_SUITS.includes(s.Name) ? " builtin" : "");
 					suit_button.src = "/api/suits_editor/icon?aid=" + references[normalize_path(s.PreviewImage)] + "#" + Date.now();
@@ -83,9 +77,15 @@ suits_editor = {
 					preview.appendChild(suit_button);
 				}
 
-				this.render_details();
+				var ab = document.createElement("img");
+				ab.className = "suit add_button";
+				ab.src = "/img/add_button.png";
+				preview.appendChild(ab);
+				ab.onclick = function () { self.show_adding_popup(); };
 
-				// TODO: `+` button
+				// controls column
+
+				this.render_details();
 
 				var bottom_pane = document.createElement("div");
 				bottom_pane.className = "bottom_pane";
@@ -102,12 +102,6 @@ suits_editor = {
 					cb.id = cb_id;
 					cb.checked = (this.display_default_suits);
 					cb.onchange = function () {
-						/*
-						self.display_default_suits = cb.checked;
-						self.selected_suit = null;
-						self.render();
-						*/
-
 						self.display_default_suits = cb.checked;
 						if (self.display_default_suits)
 							self.preview_dom.classList.remove("no_builtins");
@@ -183,6 +177,30 @@ suits_editor = {
 				}
 			},
 
+			show_adding_popup: function () {
+				var e = this.container;
+				var d = document.createElement("div");
+				d.className = "popup";
+				d.onclick = function (ev) { if (ev.target == d) d.parentNode.removeChild(d); };
+				e.appendChild(d);
+
+				var d2 = document.createElement("div");
+				d2.className = "install_suit";
+				d.appendChild(d2);
+
+				var input = document.createElement("input");
+				input.type = "file";
+				input.name = "suit";
+				d2.appendChild(input);
+
+				var b = createElementWithTextNode("button", "Install");
+				d2.appendChild(b);
+				var self = this;
+				b.onclick = function () { self.install_suit(input); };
+			},
+
+			//
+
 			refresh_icons: function () {
 				var self = this;
 				self.refreshing_icons = true;
@@ -197,6 +215,27 @@ suits_editor = {
 						// TODO: self.editor.search.error = null;
 						self.refreshing_icons = false;
 						self.render();
+					},
+					function(e) {				
+						// TODO: self.editor.search.error = e;
+					}
+				);
+			},
+
+			install_suit: function (input) {
+				var form_data = new FormData();
+				form_data.set(input.name, input.files[0]);
+
+				var self = this;
+				ajax.postFormAndParseJson(
+					"api/suits_editor/install_suit", form_data,
+					function(r) {
+						if (r.error) {
+							// TODO: self.editor.search.error = r.message;
+							return;
+						}
+
+						// TODO: self.editor.search.error = null;
 					},
 					function(e) {				
 						// TODO: self.editor.search.error = e;

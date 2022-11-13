@@ -1390,3 +1390,23 @@ html, body {
 .suits_editor .preview.no_builtins .suit.builtin {
 	display: none;
 }
+
+.suits_editor .preview .suit.add_button {
+
+}
+
+.suits_editor .popup {
+	background: rgba(0,0,0, 0.7);
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+}
+
+.suits_editor .popup > div {
+	width: 80%;
+	height: 80%;
+	margin: auto;
+	background: #FFF;
+	padding: 10pt;
+}
