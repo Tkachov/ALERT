@@ -4,6 +4,7 @@ import dat1lib.types.sections.toc.archives
 import dat1lib.types.sections.toc.asset_ids
 import dat1lib.types.sections.toc.offsets
 import dat1lib.types.sections.toc.sizes
+import dat1lib.types.sections.toc.spans
 import io
 import os.path
 import struct
@@ -103,6 +104,9 @@ class TOC(object):
 
 	def get_sizes_section(self):
 		return self.dat1.get_section(dat1lib.types.sections.toc.sizes.SizesSection.TAG)
+
+	def get_spans_section(self):
+		return self.dat1.get_section(dat1lib.types.sections.toc.spans.SpansSection.TAG)
 
 	def get_offsets_section(self):
 		return self.dat1.get_section(dat1lib.types.sections.toc.offsets.OffsetsSection.TAG)

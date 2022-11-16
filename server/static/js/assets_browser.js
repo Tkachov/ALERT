@@ -4,6 +4,7 @@ assets_browser = {
 	toc: null,
 	assets: new Map(),
 	asset_ids: new Map(),
+	assets_info: new Map(),
 
 	search: {
 		error: null,
@@ -64,6 +65,9 @@ assets_browser = {
 		e.className = "result_entry";
 		e.appendChild(createElementWithTextNode("b", r.name));
 		e.appendChild(createElementWithTextNode("span", this._get_archive_name(r.archive)));
+		// TODO: span
+		// TODO: size
+		// TODO: stage
 		e.title = r.aid + (r.path != "" ? " - " + r.path : "");
 
 		var self = this;
@@ -106,6 +110,8 @@ assets_browser = {
 		if (entry.path != "") {
 			e.appendChild(createElementWithTextNode("p", entry.path + " (" + this._get_archive_name(entry.archive) + ")"));
 			e.appendChild(createElementWithTextNode("span", entry.aid));
+			// TODO: span?
+			// TODO: stage?
 		} else {
 			e.appendChild(createElementWithTextNode("p", this._get_archive_name(entry.archive)));
 		}
@@ -119,8 +125,13 @@ assets_browser = {
 			return [shortname, fullname];
 		}
 
-		if (this.assets.has(entry.index)) {
-			var info = this.assets.get(entry.index);
+		var locator = "/" + entry.span + "/" + entry.aid;
+		if (entry.stage != "") {
+			locator = entry.stage + "/" + entry.span + "/" + entry.path;
+		}
+
+		if (this.assets.has(locator)) {
+			var info = this.assets.get(locator);
 
 			e.appendChild(document.createElement("hr"));
 			var desc = "";
@@ -128,11 +139,11 @@ assets_browser = {
 			links.className = "links";
 
 			// generic
-			desc = filesize(info.size);
+			desc = filesize(entry.size);
 
 			{
 				var btn = createElementWithTextNode("a", "Save as...");
-				btn.href = "/api/assets/asset?index=" + entry.index;
+				btn.href = "/api/assets/asset?locator=" + locator;
 				btn.target = "_blank";
 				links.appendChild(btn);
 			}
@@ -165,7 +176,7 @@ assets_browser = {
 					links.appendChild(btn);
 					btn.onclick = function () {
 						let [shortname, fullname] = get_asset_names(self);
-						sections_viewer.show_viewer(entry.index, shortname, fullname);
+						sections_viewer.show_viewer(locator, shortname, fullname);
 					};
 				}
 
@@ -174,7 +185,7 @@ assets_browser = {
 					links.appendChild(btn);
 					btn.onclick = function () {
 						let [shortname, fullname] = get_asset_names(self);
-						sections_editor.show_editor(entry.index, shortname, fullname);
+						sections_editor.show_editor(locator, shortname, fullname);
 					};
 				}
 			}
@@ -189,7 +200,7 @@ assets_browser = {
 				links.appendChild(btn);
 				btn.onclick = function () {
 					let [shortname, fullname] = get_asset_names(self);
-					configs_editor.show_editor(entry.index, shortname, fullname);
+					configs_editor.show_editor(locator, shortname, fullname);
 				};
 			}
 
@@ -217,7 +228,7 @@ assets_browser = {
 				var self = this;
 				btn.onclick = function () {
 					let [shortname, fullname] = get_asset_names(self);
-					models_viewer.show_mesh("/api/models_viewer/obj?index=" + entry.index, shortname, fullname);
+					models_viewer.show_mesh("/api/models_viewer/obj?locator=" + locator, shortname, fullname);
 				};
 			}
 
@@ -232,7 +243,7 @@ assets_browser = {
 				var self = this;
 				btn.onclick = function () {
 					let [shortname, fullname] = get_asset_names(self);
-					textures_viewer.show_texture(entry.index, shortname, fullname);
+					textures_viewer.show_texture(locator, shortname, fullname);
 				};
 			}
 
@@ -249,7 +260,7 @@ assets_browser = {
 		} else {
 			var self = this;
 			this.extract_asset(
-				entry.index,
+				locator,
 				function () { self.make_asset_details(entry); },
 				function (error_message) {
 					e.appendChild(document.createElement("hr"));
@@ -261,10 +272,26 @@ assets_browser = {
 
 	/* directories tree / content browser */
 
+	make_info_entry: function (path, info) {
+		var vars = [];
+		for (var o of info) {
+			vars.push({
+				span: o[0],
+				archive: o[1],
+				size: o[2]
+			});
+		};		
+		return {
+			path: path,
+			variants: vars
+		};
+	},
+
 	traverse_tree: function (tree, current_path) {
 		for (var k in tree) {
 			if (is_array(tree[k])) {
 				this.asset_ids.set(tree[k][0], current_path + k);
+				this.assets_info.set(tree[k][0], this.make_info_entry(current_path + k, tree[k][1]));
 			} else {
 				this.traverse_tree(tree[k], current_path + k + "/");
 			}
@@ -274,6 +301,7 @@ assets_browser = {
 	fill_structs: function () {
 		for (var k in this.toc.assets_map) {
 			this.asset_ids.set(k, "");
+			this.assets_info.set(k, this.make_info_entry("", this.toc.assets_map[k]));
 		}
 
 		this.traverse_tree(this.toc.tree, "");
@@ -608,7 +636,8 @@ assets_browser = {
 				var aid = assets_function(a);
 				if (!this.asset_ids.has(aid)) continue;
 
-				var filepath = this.asset_ids.get(aid);
+				var info = this.assets_info.get(aid);
+				var filepath = info.path;
 				var filename = aid;
 				var onclick;
 				
@@ -677,6 +706,7 @@ assets_browser = {
 		var v = e.value;
 
 		function add_results(self, array, aid, path) {
+			/*
 			if (path == "") {
 				for (var i of self.toc.assets_map[aid])
 					array.push({index: i[0], archive: i[1], aid: aid, name: aid, path: ""});
@@ -687,6 +717,24 @@ assets_browser = {
 			var basename = e.crumbs[e.crumbs.length-1];
 			for (var i of e.tree_node[basename][1])
 				array.push({index: i[0], archive: i[1], aid: e.aid, name: basename, path: path});
+			*/
+
+			function get_basename(path) {
+				var i1 = path.lastIndexOf('/');
+				var i2 = path.lastIndexOf('\\');
+				return path.substr(Math.max(i1, i2) + 1);
+			}
+
+			var info = self.assets_info.get(aid);
+			var basename = aid;
+			var path = "";
+			if (info.path != "") {
+				basename = get_basename(info.path);
+				path = info.path;
+			}
+
+			for (var v of info.variants)
+				array.push({aid: aid, span: v.span, archive: v.archive, size: v.size, name: basename, path: path, stage: ""});
 		}
 
 		function meets_request(s, terms) {
@@ -749,11 +797,11 @@ assets_browser = {
 		return false; // invalidate form anyways (so it won't refresh the page on submit)
 	},
 
-	extract_asset: function (index, success_cb, failure_cb) {
+	extract_asset: function (locator, success_cb, failure_cb) {
 		var self = this;
 		ajax.postAndParseJson(
 			"api/assets/get_info", {
-				index: index
+				locator: locator
 			},
 			function(r) {
 				if (r.error) {
@@ -763,7 +811,7 @@ assets_browser = {
 				}
 
 				// TODO: self.search.error = null;
-				self.assets.set(index, r.asset);
+				self.assets.set(locator, r.asset);
 				success_cb();
 
 				if (r.thumbnail != null) {

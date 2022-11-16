@@ -44,7 +44,7 @@ class TocLoader(object):
 		node[file] = [aid, []]
 		self._known_paths[aid] = path
 
-	def _add_index_to_tree(self, aid, i, archive_index):
+	def _add_index_to_tree(self, aid, asset_info):
 		path = self._known_paths[aid]
 		parts = path.split("/")
 		dirs, file = parts[:-1], parts[-1]
@@ -55,7 +55,7 @@ class TocLoader(object):
 				node[d] = {}
 			node = node[d]
 
-		node[file][1] += [[i, archive_index]]
+		node[file][1] += [asset_info]
 
 	def _load_tree(self):
 		if self.tree is not None:
@@ -105,7 +105,7 @@ class TocLoader(object):
 
 		toc = None
 		with open(toc_fn, "rb") as f:
-			toc = dat1lib.read(f)		
+			toc = dat1lib.read(f)
 
 		if toc is None:
 			raise Exception("Couldn't comprehend '{}'".format(toc_fn))
@@ -120,18 +120,27 @@ class TocLoader(object):
 		self.toc = toc
 		self.toc_path = toc_fn
 
+		spans_section = self.toc.get_spans_section()
 		assets_section = self.toc.get_assets_section()
 		offsets_section = self.toc.get_offsets_section()
+		sizes_section = self.toc.get_sizes_section()
+
+		spans = spans_section.entries
 		ids = assets_section.ids
-		for i in range(len(ids)):
-			aid = "{:016X}".format(ids[i])
-			if aid in self._known_paths:
-				self._add_index_to_tree(aid, i, offsets_section.entries[i].archive_index)
-			else:
-				if aid in self.hashes:
-					self.hashes[aid] += [[i, offsets_section.entries[i].archive_index]]
+		offsets = offsets_section.entries
+		sizes = sizes_section.entries
+
+		for span_index, span in enumerate(spans):
+			for i in range(span.asset_index, span.asset_index + span.count):
+				aid = "{:016X}".format(ids[i])
+				asset_info = [span_index, offsets[i].archive_index, sizes[i].value]
+				if aid in self._known_paths:
+					self._add_index_to_tree(aid, asset_info)
 				else:
-					self.hashes[aid] = [[i, offsets_section.entries[i].archive_index]] # ["", [i]]
+					if aid in self.hashes:
+						self.hashes[aid] += [asset_info]
+					else:
+						self.hashes[aid] = [asset_info]
 
 		archives_section = self.toc.get_archives_section()
 		self.archives = ["{}".format(a.filename.decode('ascii')).replace("\x00", "") for a in archives_section.archives]
@@ -151,3 +160,17 @@ class TocLoader(object):
 			node = node[d]
 
 		return node[file]
+
+	#
+
+	def get_boot_info(self):
+		archives = self.toc.get_archives_section()
+		assets = self.toc.get_assets_section()
+
+		return {"toc": {
+			"archives": len(archives.archives),
+			"assets": len(assets.ids),
+			"tree": self.tree,
+			"assets_map": self.hashes,
+			"archives_map": self.archives
+		}}

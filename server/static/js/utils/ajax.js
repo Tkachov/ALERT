@@ -49,7 +49,7 @@ ajax.getAndParseJson = function (url, data, callback, errorCallback) {
 			try {
 				callback(JSON.parse(responseText));
 			} catch (e) {
-				console.log(e.name+": "+e.message);
+				console.log(e);
 				console.log(responseText);
 				if (errorCallback !== undefined) errorCallback(e);
 			}
@@ -66,7 +66,7 @@ ajax.postAndParseJson = function (url, data, callback, errorCallback) {
 			try {
 				callback(JSON.parse(responseText));
 			} catch (e) {
-				console.log(e.name+": "+e.message);
+				console.log(e);
 				console.log(responseText);
 				if (errorCallback !== undefined) errorCallback(e);
 			}
@@ -82,7 +82,7 @@ ajax.postFormAndParseJson = function (url, data, callback, errorCallback) {
 			try {
 				callback(JSON.parse(responseText));
 			} catch (e) {
-				console.log(e.name+": "+e.message);
+				console.log(e);
 				console.log(responseText);
 				if (errorCallback !== undefined) errorCallback(e);
 			}
