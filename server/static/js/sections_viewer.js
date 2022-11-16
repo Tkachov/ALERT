@@ -7,11 +7,11 @@ sections_viewer = {
 
 	//
 
-	show_viewer: function (index, shortname, fullname) {
+	show_viewer: function (locator, shortname, fullname) {
 		var self = this;
 		ajax.postAndParseJson(
 			"api/sections_viewer/make", {
-				index: index
+				locator: locator
 			},
 			function(r) {
 				if (r.error) {
@@ -20,7 +20,7 @@ sections_viewer = {
 				}
 
 				// TODO: self.editor.search.error = null;
-				self.make_window(index, r.report, shortname, fullname);
+				self.make_window(locator, r.report, shortname, fullname);
 			},
 			function(e) {				
 				// TODO: self.editor.search.error = e;
@@ -28,7 +28,7 @@ sections_viewer = {
 		);
 	},
 
-	make_window: function (index, report, shortname, fullname) {
+	make_window: function (locator, report, shortname, fullname) {
 		var title = fullname + " — Sections Viewer";
 		var button_title = shortname + " — Sections Viewer";
 		var e = windows.new_window(title, button_title);
@@ -47,7 +47,7 @@ sections_viewer = {
 		var self = this;
 		var oe = createElementWithTextNode("a", "Edit sections");
 		oe.className = "editor_button";
-		oe.onclick = function () { sections_editor.show_editor(index, shortname, fullname); };
+		oe.onclick = function () { sections_editor.show_editor(locator, shortname, fullname); };
 		h.appendChild(oe);
 
 		// spoilers with reports by section

@@ -180,7 +180,7 @@ class State(object):
 
 		return asset, thumbnail
 
-	def _get_asset_by_locator(self, locator):
+	def _get_asset_by_locator(self, locator): # TODO: get rid of this
 		return self.get_asset(locator)
 
 	def _get_asset_name_loc(self, locator):

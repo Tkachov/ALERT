@@ -3,7 +3,7 @@ assets_browser = {
 
 	toc: null,
 	assets: new Map(),
-	asset_ids: new Map(),
+	asset_ids: new Map(), // TODO: get rid of this
 	assets_info: new Map(),
 
 	search: {

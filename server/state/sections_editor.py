@@ -1,5 +1,5 @@
 import flask
-from server.api_utils import get_int, get_json, make_get_json_route, make_post_json_route
+from server.api_utils import get_field, get_int, get_json, make_get_json_route, make_post_json_route
 
 import io
 import struct
@@ -23,27 +23,27 @@ class SectionsEditor(object):
 		make_get_json_route(app, "/api/sections_editor/edited_asset", self.get_edited_asset, False)
 
 	def make_editor(self):
-		index = get_int(flask.request.form, "index")
-		return {"report": self.get_asset_editor(index)}
+		locator = get_field(flask.request.form, "locator")
+		return {"report": self.get_asset_editor(locator)}
 
 	#
 
 	def get_section(self):
-		index = get_int(flask.request.args, "index")
+		locator = get_field(flask.request.args, "locator")
 		section = get_int(flask.request.args, "section")
 
-		data, asset = self.state._get_asset_by_index(index)
+		data, asset = self.state._get_asset_by_locator(locator)
 		section_data = asset.dat1.get_section(section)._raw
-		filename = self.state._get_asset_name(index) + ".{:08X}.raw".format(section)
+		filename = self.state._get_asset_name_loc(locator) + ".{:08X}.raw".format(section)
 
 		return flask.send_file(io.BytesIO(section_data), as_attachment=True, download_name=filename, mimetype='application/octet-stream')
 
 	def get_strings(self):
-		index = get_int(flask.request.args, "index")
+		locator = get_field(flask.request.args, "locator")
 
-		data, asset = self.state._get_asset_by_index(index)
+		data, asset = self.state._get_asset_by_locator(locator)
 		strings_data = asset.dat1._raw_strings_data
-		filename = self.state._get_asset_name(index) + ".strings.raw"
+		filename = self.state._get_asset_name_loc(locator) + ".strings.raw"
 
 		return flask.send_file(io.BytesIO(strings_data), as_attachment=True, download_name=filename, mimetype='application/octet-stream')
 
@@ -51,7 +51,7 @@ class SectionsEditor(object):
 
 	def prepare_edited_asset(self):
 		rq = flask.request
-		index = get_int(rq.form, "index")
+		locator = get_field(rq.form, "locator")
 		header = get_json(rq.form, "header")
 		strings = get_json(rq.form, "strings")
 		sections = get_json(rq.form, "sections")
@@ -63,7 +63,7 @@ class SectionsEditor(object):
 			if s["option"] == "replace":
 				s["raw"] = rq.files["{:08X}_raw".format(s["tag"])].read()
 
-		self.edit_asset(index, header, strings, sections)
+		self.edit_asset(locator, header, strings, sections)
 		return {}
 
 	def get_edited_asset(self):
@@ -71,8 +71,8 @@ class SectionsEditor(object):
 
 	# internal
 
-	def get_asset_editor(self, index):
-		data, asset = self.state._get_asset_by_index(index)
+	def get_asset_editor(self, locator):
+		data, asset = self.state._get_asset_by_locator(locator)
 
 		#
 
@@ -104,8 +104,8 @@ class SectionsEditor(object):
 
 		return report
 
-	def edit_asset(self, asset_index, header, strings, sections):
-		_, asset = self.state._read_asset(asset_index) # a new copy instead of reusing existing one, because we're editing it
+	def edit_asset(self, locator, header, strings, sections):
+		_, asset = self.state.get_asset(locator) # a new copy instead of reusing existing one, because we're editing it
 		dat1 = asset.dat1
 
 		if strings["option"] == "replace":
@@ -151,4 +151,4 @@ class SectionsEditor(object):
 		f.seek(0)
 
 		self.edited_asset = f
-		self.edited_asset_name = self.state._get_asset_name(asset_index)
+		self.edited_asset_name = self.state._get_asset_name_loc(locator)

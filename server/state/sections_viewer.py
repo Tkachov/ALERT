@@ -1,5 +1,5 @@
 import flask
-from server.api_utils import get_int, make_post_json_route
+from server.api_utils import get_field, make_post_json_route
 
 import base64
 import io
@@ -15,13 +15,13 @@ class SectionsViewer(object):
 		make_post_json_route(app, "/api/sections_viewer/make", self.make_viewer)
 
 	def make_viewer(self):
-		index = get_int(flask.request.form, "index")
-		return {"report": self.get_asset_report(index)}
+		locator = get_field(flask.request.form, "locator")
+		return {"report": self.get_asset_report(locator)}
 
 	# internal
 
-	def get_asset_report(self, index):
-		data, asset = self.state._get_asset_by_index(index)
+	def get_asset_report(self, locator):
+		data, asset = self.state._get_asset_by_locator(locator)
 
 		report = {"header": [], "sections": {}, "strings": ""}
 		report["header"] = [(s.tag, s.offset, s.size) for s in asset.dat1.header.sections]

@@ -7,13 +7,13 @@ sections_editor = {
 
 	construct_editor: function () {
 		return {
-			index: null,
+			locator: null,
 			info: null,
 			edited: null,
 			container: null,
 
-			init: function (index, info, shortname, fullname) {
-				this.index = index;
+			init: function (locator, info, shortname, fullname) {
+				this.locator = locator;
 				this.info = info;
 				this.edited = null;
 
@@ -105,7 +105,7 @@ sections_editor = {
 				s.appendChild(createElementWithTextNode("span", "Strings block (" + this.info.strings.count + " strings/" + this.info.strings.size + " bytes)"));
 				
 				var a = createElementWithTextNode("a", "Save raw");
-				a.href = "/api/sections_editor/strings?index=" + this.index;
+				a.href = "/api/sections_editor/strings?locator=" + this.locator;
 				a.target = "_blank";
 				s.appendChild(a);
 				original.appendChild(s);
@@ -123,7 +123,7 @@ sections_editor = {
 					s.appendChild(createElementWithTextNode("span", tag + " (" + section.size + " bytes)"));
 					
 					a = createElementWithTextNode("a", "Save raw");
-					a.href = "/api/sections_editor/section?index=" + this.index + "&section=" + section.tag;
+					a.href = "/api/sections_editor/section?locator=" + this.locator + "&section=" + section.tag;
 					a.target = "_blank";
 					s.appendChild(a);
 					original.appendChild(s);
@@ -131,7 +131,7 @@ sections_editor = {
 
 				a = createElementWithTextNode("a", "Save original as...");
 				a.className = "bottom_button";
-				a.href = "/api/assets/asset?index=" + this.index;
+				a.href = "/api/assets/asset?locator=" + this.locator;
 				a.target = "_blank";
 				original.appendChild(a);
 
@@ -359,7 +359,7 @@ sections_editor = {
 
 			edit_asset: function () {
 				var form_data = new FormData();
-				form_data.set("index", this.index);
+				form_data.set("locator", this.locator);
 				form_data.set("header", JSON.stringify(this.edited.header));
 
 				var strings_dom = this.edited.strings.dom;
@@ -407,11 +407,11 @@ sections_editor = {
 		};
 	},
 
-	show_editor: function (index, shortname, fullname) {
+	show_editor: function (locator, shortname, fullname) {
 		var self = this;
 		ajax.postAndParseJson(
 			"api/sections_editor/make", {
-				index: index
+				locator: locator
 			},
 			function(r) {
 				if (r.error) {
@@ -421,7 +421,7 @@ sections_editor = {
 
 				// TODO: self.editor.search.error = null;
 				var e = self.construct_editor();
-				e.init(index, r.report, shortname, fullname);
+				e.init(locator, r.report, shortname, fullname);
 			},
 			function(e) {				
 				// TODO: self.editor.search.error = e;
