@@ -213,7 +213,7 @@ assets_browser = {
 				var btn = createElementWithTextNode("a", "Edit suits");
 				links.appendChild(btn);
 				btn.onclick = function () {
-					suits_editor.show_editor();
+					suits_editor.show_editor(""); // TODO: stage
 				};
 			}
 
@@ -315,7 +315,8 @@ assets_browser = {
 			is_file: false,
 			aid: "",
 			basedir: "",
-			thumbnails_info: null
+			thumbnails_info: null,
+			stage: "" // TODO
 		};
 
 		if (path != "") result.crumbs = path.split("/");
@@ -426,6 +427,7 @@ assets_browser = {
 				var self = this;
 				ajax.postAndParseJson(
 					"api/thumbnails/list", {
+						stage: entry.stage,
 						path: full_path
 					},
 					function(r) {
@@ -484,9 +486,10 @@ assets_browser = {
 				item.onclick = this.make_entry_onclick(entry.basedir + f, true);
 
 				var aid = entry.tree_node[f][0];
-				if (this._browser_known_thumbnails.has(aid)) {
+				var taid = entry.stage + "_" + aid;
+				if (this._browser_known_thumbnails.has(taid)) {
 					var thumb = document.createElement("img");
-					thumb.src = "/api/thumbnails/png?aid=" + aid;
+					thumb.src = "/api/thumbnails/png?stage=" + entry.stage + "&aid=" + aid;
 					item.appendChild(thumb);
 					item.className += " with_thumbnail";
 				}

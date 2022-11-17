@@ -174,10 +174,9 @@ class State(object):
 
 		data, asset = self.get_asset(locator)
 
-		aid = locator.asset_id # TODO: stage appended here?
-		# made_thumbnail = self.thumbnails._try_making_thumbnail(aid, index)
-		made_thumbnail = False # TODO
-		thumbnail = aid if made_thumbnail else None
+		taid = "{}_{}".format("" if locator.stage is None else locator.stage, locator.asset_id)
+		made_thumbnail = self.thumbnails._try_making_thumbnail(locator)
+		thumbnail = taid if made_thumbnail else None
 
 		return asset, thumbnail
 
@@ -200,11 +199,29 @@ class State(object):
 	#
 
 	def locator(self, s):
-		return Locator(s)
+		if not isinstance(s, Locator):
+			return Locator(s)
+		return s
+
+	def _get_archived_asset_index(self, locator):
+		locator = self.locator(locator)
+
+		toc = self.toc_loader.toc
+		spans_section = toc.get_spans_section()
+		span = spans_section.entries[locator.span]
+
+		int_aid = int(locator.asset_id, 16)
+		assets_section = toc.get_assets_section()
+		ids = assets_section.ids
+		hi = span.asset_index + span.count
+		i = bisect.bisect_left(ids, int_aid, span.asset_index, hi)
+		if i >= hi or ids[i] != int_aid:
+			raise Exception("{} not found in span#{}".format(locator.asset_id, locator.span))
+
+		return i
 
 	def get_asset_data(self, locator):
-		if not isinstance(locator, Locator):
-			locator = self.locator(locator)
+		locator = self.locator(locator)
 
 		if not locator.is_valid:
 			raise Exception("Invalid Locator passed: {}".format(locator))
@@ -219,19 +236,10 @@ class State(object):
 		# extract data from toc
 
 		toc = self.toc_loader.toc
-		spans_section = toc.get_spans_section()
-		span = spans_section.entries[locator.span]
-
-		int_aid = int(locator.asset_id, 16)
-		assets_section = toc.get_assets_section()
-		ids = assets_section.ids
-		hi = span.asset_index + span.count
-		i = bisect.bisect_left(ids, int_aid, span.asset_index, hi)
-		if i >= hi or ids[i] != int_aid:
-			raise Exception("{} not found in span#{}".format(locator.asset_id, locator.span))
+		i = self._get_archived_asset_index(locator)
 
 		try:
-			data = toc.extract_asset(i)
+			return toc.extract_asset(i)
 		except Exception as e:
 			error_msg = "{}".format(e)
 
@@ -246,8 +254,6 @@ class State(object):
 
 			raise
 
-		return data
-
 	def get_asset(self, locator):
 		data = self.get_asset_data(locator)
 
@@ -257,10 +263,16 @@ class State(object):
 		return data, asset
 
 	def _make_hd_locator(self, locator):
-		if not isinstance(locator, Locator):
-			locator = self.locator(locator)
+		locator = self.locator(locator)
 
 		hd_locator = copy.deepcopy(locator)
 		hd_locator.span = 1
 		
 		return hd_locator
+
+	def get_asset_variants_locators(self, stage, aid):
+		if stage != "":
+			return [] # TODO
+
+		_, variants = self.toc_loader._get_node_by_aid(aid)
+		return ["/{}/{}".format(v[0], aid) for v in variants]

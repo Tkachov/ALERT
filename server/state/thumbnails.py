@@ -26,19 +26,27 @@ class Thumbnails(object):
 		make_get_json_route(app, "/api/thumbnails/png", self.get_png, False)
 
 	def list_thumbnails(self):
+		stage = get_field(flask.request.form, "stage")
 		path = get_field(flask.request.form, "path")
-		return {"list": self.get_thumbnails_list(path)}
+		return {"list": self.get_thumbnails_list(stage, path)}
 
 	def get_png(self):
+		stage = get_field(flask.request.args, "stage")
 		aid = get_field(flask.request.args, "aid")
-		return self._get_thumbnail(aid)
+		return self._get_thumbnail(stage, aid)
 
 	# internal
 
 	def boot(self):
 		os.makedirs(".cache/thumbnails/", exist_ok=True)
 
-	def _get_asset_metahash(self, index):
+	def _get_asset_metahash(self, locator):
+		locator = self.state.locator(locator)
+		
+		if locator.stage is not None:
+			return 0 # TODO: stage support
+
+		index = self.state._get_archived_asset_index(locator)
 		toc = self.state.toc_loader.toc
 		assets_section = toc.get_assets_section()
 		archives_section = toc.get_archives_section()
@@ -49,11 +57,16 @@ class Thumbnails(object):
 		checksum = zlib.crc32(struct.pack("<QII", assets_section.ids[index], offsets_section.entries[index].offset, sizes_section.entries[index].value), checksum)
 		return checksum
 
-	def _get_thumbnail_path(self, aid, index):
-		return ".cache/thumbnails/{}.{:08X}.png".format(aid, self._get_asset_metahash(index))
+	def _get_thumbnail_path(self, locator):
+		locator = self.state.locator(locator)
+		prefix = "{}{}".format("" if locator.stage is None else locator.stage, "" if locator.stage is None else "_")
+		return ".cache/thumbnails/{}{}.{:08X}.png".format(prefix, locator.asset_id, self._get_asset_metahash(locator))
 
-	def get_thumbnails_list(self, path):
+	def get_thumbnails_list(self, stage, path):
 		parts = path.split("/")
+
+		if stage != "":
+			return [] # TODO: stage support
 		
 		node = self.state.toc_loader.tree
 		for p in parts:
@@ -71,20 +84,19 @@ class Thumbnails(object):
 		s = self.state.toc_loader.toc.get_assets_section()
 		for k in node:
 			if isinstance(node[k], list):
-				aid, variants = node[k][0], node[k][1]
-				for index, archive_index in variants:
-					aid = "{:016X}".format(s.ids[index])
-					fn = self._get_thumbnail_path(aid, index)
+				aid = node[k][0]
+				locators = self.state.get_asset_variants_locators(stage, aid)
+				for l in locators:
+					fn = self._get_thumbnail_path(l)
 					if os.path.exists(fn):
-						result += [aid]
+						result += [stage + "_" + aid]
 
 		return result
 
-	def _get_thumbnail(self, aid):
-		node = self.state.toc_loader._get_node_by_aid(aid)
-		aid, variants = node[0], node[1]
-		for index, archive_index in variants:
-			fn = self._get_thumbnail_path(aid, index)
+	def _get_thumbnail(self, stage, aid):
+		locators = self.state.get_asset_variants_locators(stage, aid)
+		for l in locators:
+			fn = self._get_thumbnail_path(l)
 			if os.path.exists(fn):
 				f = open(fn, "rb")
 				return (flask.send_file(f, mimetype='image/png'), 200)
@@ -101,10 +113,10 @@ class Thumbnails(object):
 
 		return False
 
-	def _try_making_thumbnail(self, aid, index):
+	def _try_making_thumbnail(self, locator):
 		try:
-			fn = self._get_thumbnail_path(aid, index)
-			data, asset = self.state._get_asset_by_index(index)
+			fn = self._get_thumbnail_path(locator)
+			data, asset = self.state._get_asset_by_locator(locator)
 
 			if isinstance(asset, dat1lib.types.autogen.Texture):
 				img = self.state.textures._load_dds_mipmap(asset, None, 0)
