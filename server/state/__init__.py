@@ -18,6 +18,7 @@ from server.api_utils import get_int, get_field, make_get_json_route, make_post_
 #
 
 import string
+import copy
 
 def is_hex(s):
 	return all(c in string.hexdigits for c in s)
@@ -254,3 +255,12 @@ class State(object):
 		asset = dat1lib.read(d, try_unknown=False)
 
 		return data, asset
+
+	def _make_hd_locator(self, locator):
+		if not isinstance(locator, Locator):
+			locator = self.locator(locator)
+
+		hd_locator = copy.deepcopy(locator)
+		hd_locator.span = 1
+		
+		return hd_locator

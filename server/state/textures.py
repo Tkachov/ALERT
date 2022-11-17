@@ -26,14 +26,14 @@ class Textures(object):
 		make_get_json_route(app, "/api/textures_viewer/mipmap", self.get_mipmap, False)
 
 	def make_viewer(self):
-		index = get_int(flask.request.form, "index")
-		return {"viewer": self.get_texture_viewer(index)}
+		locator = get_field(flask.request.form, "locator")
+		return {"viewer": self.get_texture_viewer(locator)}
 
 	def get_mipmap(self):
 		rq = flask.request
-		index = get_int(rq.args, "index")
+		locator = get_field(rq.args, "locator")
 		mmi = get_int(rq.args, "mipmap_index")
-		return self.get_texture_mipmap(index, mmi)
+		return self.get_texture_mipmap(locator, mmi)
 
 	# internal
 
@@ -157,8 +157,8 @@ class Textures(object):
 			
 		return None
 
-	def get_texture_viewer(self, index):
-		data, asset = self.state._get_asset_by_index(index)
+	def get_texture_viewer(self, locator):
+		data, asset = self.state._get_asset_by_locator(locator)
 		info = asset.dat1.get_section(dat1lib.types.sections.texture.autogen.TextureHeaderSection.TAG)
 
 		mipmaps = []
@@ -177,31 +177,14 @@ class Textures(object):
 
 		return {"mipmaps": mipmaps}
 
-	def get_texture_mipmap(self, index, mipmap_index):
-		data, asset = self.state._get_asset_by_index(index)
+	def get_texture_mipmap(self, locator, mipmap_index):
+		data, asset = self.state._get_asset_by_locator(locator)
 		info = asset.dat1.get_section(dat1lib.types.sections.texture.autogen.TextureHeaderSection.TAG)
 
 		hd_data = None
 		if mipmap_index < info.hd_mipmaps:
-			s = self.state.toc_loader.toc.get_assets_section()
-			aid = "{:016X}".format(s.ids[index])
-			path = self.state.toc_loader._known_paths[aid]
-			parts = path.split("/")
-			dirs, file = parts[:-1], parts[-1]
-			
-			node = self.state.toc_loader.tree
-			for d in dirs:
-				if d not in node:
-					node[d] = {}
-				node = node[d]
-			
-			variants = node[file][1]
-			if len(variants) == 2:
-				hd_index = variants[0][0]
-				if hd_index == index:
-					hd_index = variants[1][0]
-			
-			hd_data, ha = self.state._read_asset(hd_index)
+			hd_locator = self.state._make_hd_locator(locator)
+			hd_data, ha = self.state.get_asset(hd_locator)
 		else:
 			mipmap_index -= info.hd_mipmaps
 

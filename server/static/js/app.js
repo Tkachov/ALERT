@@ -5,6 +5,7 @@ const USER_STORAGE_KEY = "user";
 // TODO: fix bigger models
 // TODO: model viewer materials preview
 // TODO: scaleable and moveable windows?
+// TODO: localization
 
 var assets_browser = { ready: false };
 var configs_editor = { ready: false };

@@ -7,11 +7,11 @@ textures_viewer = {
 
 	//
 
-	show_texture: function (index, shortname, fullname) {
+	show_texture: function (locator, shortname, fullname) {
 		var self = this;
 		ajax.postAndParseJson(
 			"api/textures_viewer/make", {
-				index: index
+				locator: locator
 			},
 			function(r) {
 				if (r.error) {
@@ -20,7 +20,7 @@ textures_viewer = {
 				}
 
 				// TODO: self.editor.search.error = null;
-				self.make_window(index, r.viewer, shortname, fullname);
+				self.make_window(locator, r.viewer, shortname, fullname);
 			},
 			function(e) {				
 				// TODO: self.editor.search.error = e;
@@ -28,7 +28,7 @@ textures_viewer = {
 		);
 	},
 
-	make_window: function (index, info, shortname, fullname) {
+	make_window: function (locator, info, shortname, fullname) {
 		var title = fullname + " — Textures Viewer";
 		var button_title = shortname + " — Textures Viewer";
 		var e = windows.new_window(title, button_title);
@@ -42,7 +42,7 @@ textures_viewer = {
 		d.appendChild(preview);
 
 		var img = document.createElement("img");
-		img.src = "/api/textures_viewer/mipmap?index=" + index + "&mipmap_index=0";
+		img.src = "/api/textures_viewer/mipmap?locator=" + locator + "&mipmap_index=0";
 		preview.appendChild(img);
 
 		var controls = document.createElement("div");
@@ -62,6 +62,7 @@ textures_viewer = {
 			select.appendChild(make_option(w + " × " + h, i));
 		}
 		select.selectedIndex = 0;
+		if (info.mipmaps.length < 2) select.disabled = true;
 		controls.appendChild(select);
 
 		var btn = createElementWithTextNode("a", "Open in new tab");
@@ -70,7 +71,7 @@ textures_viewer = {
 		controls.appendChild(btn);
 
 		select.onchange = function () {
-			img.src = "/api/textures_viewer/mipmap?index=" + index + "&mipmap_index=" + select.selectedIndex;
+			img.src = "/api/textures_viewer/mipmap?locator=" + locator + "&mipmap_index=" + select.selectedIndex;
 			btn.href = img.src;
 		};
 	}
