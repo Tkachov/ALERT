@@ -57,8 +57,8 @@ var controller = {
 
 	// events handling
 
-	toc_loaded: function (toc) {
-		assets_browser.toc_loaded(toc);
+	toc_loaded: function (toc, stages) {
+		assets_browser.toc_loaded(toc, stages);
 	},
 
 	escape_pressed: function (e) {

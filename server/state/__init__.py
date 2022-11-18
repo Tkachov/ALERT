@@ -9,6 +9,7 @@ import server.state.configs_editor
 import server.state.models_viewer
 import server.state.sections_editor
 import server.state.sections_viewer
+import server.state.stages
 import server.state.suits_editor
 import server.state.textures
 import server.state.thumbnails
@@ -66,6 +67,8 @@ class Locator(object):
 class State(object):
 	def __init__(self, app):
 		self.toc_loader = server.state.toc_loader.TocLoader(self)
+		self.stages = server.state.stages.Stages(self)
+
 		self.assets = server.state.assets.Assets(self)
 		self.configs_editor = server.state.configs_editor.ConfigsEditor(self)
 		self.models_viewer = server.state.models_viewer.ModelsViewer(self)
@@ -80,6 +83,7 @@ class State(object):
 
 	def reboot(self):
 		self.toc_loader.reboot()
+		self.stages.reboot()
 
 		self.currently_extracted_asset = None
 		self.currently_extracted_asset_index = None
@@ -103,11 +107,17 @@ class State(object):
 		toc_path = get_field(flask.request.form, "toc_path")
 
 		self.toc_loader.load_toc(toc_path)
+		self.stages.boot()
 		self.suits_editor.boot()
 		self.textures.boot()
 		self.thumbnails.boot()
 
-		return self.toc_loader.get_boot_info()
+		tlbi = self.toc_loader.get_boot_info()
+		sbi = self.stages.get_boot_info()
+		return {
+			"toc": tlbi["toc"],
+			"stages": sbi["stages"]
+		}
 
 	# common state methods
 
@@ -135,19 +145,6 @@ class State(object):
 
 		return data, obj
 
-	def _get_asset_by_index(self, index):
-		if self.currently_extracted_asset_index == index:
-			return self.currently_extracted_asset_data, self.currently_extracted_asset
-		
-		return self._read_asset(index)
-
-	def _get_asset_name(self, index):
-		s = self.toc_loader.toc.get_assets_section()
-		aid = "{:016X}".format(s.ids[index])
-		if aid in self.toc_loader._known_paths:
-			return os.path.basename(self.toc_loader._known_paths[aid])
-		return aid
-
 	def extract_asset(self, index):
 		# TODO: what if I want to force reload?
 		s = self.toc_loader.toc.get_sizes_section()
@@ -169,8 +166,7 @@ class State(object):
 		return self.currently_extracted_asset, sz, thumbnail
 
 	def extract_asset_loc(self, locator):
-		if not isinstance(locator, Locator):
-			locator = self.locator(locator)
+		locator = self.locator(locator)
 
 		data, asset = self.get_asset(locator)
 

@@ -63,7 +63,7 @@ boot_splash = {
 				}
 
 				self.error = null;
-				controller.toc_loaded(r.toc);
+				controller.toc_loaded(r.toc, r.stages);
 				self.hide();
 			},
 			function(e) {

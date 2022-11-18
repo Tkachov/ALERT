@@ -5,6 +5,7 @@ assets_browser = {
 	assets: new Map(),
 	asset_ids: new Map(), // TODO: get rid of this
 	assets_info: new Map(),
+	stages: [],
 
 	search: {
 		error: null,
@@ -20,9 +21,9 @@ assets_browser = {
 
 	//
 
-	toc_loaded: function (toc) {
+	toc_loaded: function (toc, stages) {
 		this.toc = toc;
-		this.fill_structs();
+		this.fill_structs(stages);
 		this.make_toc_details();
 		this.make_directories_tree();
 		this.render();
@@ -272,10 +273,11 @@ assets_browser = {
 
 	/* directories tree / content browser */
 
-	make_info_entry: function (path, info) {
+	make_info_entry: function (stage, path, info) {
 		var vars = [];
 		for (var o of info) {
 			vars.push({
+				stage: stage,
 				span: o[0],
 				archive: o[1],
 				size: o[2]
@@ -287,24 +289,31 @@ assets_browser = {
 		};
 	},
 
-	traverse_tree: function (tree, current_path) {
+	traverse_tree: function (stage, tree, current_path) {
 		for (var k in tree) {
 			if (is_array(tree[k])) {
 				this.asset_ids.set(tree[k][0], current_path + k);
-				this.assets_info.set(tree[k][0], this.make_info_entry(current_path + k, tree[k][1]));
+				// TODO: add to the assets_info if key is known already (by other stages)
+				this.assets_info.set(tree[k][0], this.make_info_entry(stage, current_path + k, tree[k][1]));
 			} else {
-				this.traverse_tree(tree[k], current_path + k + "/");
+				this.traverse_tree(stage, tree[k], current_path + k + "/");
 			}
 		}
 	},
 
-	fill_structs: function () {
+	fill_structs: function (stages) {
 		for (var k in this.toc.assets_map) {
 			this.asset_ids.set(k, "");
-			this.assets_info.set(k, this.make_info_entry("", this.toc.assets_map[k]));
+			this.assets_info.set(k, this.make_info_entry("", "", this.toc.assets_map[k]));
 		}
 
-		this.traverse_tree(this.toc.tree, "");
+		this.traverse_tree("", this.toc.tree, "");
+		console.log(stages);
+		for (var s in stages) {
+			console.log(s);
+			this.traverse_tree(s, stages[s].tree, "");
+			this.stages.push(s);
+		}
 	},
 
 	get_entry_info: function (path) {
@@ -570,15 +579,35 @@ assets_browser = {
 		e.innerHTML = "";
 
 		var d = document.createElement("div");
-		d.appendChild(build_tree(this, this.toc.tree, ""));
+		var d2 = document.createElement("div");
+		d.appendChild(d2);
+
+		for (var stage of this.stages) {
+			var self = this;
+			var depth = 0;
+			var f = stage;
+			var c = document.createElement("div");
+			var p = document.createElement("p");
+			p.className = "entry file";
+			p.style.marginLeft = "-" + (5 + depth*20) + "pt";
+			p.style.paddingLeft = (5 + depth*20) + "pt";
+			// p.onclick = function () { self.make_content_browser(""); };
+			// p.onclick = this.make_entry_onclick("", false);
+
+			var s = document.createElement("span");
+			s.className = "fname";
+			s.innerHTML = f;
+			s.title = f;
+			p.appendChild(s);
+			c.appendChild(p);
+			d2.appendChild(c);
+		}
 
 		// home + separator
 
-		var first = (d.children.length > 0 ? d.children[0] : d);
-
 		var sep = document.createElement("div");
 		sep.className = "separator";
-		first.insertBefore(sep, first.firstChild);
+		d2.appendChild(sep);
 
 		{
 			var self = this;
@@ -598,8 +627,14 @@ assets_browser = {
 				s.title = f;
 				p.appendChild(s);
 				c.appendChild(p);
-				first.insertBefore(c, first.firstChild);
+				d2.appendChild(c);
 		}
+
+		//
+
+		d2.appendChild(build_tree(this, this.toc.tree, ""));
+
+		//
 
 		this.make_content_browser(this.get_entry_info(""));
 		e.appendChild(d);
