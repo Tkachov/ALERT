@@ -133,6 +133,26 @@ class TocLoader(object):
 				else:
 					self.hashes[aid] = [[i, offsets_section.entries[i].archive_index]] # ["", [i]]
 
+		def cleanup_tree(node):
+			keys_to_remove = []
+
+			for k in node:
+				if isinstance(node[k], list):
+					aid, variants = node[k]
+					if len(variants) == 0:
+						keys_to_remove += [k]
+				else:
+					cleanup_tree(node[k])
+					if len(node[k]) == 0:
+						keys_to_remove += [k]
+
+			for k in keys_to_remove:
+				del node[k]
+
+		cleanup_tree(self.tree)
+
+		#
+
 		archives_section = self.toc.get_archives_section()
 		self.archives = ["{}".format(a.filename.decode('ascii')).replace("\x00", "") for a in archives_section.archives]
 

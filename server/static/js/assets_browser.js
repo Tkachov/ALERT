@@ -207,7 +207,7 @@ assets_browser = {
 			}
 
 			// model
-			if (info.type == "Model") {
+			if (info.type == "Model" || info.type == "Model2") {
 				var sep = document.createElement("span");
 				sep.className = "separator";
 				links.appendChild(sep);

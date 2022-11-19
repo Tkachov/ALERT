@@ -58,3 +58,6 @@ class Model(object):
 			return " (info)"
 
 		return " (streaming)"
+
+class Model2(Model): # MM variation
+	MAGIC = 0xDB40514C
