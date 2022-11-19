@@ -351,6 +351,9 @@ class MaterialGraph(object):
 
 		self.dat1.print_info(config)
 
+class MaterialGraph2(MaterialGraph):
+	MAGIC = 0xFF60342A
+
 #
 
 class Texture(object):

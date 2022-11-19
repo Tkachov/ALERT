@@ -39,3 +39,6 @@ class Material(object):
 		print("")
 
 		self.dat1.print_info(config)
+
+class Material2(Material):
+	MAGIC = 0x18757E9C
