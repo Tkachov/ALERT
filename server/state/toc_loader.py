@@ -4,7 +4,6 @@ from server.api_utils import get_field, make_post_json_route
 import dat1lib
 import dat1lib.types.toc
 import dat1lib.types.autogen
-import dat1lib.types.sections.texture.autogen
 import io
 import os
 import os.path

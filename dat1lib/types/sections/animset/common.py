@@ -15,11 +15,18 @@ class x212BD372_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 2174 occurrences in 2407 files
 		# met in AnimSet/PerformanceSet, Cinematic2
 		# size = 24..28416 (avg = 678.9)
 		#
 		# examples: 80B6332B78CB1955 (min size), 903533D7C4E45412 (max size)
+
+		# MM
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 24..23640 (avg = 823.3)
+		#
+		# examples: 8066767AB8665577 (min size), BA773355A0CA1F3E (max size)
 
 		self.version, self.count = struct.unpack("<HH", data[:4])
 
@@ -78,11 +85,18 @@ class x6C69A660_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 2407 occurrences in 2407 files (always present)
 		# met in AnimSet/PerformanceSet, Cinematic2
 		# size = 24
 		#
 		# examples: 8001A078B458EE04
+
+		# MM
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 24
+		#
+		# examples: 80186B0F3760E0B8
 		
 		ENTRY_SIZE = 2
 		count = len(data)//ENTRY_SIZE
@@ -116,11 +130,18 @@ class x66CA6C6F_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 1207 occurrences in 2407 files
 		# met in AnimSet/PerformanceSet, Cinematic2
 		# size = 80..216000 (avg = 5557.7)
 		#
 		# examples: 80176C7A46F8A544 (min size), B339513408DB6431 (max size)
+
+		# MM
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 80..156400 (avg = 3937.9)
+		#
+		# examples: 8019E233758A1721 (min size), B6C2891A5C7B1E0E (max size)
 		
 		ENTRY_SIZE = 80
 		count = len(data)//ENTRY_SIZE
@@ -160,11 +181,18 @@ class xB79CF1D7_Section(dat1lib.types.sections.Section): # aka anim_clip_lookup
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 2175 occurrences in 2407 files
 		# met in AnimSet/PerformanceSet, Cinematic2
 		# size = 24..64872 (avg = 1603.3)
 		#
 		# examples: 80176C7A46F8A544 (min size), B339513408DB6431 (max size)
+
+		# MM
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 24..50064 (avg = 1783.3)
+		#
+		# examples: 8019E233758A1721 (min size), BA773355A0CA1F3E (max size)
 		
 		ENTRY_SIZE = 24
 		count = len(data)//ENTRY_SIZE
@@ -204,11 +232,18 @@ class x73CEE17F_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 1204 occurrences in 2407 files
 		# met in AnimSet/PerformanceSet, Cinematic2
 		# size = 96..259200 (avg = 7666.1)
 		#
 		# examples: 80176C7A46F8A544 (min size), B339513408DB6431 (max size)
+
+		# MM
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 96..393456 (avg = 7027.5)
+		#
+		# examples: 8019E233758A1721 (min size), 829740303741E942 (max size)
 
 		# seems to be related to 0xA40B51D2
 		
@@ -245,11 +280,18 @@ class xA40B51D2_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 1207 occurrences in 2407 files
 		# met in AnimSet/PerformanceSet, Cinematic2
 		# size = 16..43200 (avg = 1111.5)
 		#
 		# examples: 80176C7A46F8A544 (min size), B339513408DB6431 (max size)
+
+		# MM
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 16..31280 (avg = 787.5)
+		#
+		# examples: 8019E233758A1721 (min size), B6C2891A5C7B1E0E (max size)
 
 		# seems to be related to 0x73CEE17F (0xA40B51D2's entry[0] == offset of entry in 0x73CEE17F -- which isn't hard tho since it's 96*index)
 		# but, based on occurrences amount, they are not necessarily going together
@@ -287,11 +329,18 @@ class x9FD19C20_Section(dat1lib.types.sections.Section): # aka anim_clip_data
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 783 occurrences in 2407 files
 		# met in AnimSet/PerformanceSet, Cinematic2
 		# size = 80..29793232 (avg = 829093.4)
 		#
 		# examples: 9D2A0B2B472ADED0 (min size), A0D237BF807F8B9F (max size)
+
+		# MM
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 80..19315664 (avg = 633274.9)
+		#
+		# examples: 90362EE3DA39CC6C (min size), 868F0E1B33099EDF (max size)
 		
 		self.inner_dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(data), self)
 

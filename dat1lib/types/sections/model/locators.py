@@ -10,10 +10,17 @@ class LocatorsMapSection(dat1lib.types.sections.UintUintMapSection): # aka model
 	def __init__(self, data, container):
 		dat1lib.types.sections.UintUintMapSection.__init__(self, data, container)
 
+		# MSMR
 		# 1401 occurrences in 38298 files
 		# size = 8..2944 (avg = 312.4)
 		#
 		# examples: 8008B62FF6E72FDE (min size), 8BBCF107882FAD67 (max size)
+
+		# MM
+		# 1177 occurrences in 37147 files
+		# size = 8..2696 (avg = 283.6)
+		#
+		# examples: 8008B62FF6E72FDE (min size), B742D90D7B153BDF (max size)
 
 	def get_short_suffix(self):
 		return "locators map ({})".format(len(self._map))
@@ -50,10 +57,17 @@ class LocatorsSection(dat1lib.types.sections.Section): # aka model_locator
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 1401 occurrences in 38298 files
 		# size = 64..23552 (avg = 2499.7)
 		#
 		# examples: 8008B62FF6E72FDE (min size), 8BBCF107882FAD67 (max size)
+
+		# MM
+		# 1177 occurrences in 37147 files
+		# size = 64..21568 (avg = 2269.5)
+		#
+		# examples: 8008B62FF6E72FDE (min size), B742D90D7B153BDF (max size)
 
 		ENTRY_SIZE = 64
 		count = len(data)//ENTRY_SIZE
@@ -90,10 +104,17 @@ class LocatorRelatedSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 39 occurrences in 38298 files
 		# size = 608..1152 (avg = 914.8)
 		#
 		# examples: 80C52396F2470510 (min size), 8308C60D2DCEA858 (max size)
+
+		# MM
+		# 40 occurrences in 37147 files
+		# size = 608..1152 (avg = 716.8)
+		#
+		# examples: 80C52396F2470510 (min size), 81CDD58B0A93CCE2 (max size)
 
 		# TODO: only 39 models, and I've met one of these! maybe hero-related?
 

@@ -10,10 +10,17 @@ class SomeBonesInfoSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 499 occurrences in 1683 files
 		# size = 96..107040 (avg = 7291.3)
 		#
 		# examples: 96AD98C8AC61B09A (min size), A8052A228EF425FE (max size)
+
+		# MM
+		# 408 occurrences in 953 files
+		# size = 96..106064 (avg = 6200.8)
+		#
+		# examples: 96AD98C8AC61B09A (min size), AC4A301352BCC79B (max size)
 
 		s = container.get_section(0xD614B18B)
 		

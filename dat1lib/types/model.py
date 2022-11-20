@@ -7,11 +7,14 @@ class Model(object):
 	MAGIC = 0x98906B9F
 
 	def __init__(self, f):
+		# MSMR
 		# 38298 occurrences
 		# size = 2260..42645436 (avg = 108149.2)
 		# from 8 to 31 sections (avg = 11.1)
 		#
 		# examples: 895946D95299E18F (min size), 8FCA3A1C0CF13DD0 (max size), 81DC2CDB45872F11 (8 sections), 9347CDA478F55078 (31 sections)
+
+		# MM: none
 		
 		self.magic, self.offset_to_stream_sections, self.stream_sections_size = struct.unpack("<III", f.read(12))
 		self.unk = f.read(24)
@@ -61,3 +64,12 @@ class Model(object):
 
 class Model2(Model): # MM variation
 	MAGIC = 0xDB40514C
+
+	# MSMR: none
+	
+	# MM
+	# 37147 occurrences
+	# size = 2260..31112412 (avg = 82484.5)
+	# from 5 to 35 sections (avg = 11.0)
+	#
+	# examples: 895946D95299E18F (min size), A6E98A5F0D076856 (max size), 85BD78D439151B00 (5 sections), A1069ACB1E139D38 (35 sections)

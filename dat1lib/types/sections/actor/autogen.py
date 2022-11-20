@@ -10,10 +10,17 @@ class x364A6C7C_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 5167 occurrences in 5167 files (always present)
 		# size = 176..320 (avg = 301.3)
 		#
 		# examples: 802A792FD6F72CE3 (min size), 80029DC4DB44B189 (max size)
+
+		# MM
+		# 3793 occurrences in 3793 files (always present)
+		# size = 176..320 (avg = 302.6)
+		#
+		# examples: 8090DFC5CFCD7795 (min size), 80027411351D35BA (max size)
 
 		# floats; starts with 4x4 matrix (identity in actors_3d_poi_distant_fx_marker_quest_vertical_camfacer.actor)
 		

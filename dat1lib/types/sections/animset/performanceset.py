@@ -10,10 +10,17 @@ class ClipsListSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 320 occurrences in 320 .performanceset files
 		# size = 24..253032 (avg = 3152.7)
 		#
 		# examples: 81C13ECB778F64AD (min size), 9B4C33CE8CA86160 (max size)
+
+		# MM
+		# 108 occurrences in 953 files
+		# size = 24..139560 (avg = 5060.2)
+		#
+		# examples: A5A17E16E08C3011 (min size), 924A892B91713303 (max size)
 		
 		ENTRY_SIZE = 24
 		count = len(data)//ENTRY_SIZE

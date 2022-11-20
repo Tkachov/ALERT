@@ -11,11 +11,19 @@ class ConfigTypeSection(dat1lib.types.sections.SerializedSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
 
+		# MSMR
 		# 2521 occurrences in 2521 files (always present)
 		# size = 56..84 (avg = 65.1)
 		# always first
 		#
 		# examples: 80880A03CBA9B6B0 (min size), 852FD4D4179A4F46 (max size)
+
+		# MM
+		# 2026 occurrences in 2026 files (always present)
+		# size = 56..84 (avg = 65.2)
+		# always first
+		#
+		# examples: 804C47786C04D879 (min size), 826CCE238253182B (max size)
 
 	def get_short_suffix(self):
 		return "type"
@@ -38,10 +46,18 @@ class ConfigContentSection(dat1lib.types.sections.SerializedSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
 
+		# MSMR
 		# 2521 occurrences in 2521 files (always present)
 		# size = 16..975836 (avg = 3205.9)
 		#
 		# examples: 813381135A2CC078 (min size), A5C3BBB75C76D0FA (max size)
+
+		# MM
+		# 2026 occurrences in 2026 files (always present)
+		# size = 16..1230252 (avg = 3679.2)
+		# always last
+		#
+		# examples: 813381135A2CC078 (min size), 97425517EBC3BB3F (max size)
 
 	def get_short_suffix(self):
 		return "content"

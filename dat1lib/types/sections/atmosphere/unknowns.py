@@ -12,11 +12,19 @@ class HeaderSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 133 occurrences in 133 files (always present)
 		# size = 1576
 		# always first
 		#
 		# examples: 803D388D02427C63
+
+		# MM
+		# 108 occurrences in 108 files (always present)
+		# size = 1576
+		# always first
+		#
+		# examples: 805D8409A8286E3F
 
 		self.unk1 = data[:32]
 		self.z1, self.time_of_day, self.z2, self.z3 = struct.unpack("<IfII", data[32:48])
@@ -54,10 +62,17 @@ class StringsSection(dat1lib.types.sections.StringsSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.StringsSection.__init__(self, data, container)
 
+		# MSMR
 		# 127 occurrences in 133 files
 		# size = 1..88 (avg = 63.8)
 		#
 		# examples: 8814BE4101361FCC (min size), B11F882525900C32 (max size)
+
+		# MM
+		# 106 occurrences in 108 files
+		# size = 1..87 (avg = 51.4)
+		#
+		# examples: 93D0C8E529805B2C (min size), 80BA05E01E62AE5B (max size)
 
 	def get_short_suffix(self):
 		return "strings ({})".format(len(self._strings))
@@ -79,10 +94,17 @@ class TextureSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 120 occurrences in 133 files
 		# size = 524268
 		#
 		# examples: 803D388D02427C63
+
+		# MM
+		# 101 occurrences in 108 files
+		# size = 524268..2096748 (avg = 539837.1)
+		#
+		# examples: 805D8409A8286E3F (min size), 970D43801CB614DC (max size)
 
 	def get_short_suffix(self):
 		return "texture DAT1"
@@ -100,7 +122,14 @@ class xE7997256_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 66 occurrences in 133 files
+		# size = 2244624
+		#
+		# examples: 80BA05E01E62AE5B
+
+		# MM
+		# 27 occurrences in 108 files
 		# size = 2244624
 		#
 		# examples: 80BA05E01E62AE5B

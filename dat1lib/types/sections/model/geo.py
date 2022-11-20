@@ -10,10 +10,17 @@ class IndexesSection(dat1lib.types.sections.Section): # aka model_index
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 6..10127496 (avg = 21726.4)
 		#
 		# examples: 803D66A8B5147C41 (min size), 8FCA3A1C0CF13DD0 (max size)
+
+		# MM
+		# 37144 occurrences in 37147 files
+		# size = 6..4706040 (avg = 15410.0)
+		#
+		# examples: 83C4C8562CDC453B (min size), 90B61AD0494B91C9 (max size)
 
 		self._delta_encoded = utils.read_struct_N_array_data(data, len(data)//2, "<h")
 		self.values = []
@@ -60,11 +67,18 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 48..17727456 (avg = 49041.9)
 		# always last
 		#
 		# examples: 803D66A8B5147C41 (min size), 8FCA3A1C0CF13DD0 (max size)
+
+		# MM
+		# 37144 occurrences in 37147 files
+		# size = 48..12826640 (avg = 38259.5)
+		#
+		# examples: 83C4C8562CDC453B (min size), 90B61AD0494B91C9 (max size)
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -120,10 +134,17 @@ class x6B855EED_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 1017 occurrences in 38298 files
 		# size = 16..4431864 (avg = 108495.7)
 		#
 		# examples: 91F17B2F202041FD (min size), 8FCA3A1C0CF13DD0 (max size)
+
+		# MM
+		# 1025 occurrences in 37147 files
+		# size = 16..3206660 (avg = 123562.4)
+		#
+		# examples: 9D70551B3BB56B53 (min size), 90B61AD0494B91C9 (max size)
 
 		# same amount as vertexes
 		# looks like a bunch of uints
@@ -148,10 +169,17 @@ class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 11302 occurrences in 38298 files
 		# size = 16..4431864 (avg = 18953.2)
 		#
 		# examples: 9322A1EA95E1B12C (min size), 8FCA3A1C0CF13DD0 (max size)
+
+		# MM
+		# 11523 occurrences in 37147 files
+		# size = 16..3206660 (avg = 14074.3)
+		#
+		# examples: 9322A1EA95E1B12C (min size), 90B61AD0494B91C9 (max size)
 		
 		# same amount as vertexes
 		# has a lot of 0s

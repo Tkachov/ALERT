@@ -11,7 +11,15 @@ class x1F6A31A6_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 5 occurrences in 5 files (always present)
+		# size = 36
+		# always first
+		#
+		# examples: 83F4B7E7E9672F27
+
+		# MM
+		# 4 occurrences in 4 files (always present)
 		# size = 36
 		# always first
 		#
@@ -47,7 +55,15 @@ class x46EFD07A_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 5 occurrences in 5 files (always present)
+		# size = 16
+		# always last
+		#
+		# examples: 83F4B7E7E9672F27
+
+		# MM
+		# 4 occurrences in 4 files (always present)
 		# size = 16
 		# always last
 		#

@@ -15,10 +15,17 @@ class MeshesSection(dat1lib.types.sections.Section): # aka model_subset
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 64..56064 (avg = 305.0)
 		#
 		# examples: 800058C35E144B3F (min size), 857E2B6AE905140D (max size)
+
+		# MM
+		# 37144 occurrences in 37147 files
+		# size = 64..66944 (avg = 296.8)
+		#
+		# examples: 800058C35E144B3F (min size), 8C7796FC7478109D (max size)
 
 		ENTRY_SIZE = 64
 		count = len(data)//ENTRY_SIZE

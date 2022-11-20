@@ -16,10 +16,17 @@ class x7CA37DA0_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 160 occurrences in 38298 files
 		# size = 48..240 (avg = 123.9)
 		#
 		# examples: 808190A5B20A8431 (min size), 8007367BDC86C66B (max size)
+
+		# MM
+		# 115 occurrences in 37147 files
+		# size = 48..240 (avg = 117.2)
+		#
+		# examples: 808190A5B20A8431 (min size), 819AC4507BA62889 (max size)
 
 		ENTRY_SIZE = 48
 		count = len(data)//ENTRY_SIZE
@@ -44,10 +51,17 @@ class x811902D7_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 1624..108882 (avg = 1749.0)
 		#
 		# examples: 80032369552B0B62 (min size), 8FCA3A1C0CF13DD0 (max size)
+
+		# MM
+		# 37147 occurrences in 37147 files (always present)
+		# size = 1624..102562 (avg = 1743.3)
+		#
+		# examples: 80038A947A2C3B00 (min size), AC32788DFEFA4405 (max size)
 
 		size1, = struct.unpack("<I", data[:4])
 		self.uints = utils.read_struct_N_array_data(data[4:], size1//4 - 1, "<I")
@@ -74,10 +88,17 @@ class xDCC88A19_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 2311 occurrences in 38298 files
 		# size = 128..355712 (avg = 6332.5)
 		#
 		# examples: 800804287BB19C92 (min size), BBCAFC4308D39DEC (max size)
+
+		# MM
+		# 2004 occurrences in 37147 files
+		# size = 128..350912 (avg = 5300.5)
+		#
+		# examples: 800B08BE9B0E1249 (min size), B699EAFFCD4834D0 (max size)
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -103,10 +124,17 @@ class xDF9FDF12_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 38275 occurrences in 38298 files
 		# size = 16..1040 (avg = 17.0)
 		#
 		# examples: 800058C35E144B3F (min size), 8FCA3A1C0CF13DD0 (max size)
+
+		# MM
+		# 37115 occurrences in 37147 files
+		# size = 16..1008 (avg = 16.9)
+		#
+		# examples: 800058C35E144B3F (min size), AC32788DFEFA4405 (max size)
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -141,10 +169,17 @@ class xB7380E8C_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 2311 occurrences in 38298 files
 		# size = 2..6346 (avg = 79.1)
 		#
 		# examples: 800804287BB19C92 (min size), BBCAFC4308D39DEC (max size)
+
+		# MM
+		# 2004 occurrences in 37147 files
+		# size = 2..6264 (avg = 65.3)
+		#
+		# examples: 8008B62FF6E72FDE (min size), B699EAFFCD4834D0 (max size)
 
 		# some unique numbers from 0, but with some gaps
 		# for example, 146 numbers from 0 up to 220
@@ -169,10 +204,17 @@ class xC5354B60_Section(dat1lib.types.sections.Section): # aka model_mirror_ids
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 2311 occurrences in 38298 files
 		# size = 4..12704 (avg = 182.0)
 		#
 		# examples: 800804287BB19C92 (min size), BBCAFC4308D39DEC (max size)
+
+		# MM
+		# 2004 occurrences in 37147 files
+		# size = 4..12532 (avg = 153.3)
+		#
+		# examples: 800B08BE9B0E1249 (min size), B699EAFFCD4834D0 (max size)
 
 		# some offset-like numbers in "mostly" increasing order
 		# (sometimes value returns back to a smaller number and continues to increase)
@@ -197,7 +239,14 @@ class x283D0383_Section(dat1lib.types.sections.Section): # aka model_built
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 38298 occurrences in 38298 files (always present)
+		# size = 120
+		#
+		# examples: 800058C35E144B3F
+
+		# MM
+		# 37147 occurrences in 37147 files (always present)
 		# size = 120
 		#
 		# examples: 800058C35E144B3F
@@ -224,10 +273,17 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 32..2560 (avg = 86.6)
 		#
 		# examples: 800058C35E144B3F (min size), 8FCA3A1C0CF13DD0 (max size)
+
+		# MM
+		# 37144 occurrences in 37147 files
+		# size = 32..3200 (avg = 94.0)
+		#
+		# examples: 800058C35E144B3F (min size), 8C7796FC7478109D (max size)
 
 		ENTRY_SIZE = 16
 		count = len(data) // 2 // ENTRY_SIZE
@@ -284,10 +340,17 @@ class x06EB7EFC_Section(dat1lib.types.sections.Section): # aka model_look
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 32..2080 (avg = 34.1)
 		#
 		# examples: 800058C35E144B3F (min size), 8FCA3A1C0CF13DD0 (max size)
+
+		# MM
+		# 37147 occurrences in 37147 files (always present)
+		# size = 32..2016 (avg = 34.0)
+		#
+		# examples: 800058C35E144B3F (min size), AC32788DFEFA4405 (max size)
 
 		self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
 
@@ -309,10 +372,17 @@ class x0AD3A708_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 2122 occurrences in 38298 files
 		# size = 36..63476 (avg = 913.3)
 		#
 		# examples: 800804287BB19C92 (min size), BBCAFC4308D39DEC (max size)
+
+		# MM
+		# 1688 occurrences in 37147 files
+		# size = 36..62656 (avg = 816.5)
+		#
+		# examples: 8008B62FF6E72FDE (min size), B699EAFFCD4834D0 (max size)
 
 		self.count, self.a, self.b, self.c = struct.unpack("<IIII", data[:16])
 
@@ -346,10 +416,17 @@ class xC61B1FF5_Section(dat1lib.types.sections.Section): # aka model_skin_batch
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 2121 occurrences in 38298 files
 		# size = 16..16256 (avg = 453.0)
 		#
 		# examples: 800C84622E8A0075 (min size), 8FCA3A1C0CF13DD0 (max size)
+
+		# MM
+		# 1688 occurrences in 37147 files
+		# size = 16..10656 (avg = 408.0)
+		#
+		# examples: 800C84622E8A0075 (min size), AD7386F5F9A76C43 (max size)
 
 		self.a, self.b, self.c, self.data_len = struct.unpack("<IIII", data[:16])
 
@@ -384,10 +461,17 @@ class x707F1B58_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 33628 occurrences in 38298 files
 		# size = 16..10752 (avg = 341.7)
 		#
 		# examples: 897307303895908C (min size), 8B2690F460D2A381 (max size)
+
+		# MM
+		# 33035 occurrences in 37147 files
+		# size = 16..19872 (avg = 382.2)
+		#
+		# examples: 897307303895908C (min size), 98E8A23CBCC4635F (max size)
 
 		self.unknown, self.data_len, self.count0, self.count1, self.count2 = struct.unpack("<IIHHI", data[:16])
 		self.floats = utils.read_struct_N_array_data(data[16:], (self.data_len - 20)//4, "<f")
@@ -418,10 +502,17 @@ class x380A5744_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 255 occurrences in 38298 files
 		# size = 172..115360 (avg = 32789.6)
 		#
 		# examples: 8B2690F460D2A381 (min size), 9870FFAD9BAF955A (max size)
+
+		# MM
+		# 66 occurrences in 37147 files
+		# size = 172..286160 (avg = 27620.9)
+		#
+		# examples: 91ECBF742BD80C48 (min size), 97A26AEB21F75DC8 (max size)
 
 		self.unknowns = struct.unpack("<" + "I"*16, data[:4*16])
 		offset = 4*16
@@ -490,10 +581,17 @@ class x4CCEA4AD_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 27..735 (avg = 27.6)
 		#
 		# examples: 800058C35E144B3F (min size), 8FCA3A1C0CF13DD0 (max size)
+
+		# MM
+		# 37147 occurrences in 37147 files (always present)
+		# size = 27..745 (avg = 27.5)
+		#
+		# examples: 800058C35E144B3F (min size), AD7386F5F9A76C43 (max size)
 
 		self.values = [c for c in data] # usually an odd amount of bytes, WEIRD!
 

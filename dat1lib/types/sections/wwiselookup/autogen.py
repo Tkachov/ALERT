@@ -11,7 +11,14 @@ class x52B343E8_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# size = 15828
+		# always first
+		#
+		# examples: A81AB0A616889CC2
+
+		# MM
+		# size = 13020
 		# always first
 		#
 		# examples: A81AB0A616889CC2
@@ -46,7 +53,14 @@ class x739B21E0_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# size = 1767744
+		# always last
+		#
+		# examples: A81AB0A616889CC2
+
+		# MM
+		# size = 1155648
 		# always last
 		#
 		# examples: A81AB0A616889CC2
@@ -81,7 +95,13 @@ class x7F9A96AA_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# size = 220968
+		#
+		# examples: A81AB0A616889CC2
+
+		# MM
+		# size = 144456
 		#
 		# examples: A81AB0A616889CC2
 		

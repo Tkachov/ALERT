@@ -16,10 +16,17 @@ class EventsSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 1309 occurrences in 1345 files
 		# size = 16..123424 (avg = 1184.0)
 		#
 		# examples: 81456C2A07996ED7 (min size), 826509A0F509A671 (max size)
+
+		# MM
+		# 1164 occurrences in 1239 files
+		# size = 16..97584 (avg = 841.9)
+		#
+		# examples: 805A011970FE88E3 (min size), AA47C17532AF52AC (max size)
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -49,10 +56,17 @@ class StringsSection(dat1lib.types.sections.StringsSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.StringsSection.__init__(self, data, container)
 
+		# MSMR
 		# 1345 occurrences in 1345 files (always present)
 		# size = 36..188456 (avg = 1981.2)
 		#
 		# examples: 9D2635C59FA63EF4 (min size), 826509A0F509A671 (max size)
+
+		# MM
+		# 1239 occurrences in 1239 files (always present)
+		# size = 26..167447 (avg = 1559.3)
+		#
+		# examples: 8FA8E5C5DDC315C1 (min size), AA47C17532AF52AC (max size)
 
 	def get_short_suffix(self):
 		return "strings ({})".format(len(self._strings))
@@ -73,11 +87,19 @@ class HeaderSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 1345 occurrences in 1345 files (always present)
 		# size = 64
 		# always first
 		#
 		# examples: 801825F7A321A714
+
+		# MM
+		# 1239 occurrences in 1239 files (always present)
+		# size = 64
+		# always first
+		#
+		# examples: 800BAAC604A8B370
 
 		self.a, self.b, self.bnk_section_size = struct.unpack("<HHI", data[:8])
 		rest = data[8:]

@@ -9,7 +9,15 @@ class EntriesCountSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 23 occurrences in 23 files (always present)
+		# size = 4
+		# always first
+		#
+		# examples: BE55D94F171BF8DE
+
+		# MM
+		# 32 occurrences in 32 files (always present)
 		# size = 4
 		# always first
 		#
@@ -36,8 +44,15 @@ class KeyNamesSection(dat1lib.types.sections.StringsSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.StringsSection.__init__(self, data, container)
 
+		# MSMR
 		# 23 occurrences in 23 files (always present)
 		# size = 1348825
+		#
+		# examples: BE55D94F171BF8DE
+
+		# MM
+		# 32 occurrences in 32 files (always present)
+		# size = 931252
 		#
 		# examples: BE55D94F171BF8DE
 
@@ -61,8 +76,16 @@ class ValuesSection(dat1lib.types.sections.StringsSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.StringsSection.__init__(self, data, container)
 
+		# MSMR
 		# 23 occurrences in 23 files (always present)
 		# size = 3039405..4903208 (avg = 3404552.5)
+		# always last
+		#
+		# examples: BE55D94F171BF8DE (min size), BE55D94F171BF8DE (max size)
+
+		# MM
+		# 32 occurrences in 32 files (always present)
+		# size = 1..2669233 (avg = 1419615.8)
 		# always last
 		#
 		# examples: BE55D94F171BF8DE (min size), BE55D94F171BF8DE (max size)
