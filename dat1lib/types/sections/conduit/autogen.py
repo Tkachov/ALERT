@@ -11,10 +11,17 @@ class x2F4056CE_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 708 occurrences in 1234 files
 		# size = 16..1728 (avg = 71.3)
 		#
 		# examples: 80035676415E24D6 (min size), AF207C743E768578 (max size)
+
+		# MM
+		# 601 occurrences in 1119 files
+		# size = 16..2448 (avg = 91.3)
+		#
+		# examples: 8085D81AFD659637 (min size), AF207C743E768578 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -46,11 +53,19 @@ class xCEB30E68_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 1234 occurrences in 1234 files (always present)
 		# size = 72..522232 (avg = 13505.9)
 		# always first
 		#
 		# examples: 93D2FB47CF888B46 (min size), AF207C743E768578 (max size)
+
+		# MM
+		# 1119 occurrences in 1119 files (always present)
+		# size = 72..885844 (avg = 18136.9)
+		# always first
+		#
+		# examples: 80372B922DE76D8F (min size), AF207C743E768578 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

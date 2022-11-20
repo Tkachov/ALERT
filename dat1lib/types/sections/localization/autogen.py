@@ -11,8 +11,15 @@ class x06A58050_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 23 occurrences in 23 files (always present)
 		# size = 229472
+		#
+		# examples: BE55D94F171BF8DE
+
+		# MM
+		# 32 occurrences in 32 files (always present)
+		# size = 140480
 		#
 		# examples: BE55D94F171BF8DE
 		
@@ -46,8 +53,15 @@ class x0CD2CFE9_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 23 occurrences in 23 files (always present)
 		# size = 114736
+		#
+		# examples: BE55D94F171BF8DE
+
+		# MM
+		# 32 occurrences in 32 files (always present)
+		# size = 70240
 		#
 		# examples: BE55D94F171BF8DE
 		
@@ -81,8 +95,15 @@ class xA4EA55B2_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 23 occurrences in 23 files (always present)
 		# size = 229472
+		#
+		# examples: BE55D94F171BF8DE
+
+		# MM
+		# 32 occurrences in 32 files (always present)
+		# size = 140480
 		#
 		# examples: BE55D94F171BF8DE
 		
@@ -116,8 +137,15 @@ class xB0653243_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 23 occurrences in 23 files (always present)
 		# size = 229472
+		#
+		# examples: BE55D94F171BF8DE
+
+		# MM
+		# 32 occurrences in 32 files (always present)
+		# size = 140480
 		#
 		# examples: BE55D94F171BF8DE
 		
@@ -151,8 +179,15 @@ class xC43731B5_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 23 occurrences in 23 files (always present)
 		# size = 229472
+		#
+		# examples: BE55D94F171BF8DE
+
+		# MM
+		# 32 occurrences in 32 files (always present)
+		# size = 140480
 		#
 		# examples: BE55D94F171BF8DE
 		
@@ -186,8 +221,15 @@ class xF80DEEB4_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 23 occurrences in 23 files (always present)
 		# size = 229472
+		#
+		# examples: BE55D94F171BF8DE
+
+		# MM
+		# 32 occurrences in 32 files (always present)
+		# size = 140480
 		#
 		# examples: BE55D94F171BF8DE
 		

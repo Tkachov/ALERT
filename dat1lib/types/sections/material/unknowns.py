@@ -12,10 +12,17 @@ class xF5260180_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 13170 occurrences in 13178 files
 		# size = 48..3552 (avg = 450.7)
 		#
 		# examples: 8010653ABB4F13F1 (min size), 8D5EB677647A4385 (max size)
+
+		# MM
+		# 11763 occurrences in 11787 files
+		# size = 48..2640 (avg = 451.4)
+		#
+		# examples: 8010653ABB4F13F1 (min size), AAE9D798DC4426DB (max size)
 
 		self.data_size, self.unk1, self.unk2, self.unk3, self.unk4 = struct.unpack("<IIIII", data[:20])
 		self.materials_count, self.unk5, self.unk6, self.unk7, self.unk8 = struct.unpack("<IIIII", data[20:40])
@@ -89,10 +96,17 @@ class xD9B12454_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 8 occurrences in 13178 files
 		# size = 52
 		#
 		# examples: 891E22BD4A6EA203
+
+		# MM
+		# 24 occurrences in 11787 files
+		# size = 52
+		#
+		# examples: 82D70D47FF52BF2F
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -124,7 +138,14 @@ class x3E45AA13_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 3481 occurrences in 13178 files
+		# size = 520
+		#
+		# examples: 8000E61F841EBC5F
+
+		# MM
+		# 3429 occurrences in 11787 files
 		# size = 520
 		#
 		# examples: 8000E61F841EBC5F
@@ -159,7 +180,15 @@ class xE1275683_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 13178 occurrences in 13178 files (always present)
+		# size = 40
+		# always first
+		#
+		# examples: 8000B10F551366C6
+
+		# MM
+		# 11787 occurrences in 11787 files (always present)
 		# size = 40
 		# always first
 		#

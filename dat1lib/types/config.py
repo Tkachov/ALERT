@@ -8,11 +8,19 @@ class Config(object):
 	EMPTY_DATA = struct.pack("<II", 0x21A56F68, len(dat1lib.types.dat1.DAT1.EMPTY_DATA)) + b'\0'*28 + dat1lib.types.dat1.DAT1.EMPTY_DATA
 
 	def __init__(self, f):
+		# MSMR
 		# 2521 occurrences
 		# size = 180..1239920 (avg = 4610.3)
 		# from 2 to 3 sections (avg = 2.5)
 		#
 		# examples: 813381135A2CC078 (min size), A5C3BBB75C76D0FA (max size), 800C715445D02494 (2 sections), 8008619CBD504B56 (3 sections)
+
+		# MM
+		# 2026 occurrences
+		# size = 180..1578624 (avg = 5255.9)
+		# from 2 to 3 sections (avg = 2.4)
+		#
+		# examples: 813381135A2CC078 (min size), 97425517EBC3BB3F (max size), 80021D6AAE50A75C (2 sections), 80419E87ECF4E626 (3 sections)
 		
 		self.magic, self.dat1_size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)

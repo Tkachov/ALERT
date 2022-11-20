@@ -7,11 +7,14 @@ class Material(object):
 	MAGIC = 0x1C04EF8C
 
 	def __init__(self, f):
+		# MSMR
 		# 13178 occurrences
 		# size = 260..1092164 (avg = 149987.8)
 		# from 2 to 12 sections (avg = 4.1)
 		#
 		# examples: 8B5BEC7D10F0F5D6 (min size), 8E1F4B600684B170 (max size), 8000B10F551366C6 (2 sections), 80558F950ED7ADEE (12 sections)
+
+		# MM: none
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -42,3 +45,12 @@ class Material(object):
 
 class Material2(Material):
 	MAGIC = 0x18757E9C
+
+	# MSMR: none
+
+	# MM
+	# 11787 occurrences
+	# size = 260..1338884 (avg = 196137.8)
+	# from 2 to 12 sections (avg = 4.3)
+	#
+	# examples: 820B8E05982851D5 (min size), 9C59C707EF49E793 (max size), 8000B10F551366C6 (2 sections), 8061D72FD2A04308 (12 sections)

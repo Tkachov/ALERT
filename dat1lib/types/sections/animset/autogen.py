@@ -10,10 +10,17 @@ class xD614B18B_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 499 occurrences in 1683 files
 		# size = 48..96 (avg = 52.8)
 		#
 		# examples: 80176C7A46F8A544 (min size), 817AFFAD64BE2622 (max size)
+
+		# MM
+		# 408 occurrences in 953 files
+		# size = 48..96 (avg = 48.5)
+		#
+		# examples: 8019E233758A1721 (min size), 8066767AB8665577 (max size)
 
 		self.bones_count, self.unk1, self.unk2, self.unk3, self.modelname_hash = struct.unpack("<IIIIQ", data[:24])
 
@@ -52,10 +59,17 @@ class xDF74DA06_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 134 occurrences in 1683 files
 		# size = 12..4992 (avg = 189.0)
 		#
 		# examples: 80B6332B78CB1955 (min size), 888DBF4798E4E906 (max size)
+
+		# MM
+		# 152 occurrences in 953 files
+		# size = 12..9576 (avg = 306.4)
+		#
+		# examples: 83C59A32997D7F02 (min size), 829740303741E942 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

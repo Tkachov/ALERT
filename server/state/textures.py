@@ -2,7 +2,7 @@ import flask
 from server.api_utils import get_int, get_field, make_get_json_route, make_post_json_route
 
 import dat1lib.types.autogen
-import dat1lib.types.sections.texture.autogen
+import dat1lib.types.sections.texture.header
 import io
 import os
 import os.path
@@ -44,7 +44,7 @@ class Textures(object):
 	def _load_dds_mipmap(self, texture_asset, hd_data, mipmap_index):
 		try:
 			if isinstance(texture_asset, dat1lib.types.autogen.Texture):
-				info = texture_asset.dat1.get_section(dat1lib.types.sections.texture.autogen.TextureHeaderSection.TAG)
+				info = texture_asset.dat1.get_section(dat1lib.types.sections.texture.header.TextureHeaderSection.TAG)
 
 				if DEBUG_DDS:
 					print("{}x{}, fmt={}".format(info.sd_width, info.sd_height, info.fmt))
@@ -159,7 +159,7 @@ class Textures(object):
 
 	def get_texture_viewer(self, locator):
 		data, asset = self.state._get_asset_by_locator(locator)
-		info = asset.dat1.get_section(dat1lib.types.sections.texture.autogen.TextureHeaderSection.TAG)
+		info = asset.dat1.get_section(dat1lib.types.sections.texture.header.TextureHeaderSection.TAG)
 
 		mipmaps = []
 
@@ -179,7 +179,7 @@ class Textures(object):
 
 	def get_texture_mipmap(self, locator, mipmap_index):
 		data, asset = self.state._get_asset_by_locator(locator)
-		info = asset.dat1.get_section(dat1lib.types.sections.texture.autogen.TextureHeaderSection.TAG)
+		info = asset.dat1.get_section(dat1lib.types.sections.texture.header.TextureHeaderSection.TAG)
 
 		hd_data = None
 		if mipmap_index < info.hd_mipmaps:

@@ -10,11 +10,19 @@ class ActorModelNameSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 5167 occurrences in 5167 files (always present)
 		# size = 4
 		# always first
 		#
 		# examples: 80029DC4DB44B189
+
+		# MM
+		# 3793 occurrences in 3793 files (always present)
+		# size = 4
+		# always first
+		#
+		# examples: 80027411351D35BA
 		
 		self.value = struct.unpack("<I", data)[0]
 
@@ -37,10 +45,17 @@ class ComponentsSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 4928 occurrences in 5167 files
 		# size = 16..2336 (avg = 101.9)
 		#
 		# examples: 8012CEC29FE92381 (min size), BAAE788E4A9CE960 (max size)
+
+		# MM
+		# 3595 occurrences in 3793 files
+		# size = 16..2336 (avg = 101.6)
+		#
+		# examples: 80027411351D35BA (min size), BAAE788E4A9CE960 (max size)
 		
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -79,10 +94,17 @@ class ComponentDefinitionsSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 4301 occurrences in 5167 files
 		# size = 32..1056 (avg = 115.8)
 		#
 		# examples: 8012CEC29FE92381 (min size), 88EBA704687556DC (max size)
+
+		# MM
+		# 2993 occurrences in 3793 files
+		# size = 32..800 (avg = 109.9)
+		#
+		# examples: 8014A0707A32D982 (min size), B62EBBE477CDF302 (max size)
 		
 		ENTRY_SIZE = 32
 		count = len(data)//ENTRY_SIZE
@@ -119,10 +141,17 @@ class ComponentsDataSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 3506 occurrences in 5167 files
 		# size = 32..30224 (avg = 1711.7)
 		#
 		# examples: 8074615B5D3B13A8 (min size), B93103E693B0C988 (max size)
+
+		# MM
+		# 2461 occurrences in 3793 files
+		# size = 32..26240 (avg = 1795.5)
+		#
+		# examples: 81C1F02C8DB374A9 (min size), BAAE788E4A9CE960 (max size)
 
 		# has strings in it
 
@@ -155,7 +184,7 @@ class ComponentsDataSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Comp. Data   | {:6} entries".format(self.TAG, len(self.entries))		)
+		print("{:08X} | Comp. Data   | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
 			a, b, c, data_len, comp_data = x
 			print("  - {:<3}  {:08X} {:08X} {:08X}".format(i, a, b, c))

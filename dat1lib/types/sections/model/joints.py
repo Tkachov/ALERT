@@ -10,10 +10,17 @@ class JointsMapSection(dat1lib.types.sections.UintUintMapSection): # aka model_j
 	def __init__(self, data, container):
 		dat1lib.types.sections.UintUintMapSection.__init__(self, data, container)
 
+		# MSMR
 		# 2311 occurrences in 38298 files
 		# size = 16..25416 (avg = 458.6)
 		#
 		# examples: 800804287BB19C92 (min size), BBCAFC4308D39DEC (max size)
+
+		# MM
+		# 2004 occurrences in 37147 files
+		# size = 16..25072 (avg = 384.9)
+		#
+		# examples: 800B08BE9B0E1249 (min size), B699EAFFCD4834D0 (max size)
 
 	def get_short_suffix(self):
 		return "joints map ({})".format(len(self._map))
@@ -39,10 +46,17 @@ class JointsSection(dat1lib.types.sections.Section): # aka model_joint
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 2311 occurrences in 38298 files
 		# size = 16..50816 (avg = 901.2)
 		#
 		# examples: 800804287BB19C92 (min size), BBCAFC4308D39DEC (max size)
+
+		# MM
+		# 2004 occurrences in 37147 files
+		# size = 16..50128 (avg = 753.9)
+		#
+		# examples: 800B08BE9B0E1249 (min size), B699EAFFCD4834D0 (max size)
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE

@@ -7,11 +7,19 @@ class Soundbank(object):
 	MAGIC = 0x7E4F1BB7
 
 	def __init__(self, f):
+		# MSMR
 		# 1345 occurrences
 		# size = 260..29288741 (avg = 773143.8)
 		# from 3 to 4 sections (avg = 3.9)
 		#
 		# examples: 8C129CA7DA42BEAE (min size), 9B3473B5F2EF53D3 (max size), 803894E1B9984FE9 (3 sections), 801825F7A321A714 (4 sections)
+
+		# MM
+		# 1239 occurrences
+		# size = 244..22520715 (avg = 522419.3)
+		# from 3 to 4 sections (avg = 3.9)
+		#
+		# examples: 8208A29C47736EAD (min size), 9B3473B5F2EF53D3 (max size), 800BAAC604A8B370 (4 sections)
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)

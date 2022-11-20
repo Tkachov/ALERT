@@ -14,11 +14,19 @@ class x1CAFE804_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 4423 occurrences in 1049 files
 		# met in Material, MaterialGraph
 		# size = 16..432 (avg = 130.3)
 		#
 		# examples: 8000E61F841EBC5F (min size), 833688BC03CD8BAB (max size)
+
+		# MM
+		# 4473 occurrences in 1157 files
+		# met in Material, MaterialGraph
+		# size = 16..432 (avg = 171.8)
+		#
+		# examples: 8000E61F841EBC5F (min size), 9D7D20AA12DFABFA (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -50,11 +58,19 @@ class x45C4F4C0_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 4389 occurrences in 1049 files
 		# met in Material, MaterialGraph
 		# size = 8..536 (avg = 167.0)
 		#
 		# examples: 81FB726316B0A0CA (min size), 83D5CEEBCD8A4609 (max size)
+
+		# MM
+		# 4381 occurrences in 1157 files
+		# met in Material, MaterialGraph
+		# size = 8..568 (avg = 217.6)
+		#
+		# examples: 80622C8227472B8A (min size), 80993366A7C61A94 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -86,9 +102,17 @@ class x8C049CCA_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 4530 occurrences in 1049 files
 		# met in Material, MaterialGraph
 		# size = 400..800 (avg = 523.5)
+		#
+		# examples: 800BAF6EA093111C (min size), 8000E61F841EBC5F (max size)
+
+		# MM
+		# 4586 occurrences in 1157 files
+		# met in Material, MaterialGraph
+		# size = 400..800 (avg = 569.1)
 		#
 		# examples: 800BAF6EA093111C (min size), 8000E61F841EBC5F (max size)
 		
@@ -122,11 +146,19 @@ class xA59F667B_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 4389 occurrences in 1049 files
 		# met in Material, MaterialGraph
 		# size = 16..352 (avg = 125.8)
 		#
 		# examples: 8000E61F841EBC5F (min size), 9FC1F81BF116DE2B (max size)
+
+		# MM
+		# 4381 occurrences in 1157 files
+		# met in Material, MaterialGraph
+		# size = 16..368 (avg = 152.5)
+		#
+		# examples: 8000E61F841EBC5F (min size), 815C70A0EAFA956C (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -158,11 +190,19 @@ class xBBFC8900_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 4530 occurrences in 1049 files
 		# met in Material, MaterialGraph
 		# size = 180352..1088640 (avg = 539245.6)
 		#
 		# examples: A8FE8763415A6F99 (min size), 8E1F4B600684B170 (max size)
+
+		# MM
+		# 4586 occurrences in 1157 files
+		# met in Material, MaterialGraph
+		# size = 178368..1334760 (avg = 617902.3)
+		#
+		# examples: A315153F6A2EA5F2 (min size), 9C59C707EF49E793 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -194,9 +234,17 @@ class xBC93FB5E_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 4530 occurrences in 1049 files
 		# met in Material, MaterialGraph
 		# size = 280..560 (avg = 366.4)
+		#
+		# examples: 800BAF6EA093111C (min size), 8000E61F841EBC5F (max size)
+
+		# MM
+		# 4586 occurrences in 1157 files
+		# met in Material, MaterialGraph
+		# size = 280..560 (avg = 398.3)
 		#
 		# examples: 800BAF6EA093111C (min size), 8000E61F841EBC5F (max size)
 		
@@ -230,11 +278,19 @@ class xC24B19D9_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 279 occurrences in 1049 files
 		# met in Material, MaterialGraph
 		# size = 8..16 (avg = 9.1)
 		#
 		# examples: 8037745A90D97633 (min size), 81314739879CD24C (max size)
+
+		# MM
+		# 438 occurrences in 1157 files
+		# met in Material, MaterialGraph
+		# size = 8..32 (avg = 11.3)
+		#
+		# examples: 8061D72FD2A04308 (min size), 8516DFCD8E10CAB6 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -266,7 +322,15 @@ class xF9C35F30_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 2818 occurrences in 1049 files
+		# met in Material, MaterialGraph
+		# size = 20
+		#
+		# examples: 800BAF6EA093111C
+
+		# MM
+		# 2905 occurrences in 1157 files
 		# met in Material, MaterialGraph
 		# size = 20
 		#
@@ -302,7 +366,15 @@ class xFD113362_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 1751 occurrences in 1049 files
+		# met in Material, MaterialGraph
+		# size = 8
+		#
+		# examples: 800BAF6EA093111C
+
+		# MM
+		# 1297 occurrences in 1157 files
 		# met in Material, MaterialGraph
 		# size = 8
 		#
@@ -328,3 +400,42 @@ class xFD113362_Section(dat1lib.types.sections.Section):
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | FD113362     | {:6} entries".format(self.TAG, len(self.entries)))
+
+#
+
+class xC32E7230_Section(dat1lib.types.sections.Section):
+	TAG = 0xC32E7230
+	TYPE = 'Material/MaterialGraph'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# MSMR: none
+
+		# MM
+		# 11 occurrences in 1157 files
+		# met in Material, MaterialGraph
+		# size = 4
+		#
+		# examples: 8516DFCD8E10CAB6
+		
+		ENTRY_SIZE = 4
+		count = len(data)//ENTRY_SIZE
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for e in self.entries:
+			of.write(struct.pack("<I", e))
+		of.seek(0)
+		return of.read()
+
+	def get_short_suffix(self):
+		return "C32E7230 ({})".format(len(self.entries))
+
+	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
+		##### "{:08X} | ............ | {:6} ..."
+		print("{:08X} | C32E7230     | {:6} entries".format(self.TAG, len(self.entries)))

@@ -10,10 +10,17 @@ class ReferencesSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 1276 occurrences in 2521 files
 		# size = 16..6336 (avg = 100.3)
 		#
 		# examples: 8008619CBD504B56 (min size), A2E15A1561AF23C6 (max size)
+
+		# MM
+		# 1006 occurrences in 2026 files
+		# size = 16..6464 (avg = 117.8)
+		#
+		# examples: 804666DEE5E1774A (min size), AED6101948AAFA54 (max size)
 		
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE

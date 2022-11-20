@@ -11,7 +11,16 @@ class TextureHeaderSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 25602 occurrences in 25602 files (always present)
+		# size = 44
+		# always first
+		# always last
+		#
+		# examples: 800035F1EBDCBCEC
+
+		# MM
+		# 20652 occurrences in 20652 files (always present)
 		# size = 44
 		# always first
 		# always last

@@ -9,10 +9,17 @@ class x0A231B40_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 16..1072 (avg = 95.9)
 		#
 		# examples: 8003278FC28C9C4B (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 16..1024 (avg = 76.5)
+		#
+		# examples: 80186B0F3760E0B8 (min size), B6C2891A5C7B1E0E (max size)
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -49,10 +56,17 @@ class x0CDE73EF_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 8..912 (avg = 147.5)
 		#
 		# examples: 845FE1CCB4A2873B (min size), 98B019CCD404CC37 (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 8..968 (avg = 141.3)
+		#
+		# examples: 87030407A78E7872 (min size), BD10FD78F1AB7C98 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -81,10 +95,17 @@ class x13AAEFE2_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 24..1608 (avg = 143.9)
 		#
 		# examples: 8003278FC28C9C4B (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 24..1536 (avg = 114.8)
+		#
+		# examples: 80186B0F3760E0B8 (min size), B6C2891A5C7B1E0E (max size)
 		
 		ENTRY_SIZE = 24
 		count = len(data)//ENTRY_SIZE
@@ -119,10 +140,17 @@ class x15C2983A_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 458 occurrences in 724 files
 		# size = 36..171341 (avg = 9374.7)
 		#
 		# examples: AF299BDA906DC7CA (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 265 occurrences in 487 files
+		# size = 44..120326 (avg = 9162.8)
+		#
+		# examples: A02131FD2C64CAE9 (min size), BD10FD78F1AB7C98 (max size)
 
 		self.cnt1, self.cnt2, self.cnt3, self.cnt4 = struct.unpack("<HHHH", data[:8])
 
@@ -150,7 +178,7 @@ class x15C2983A_Section(dat1lib.types.sections.Section):
 			print("")
 			for i, x in enumerate(self.entries1):
 				# print("  - {:<3}  {}".format(i, x))
-				print("  - {:<3}  {:08X} {:08X} {:08X} {:08X} {:08X} {:08X} {:4} {:4} {:08X} {:4}".format(i, *x)				)
+				print("  - {:<3}  {:08X} {:08X} {:08X} {:08X} {:08X} {:08X} {:4} {:4} {:08X} {:4}".format(i, *x))
 			print("")
 			for i, x in enumerate(self.entries2):
 				# print("  - {:<3}  {}".format(i, x))
@@ -168,10 +196,17 @@ class x2029471C_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 269 occurrences in 724 files
 		# size = 12..17160 (avg = 1467.3)
 		#
 		# examples: 8B12BE5D2364E4F9 (min size), A0D237BF807F8B9F (max size)
+
+		# MM
+		# 166 occurrences in 487 files
+		# size = 12..10704 (avg = 909.2)
+		#
+		# examples: 821271066DB28C0B (min size), B6C2891A5C7B1E0E (max size)
 		
 		ENTRY_SIZE = 12
 		count = len(data)//ENTRY_SIZE
@@ -199,10 +234,17 @@ class x26AB8388_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 24..94792 (avg = 2611.6)
 		#
 		# examples: 82B8360A1DEAFDFD (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 24..138800 (avg = 2177.2)
+		#
+		# examples: 81FFA9755903B96E (min size), B6C2891A5C7B1E0E (max size)
 
 		self.headers = []
 		self.values = []
@@ -249,10 +291,17 @@ class x2D9B0A30_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 580 occurrences in 724 files
 		# size = 30..248520 (avg = 7067.7)
 		#
 		# examples: 9293876A1ACBBA8D (min size), A0D237BF807F8B9F (max size)
+
+		# MM
+		# 309 occurrences in 487 files
+		# size = 30..249260 (avg = 6627.4)
+		#
+		# examples: 801BE25A9F682257 (min size), B6C2891A5C7B1E0E (max size)
 		pass
 
 	def get_short_suffix(self):
@@ -275,10 +324,17 @@ class x2F161636_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 8..536 (avg = 47.9)
 		#
 		# examples: 8003278FC28C9C4B (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 8..512 (avg = 38.2)
+		#
+		# examples: 80186B0F3760E0B8 (min size), B6C2891A5C7B1E0E (max size)
 		
 		ENTRY_SIZE = 8
 		count = len(data)//ENTRY_SIZE
@@ -328,10 +384,18 @@ class x2EF690BD_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 269 occurrences in 724 files
 		# size = 2..134 (avg = 23.7)
 		#
 		# examples: 89A71B7F8F42C1E5 (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 166 occurrences in 487 files
+		# size = 2..128 (avg = 19.3)
+		#
+		# examples: 821271066DB28C0B (min size), B6C2891A5C7B1E0E (max size)
+
 		ENTRY_SIZE = 2
 		count = len(data)//ENTRY_SIZE
 		self.entries = [struct.unpack("<H", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
@@ -357,10 +421,17 @@ class x34E97238_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 144..4152 (avg = 329.6)
 		#
 		# examples: 8D46E415B4F7FECA (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 144..3392 (avg = 302.6)
+		#
+		# examples: B5C8D37E0B74315C (min size), BD10FD78F1AB7C98 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -399,10 +470,17 @@ class x5BE2A972_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 32..11488 (avg = 575.7)
 		#
 		# examples: 8D46E415B4F7FECA (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 32..10272 (avg = 508.1)
+		#
+		# examples: B5C8D37E0B74315C (min size), BD10FD78F1AB7C98 (max size)
 		
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -431,10 +509,17 @@ class x85272DB0_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 248..393072 (avg = 22471.1)
 		#
 		# examples: B82D0A801D7E99A4 (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 531..359695 (avg = 16363.4)
+		#
+		# examples: A0CA72CE7CCFC982 (min size), B6C2891A5C7B1E0E (max size)
 		
 		# take offsets from 0xADCF5096 and read
 
@@ -470,10 +555,17 @@ class x7EF72163_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 269 occurrences in 724 files
 		# size = 24..156 (avg = 26.5)
 		#
 		# examples: 800D2F7E5B7F5D65 (min size), 848B35DDF0C461B6 (max size)
+
+		# MM
+		# 166 occurrences in 487 files
+		# size = 24..144 (avg = 28.0)
+		#
+		# examples: 805B360A3F36DD20 (min size), 9AC363DDC4BAF6FB (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -508,10 +600,17 @@ class x802A0575_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 269 occurrences in 724 files
 		# size = 448..45776 (avg = 10874.4)
 		#
 		# examples: B26A6BACA101C902 (min size), 98B019CCD404CC37 (max size)
+
+		# MM
+		# 166 occurrences in 487 files
+		# size = 344..47344 (avg = 9682.2)
+		#
+		# examples: A1848AB060416DA7 (min size), BD10FD78F1AB7C98 (max size)
 		
 		ENTRY_SIZE = 8
 		count = len(data)//ENTRY_SIZE
@@ -547,10 +646,17 @@ class xA20AD331_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 587 occurrences in 724 files
 		# size = 64..7296 (avg = 1232.7)
 		#
 		# examples: 9AA0719D4FB56E3E (min size), 98B019CCD404CC37 (max size)
+
+		# MM
+		# 310 occurrences in 487 files
+		# size = 64..7744 (avg = 1186.8)
+		#
+		# examples: 87030407A78E7872 (min size), BD10FD78F1AB7C98 (max size)
 		
 		ENTRY_SIZE = 32
 		count = len(data)//ENTRY_SIZE
@@ -578,10 +684,17 @@ class xADCF5096_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 72..76080 (avg = 3914.2)
 		#
 		# examples: 8D46E415B4F7FECA (min size), A0D237BF807F8B9F (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 72..62520 (avg = 2831.4)
+		#
+		# examples: B5C8D37E0B74315C (min size), B6C2891A5C7B1E0E (max size)
 		
 		ENTRY_SIZE = 24
 		count = len(data)//ENTRY_SIZE
@@ -613,10 +726,17 @@ class xD3E83200_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 176..212264 (avg = 5811.9)
 		#
 		# examples: 82B8360A1DEAFDFD (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 176..300176 (avg = 4931.2)
+		#
+		# examples: 81FFA9755903B96E (min size), B6C2891A5C7B1E0E (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -652,10 +772,17 @@ class xA7D217DE_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 269 occurrences in 724 files
 		# size = 1728..1468768 (avg = 66856.1)
 		#
 		# examples: B851E3356CC7F0B4 (min size), 848B35DDF0C461B6 (max size)
+
+		# MM
+		# 166 occurrences in 487 files
+		# size = 1360..927488 (avg = 91563.6)
+		#
+		# examples: 985F7072101087F7 (min size), 8F2AC1558A16890D (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -693,10 +820,17 @@ class xF2A2B07B_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 368..129032 (avg = 6229.3)
 		#
 		# examples: 8D46E415B4F7FECA (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 368..113616 (avg = 5504.0)
+		#
+		# examples: B5C8D37E0B74315C (min size), BD10FD78F1AB7C98 (max size)
 
 		# 0x34E97238 contains offsets to something in this section (of different size, ~168 bytes per entry)
 		
@@ -734,10 +868,17 @@ class xF59A5B54_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 724 occurrences in 724 files (always present)
 		# size = 48..3752 (avg = 332.8)
 		#
 		# examples: 8079C2A3952F3D9F (min size), A8A79439EA51466A (max size)
+
+		# MM
+		# 487 occurrences in 487 files (always present)
+		# size = 48..3584 (avg = 262.8)
+		#
+		# examples: 80186B0F3760E0B8 (min size), B6C2891A5C7B1E0E (max size)
 		
 		ENTRY_SIZE = 4*14
 		count = len(data)//ENTRY_SIZE
@@ -767,10 +908,17 @@ class xEA8685CD_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# MSMR
 		# 12 occurrences in 724 files
 		# size = 1760..42800 (avg = 17277.3)
 		#
 		# examples: BE93759F2C188519 (min size), BD43160F638170BF (max size)
+
+		# MM
+		# 19 occurrences in 487 files
+		# size = 1120..31888 (avg = 11732.6)
+		#
+		# examples: ADF5957D894AD259 (min size), 868F0E1B33099EDF (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
