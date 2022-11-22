@@ -2164,8 +2164,8 @@ class x9CCAA06F_Section(dat1lib.types.sections.Section):
 
 #
 
-class xE4158AC3_Section(dat1lib.types.sections.Section):
-	TAG = 0xE4158AC3
+class ZoneMaterialOverridesSection(dat1lib.types.sections.Section):
+	TAG = 0xE4158AC3 # "Zone Material Overrides"
 	TYPE = 'Zone'
 
 	def __init__(self, data, container):
@@ -2195,14 +2195,14 @@ class xE4158AC3_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "E4158AC3 ({})".format(len(self.entries))
+		return "Zone Material Overrides ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | E4158AC3     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Mat. Ovrrids | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 

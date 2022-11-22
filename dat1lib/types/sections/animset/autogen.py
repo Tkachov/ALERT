@@ -52,8 +52,8 @@ class xD614B18B_Section(dat1lib.types.sections.Section):
 
 #
 
-class xDF74DA06_Section(dat1lib.types.sections.Section):
-	TAG = 0xDF74DA06
+class AnimDriverVarInfoSection(dat1lib.types.sections.Section):
+	TAG = 0xDF74DA06 # Anim Driver Var Info
 	TYPE = 'AnimSet_PerformanceSet'
 
 	def __init__(self, data, container):
@@ -83,11 +83,11 @@ class xDF74DA06_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "DF74DA06 ({})".format(len(self.entries))
+		return "Anim Driver Var Info ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | DF74DA06     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Drvr VarInfo | {:6} entries".format(self.TAG, len(self.entries)))

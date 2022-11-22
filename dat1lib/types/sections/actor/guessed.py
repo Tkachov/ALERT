@@ -38,8 +38,8 @@ class ActorModelNameSection(dat1lib.types.sections.Section):
 
 ###
 
-class ComponentsSection(dat1lib.types.sections.Section):
-	TAG = 0x3AB204B9
+class ActorAssetRefsSection(dat1lib.types.sections.Section):
+	TAG = 0x3AB204B9 # Actor Asset Refs
 	TYPE = 'Actor'
 
 	def __init__(self, data, container):
@@ -70,11 +70,11 @@ class ComponentsSection(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "components? ({})".format(len(self.entries))
+		return "Actor Asset Refs ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Components   | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Asset Refs   | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
 			s = self._dat1.get_string(x[1])
 			print("  - {:<2}  {:08X}  {:016X} {}".format(i, x[2], x[0], s))

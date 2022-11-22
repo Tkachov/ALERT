@@ -78,8 +78,8 @@ class x212BD372_Section(dat1lib.types.sections.Section):
 
 #
 
-class x6C69A660_Section(dat1lib.types.sections.Section):
-	TAG = 0x6C69A660
+class AnimSetBuiltSection(dat1lib.types.sections.Section):
+	TAG = 0x6C69A660 # Anim Set Built
 	TYPE = 'AnimSet/PerformanceSet/Cinematic2'
 
 	def __init__(self, data, container):
@@ -110,21 +110,21 @@ class x6C69A660_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "6C69A660 ({})".format(len(self.entries))
+		return "Anim Set Built ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 6C69A660     | {:6} values".format(self.TAG, len(self.entries)))
+		print("{:08X} | Set Built    | {:6} values".format(self.TAG, len(self.entries)))
 		print(self.entries)
 		print("")
 
 #
 
-class x66CA6C6F_Section(dat1lib.types.sections.Section):
-	TAG = 0x66CA6C6F
+class AnimDriverClassBuiltSection(dat1lib.types.sections.Section):
+	TAG = 0x66CA6C6F # Anim Driver Class built
 	TYPE = 'AnimSet/PerformanceSet/Cinematic2'
 
 	def __init__(self, data, container):
@@ -155,14 +155,14 @@ class x66CA6C6F_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "66CA6C6F ({})".format(len(self.entries))
+		return "Anim Driver Class built ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 66CA6C6F     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Class Built  | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
 			# (3971249573, 4, 0, 96, 0, 1, 0, 0, 0, 0, 0, 0, 0, 20, 1048576000, 1048576000, 1048576000, 1048576000, 191, 0)
 			# (2049150217, 3, 4, 96, 0, 1, 0, 0, 0, 0, 0, 0, 0, 44, 1048576000, 1048576000, 1048576000, 1048576000, 187, 0)
@@ -174,8 +174,8 @@ class x66CA6C6F_Section(dat1lib.types.sections.Section):
 
 #
 
-class xB79CF1D7_Section(dat1lib.types.sections.Section): # aka anim_clip_lookup
-	TAG = 0xB79CF1D7
+class AnimClipLookupSection(dat1lib.types.sections.Section): # aka anim_clip_lookup
+	TAG = 0xB79CF1D7 # Anim Clip Lookup
 	TYPE = 'AnimSet/PerformanceSet/Cinematic2'
 
 	def __init__(self, data, container):
@@ -211,22 +211,22 @@ class xB79CF1D7_Section(dat1lib.types.sections.Section): # aka anim_clip_lookup
 		return of.read()
 
 	def get_short_suffix(self):
-		return "B79CF1D7 ({})".format(len(self.entries))
+		return "Anim Clip Lookup ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | B79CF1D7     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Clip Lookup  | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
 			print("  - {:<3}  {:08X} {:5} {} {:016X} {}".format(i, *x))
 		print("")
 
 #
 
-class x73CEE17F_Section(dat1lib.types.sections.Section):
-	TAG = 0x73CEE17F
+class AnimDriverClassDataSection(dat1lib.types.sections.Section):
+	TAG = 0x73CEE17F # Anim Driver Class data
 	TYPE = 'AnimSet/PerformanceSet/Cinematic2'
 
 	def __init__(self, data, container):
@@ -259,22 +259,22 @@ class x73CEE17F_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "73CEE17F ({})".format(len(self.entries))
+		return "Anim Driver Class data ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 73CEE17F     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Class data   | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
 			print("  - {:<3}  {:08X}  {:3} {:3}  {:08X}".format(i, x[0], x[1], x[2], x[12]))
 			# print("         {}".format(x))
 		print("")
 #
 
-class xA40B51D2_Section(dat1lib.types.sections.Section):
-	TAG = 0xA40B51D2
+class AnimDriverClassLookupSection(dat1lib.types.sections.Section):
+	TAG = 0xA40B51D2 # Anim Driver Class lookup
 	TYPE = 'AnimSet/PerformanceSet/Cinematic2'
 
 	def __init__(self, data, container):
@@ -308,22 +308,22 @@ class xA40B51D2_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "A40B51D2 ({})".format(len(self.entries))
+		return "Anim Driver Class lookup ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | A40B51D2     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Class Lookup | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
 			print("  - {:<3}  {}".format(i, x))
 		print("")
 
 #
 
-class x9FD19C20_Section(dat1lib.types.sections.Section): # aka anim_clip_data
-	TAG = 0x9FD19C20
+class AnimClipDataSection(dat1lib.types.sections.Section): # aka anim_clip_data
+	TAG = 0x9FD19C20 # Anim Clip Data
 	TYPE = 'AnimSet/PerformanceSet/Cinematic2'
 
 	def __init__(self, data, container):
@@ -345,14 +345,14 @@ class x9FD19C20_Section(dat1lib.types.sections.Section): # aka anim_clip_data
 		self.inner_dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(data), self)
 
 	def get_short_suffix(self):
-		return "inner dat1 ({} bytes, {} sections)".format(len(self._raw), len(self.inner_dat1.sections))
+		return "Anim Clip Data -- inner dat1 ({} bytes, {} sections)".format(len(self._raw), len(self.inner_dat1.sections))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Inner DAT1   | {:6} bytes".format(self.TAG, len(self._raw)))
+		print("{:08X} | Clip Data    | {:6} bytes -- inner DAT1".format(self.TAG, len(self._raw)))
 
 		print("=" * 40)
 		self.inner_dat1.print_info(config)

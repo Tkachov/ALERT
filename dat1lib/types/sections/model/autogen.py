@@ -123,8 +123,8 @@ class x27CA5246_Section(dat1lib.types.sections.Section):
 
 #
 
-class x3C9DABDF_Section(dat1lib.types.sections.Section):
-	TAG = 0x3C9DABDF
+class ModelSplineSubsetsSection(dat1lib.types.sections.Section):
+	TAG = 0x3C9DABDF # Model Spline Subsets
 	TYPE = 'Model'
 
 	def __init__(self, data, container):
@@ -154,14 +154,14 @@ class x3C9DABDF_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "3C9DABDF ({})".format(len(self.entries))
+		return "Model Spline Subsets ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 3C9DABDF     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Spline Sbsts | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 

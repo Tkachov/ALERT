@@ -4,8 +4,8 @@ import struct
 
 #
 
-class x2F4056CE_Section(dat1lib.types.sections.Section):
-	TAG = 0x2F4056CE
+class ConduitAssetRefsSection(dat1lib.types.sections.Section):
+	TAG = 0x2F4056CE # Conduit Asset Refs
 	TYPE = 'Conduit'
 
 	def __init__(self, data, container):
@@ -35,14 +35,14 @@ class x2F4056CE_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "2F4056CE ({})".format(len(self.entries))
+		return "Conduit Asset Refs ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 2F4056CE     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Asset Refs   | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 

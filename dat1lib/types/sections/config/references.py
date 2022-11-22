@@ -4,7 +4,7 @@ import io
 import struct
 
 class ReferencesSection(dat1lib.types.sections.Section):
-	TAG = 0x58B8558A
+	TAG = 0x58B8558A # Config Asset Refs
 	TYPE = 'config'
 
 	def __init__(self, data, container):

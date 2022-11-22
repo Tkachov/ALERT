@@ -5,7 +5,7 @@ import json
 import struct
 
 class ConfigTypeSection(dat1lib.types.sections.SerializedSection):
-	TAG = 0x4A128222
+	TAG = 0x4A128222 # Config Type
 	TYPE = 'config'
 
 	def __init__(self, data, container):
@@ -35,12 +35,12 @@ class ConfigTypeSection(dat1lib.types.sections.SerializedSection):
 			print(" "*10, self.extras)
 
 	def web_repr(self):
-		return {"name": "Type", "type": "json", "readonly": False, "content": self.root}
+		return {"name": "Config Type", "type": "json", "readonly": False, "content": self.root}
 
 ###
 
 class ConfigContentSection(dat1lib.types.sections.SerializedSection):
-	TAG = 0xE501186F
+	TAG = 0xE501186F # Config Built
 	TYPE = 'config'
 
 	def __init__(self, data, container):
@@ -70,4 +70,4 @@ class ConfigContentSection(dat1lib.types.sections.SerializedSection):
 			print(" "*10, self.extras)
 
 	def web_repr(self):
-		return {"name": "Content", "type": "json", "readonly": False, "content": self.root}
+		return {"name": "Config Built", "type": "json", "readonly": False, "content": self.root}

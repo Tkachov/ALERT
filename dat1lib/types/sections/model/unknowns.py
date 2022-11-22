@@ -9,8 +9,8 @@ class x7CA37DA0_Entry(object):
 	def __init__(self, data):
 		self.unknowns = struct.unpack("<" + "I"*12, data)
 
-class x7CA37DA0_Section(dat1lib.types.sections.Section):
-	TAG = 0x7CA37DA0
+class AmbientShadowPrimsSection(dat1lib.types.sections.Section):
+	TAG = 0x7CA37DA0 # Ambient Shadow Prims
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -33,14 +33,14 @@ class x7CA37DA0_Section(dat1lib.types.sections.Section):
 		self.entries = [x7CA37DA0_Entry(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def get_short_suffix(self):
-		return "? ({})".format(len(self.entries))
+		return "Ambient Shadow Prims ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | ?            | {:6} structs".format(self.TAG, len(self.entries)))
+		print("{:08X} | Shadow Prims | {:6} structs".format(self.TAG, len(self.entries)))
 
 ###
 

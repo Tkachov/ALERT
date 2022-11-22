@@ -414,8 +414,8 @@ class x4FC98D7E_Section(dat1lib.types.sections.Section):
 
 #
 
-class x9DF23F77_Section(dat1lib.types.sections.Section):
-	TAG = 0x9DF23F77
+class AnimClipBuiltSection(dat1lib.types.sections.Section):
+	TAG = 0x9DF23F77 # Anim Clip Built
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -445,14 +445,14 @@ class x9DF23F77_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "9DF23F77 ({})".format(len(self.entries))
+		return "Anim Clip Built ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 9DF23F77     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Clip Built   | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -530,8 +530,8 @@ class xA3B26640_Section(dat1lib.types.sections.Section):
 
 #
 
-class x6962F7DE_Section(dat1lib.types.sections.Section):
-	TAG = 0x6962F7DE
+class AnimClipTriggerDataSection(dat1lib.types.sections.Section):
+	TAG = 0x6962F7DE # Anim Clip Trigger Data
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -561,14 +561,14 @@ class x6962F7DE_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "6962F7DE ({})".format(len(self.entries))
+		return "Anim Clip Trigger Data ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 6962F7DE     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Trigger Data | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 

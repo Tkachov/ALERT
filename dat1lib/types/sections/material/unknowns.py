@@ -5,8 +5,8 @@ import dat1lib.utils as utils
 import io
 import struct
 
-class xF5260180_Section(dat1lib.types.sections.Section):
-	TAG = 0xF5260180
+class MaterialSerializedDataSection(dat1lib.types.sections.Section):
+	TAG = 0xF5260180 # Material Serialized Data
 	TYPE = 'material'
 
 	def __init__(self, data, container):
@@ -51,7 +51,7 @@ class xF5260180_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "materials ({})".format(len(self.materials)) # TODO: more like material maps paths? textures paths?
+		return "Material Serialized Data ({})".format(len(self.materials)) # TODO: more like material maps paths? textures paths?
 
 	def _get_string(self, start):
 		i = start
@@ -66,7 +66,7 @@ class xF5260180_Section(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Materials    | {:6} values".format(self.TAG, len(self.materials)))
+		print("{:08X} | Materials SD | {:6} values".format(self.TAG, len(self.materials)))
 
 		print(self.data_size, self.unk1, self.unk2, self.unk3, self.unk4)
 		print(self.materials_count, self.unk5, self.unk6, self.unk7, self.unk8)
