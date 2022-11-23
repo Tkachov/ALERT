@@ -5,7 +5,6 @@ import dat1lib
 import dat1lib.crc64 as crc64
 import dat1lib.types.toc
 import dat1lib.types.autogen
-import dat1lib.types.sections.texture.autogen
 import io
 import os
 import os.path
