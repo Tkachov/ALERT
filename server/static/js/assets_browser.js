@@ -3,9 +3,9 @@ assets_browser = {
 
 	toc: null,
 	assets: new Map(),
-	asset_ids: new Map(), // TODO: get rid of this
 	assets_info: new Map(),
 	stages: [],
+	trees: {}, // "stage" => {tree}
 
 	search: {
 		error: null,
@@ -25,7 +25,6 @@ assets_browser = {
 		this.toc = toc;
 		this.fill_structs(stages);
 		this.make_toc_details();
-		this.make_directories_tree();
 		this.render();
 	},
 
@@ -75,7 +74,7 @@ assets_browser = {
 		e.onclick = function () {
 			self.change_selected(container, e);
 			self.make_asset_details(r);
-			if (r.path != "") self.make_entry_onclick(r.path, false)();
+			if (r.path != "") self.make_entry_onclick(r.stage, r.path, false)();
 			else {
 				controller.remember_in_history(r.aid);
 				self.refresh_collapsible_selection(r.aid);
@@ -173,7 +172,7 @@ assets_browser = {
 
 				{
 					var self = this;
-					var btn = createElementWithTextNode("a", "Sections report");
+					var btn = createElementWithTextNode("a", "View sections");
 					links.appendChild(btn);
 					btn.onclick = function () {
 						let [shortname, fullname] = get_asset_names(self);
@@ -290,11 +289,21 @@ assets_browser = {
 	},
 
 	traverse_tree: function (stage, tree, current_path) {
+		if (current_path == "") {
+			this.trees[stage] = tree;
+		}
+
 		for (var k in tree) {
 			if (is_array(tree[k])) {
-				this.asset_ids.set(tree[k][0], current_path + k);
-				// TODO: add to the assets_info if key is known already (by other stages)
-				this.assets_info.set(tree[k][0], this.make_info_entry(stage, current_path + k, tree[k][1]));
+				var info = this.make_info_entry(stage, current_path + k, tree[k][1]);
+				if (!this.assets_info.has(tree[k][0])) {
+					this.assets_info.set(tree[k][0], info);
+				} else {
+					var old_info = this.assets_info.get(tree[k][0]);
+					if (old_info.path == "") old_info = info.path;
+					for (var v of info.variants)
+						old_info.variants.push(v);
+				}
 			} else {
 				this.traverse_tree(stage, tree[k], current_path + k + "/");
 			}
@@ -303,20 +312,27 @@ assets_browser = {
 
 	fill_structs: function (stages) {
 		for (var k in this.toc.assets_map) {
-			this.asset_ids.set(k, "");
 			this.assets_info.set(k, this.make_info_entry("", "", this.toc.assets_map[k]));
 		}
-
 		this.traverse_tree("", this.toc.tree, "");
-		console.log(stages);
 		for (var s in stages) {
-			console.log(s);
 			this.traverse_tree(s, stages[s].tree, "");
 			this.stages.push(s);
 		}
+
+		this.make_directories_tree();
 	},
 
-	get_entry_info: function (path) {
+	get_crumbs: function (path) {
+		return path.split("/");
+	},
+
+	get_basename: function (path) {
+		var c = this.get_crumbs(path);
+		return c[c.length - 1];
+	},
+
+	get_entry_info: function (stage, path) {
 		var result = {
 			path: path,
 			tree_node: null,
@@ -325,12 +341,12 @@ assets_browser = {
 			aid: "",
 			basedir: "",
 			thumbnails_info: null,
-			stage: "" // TODO
+			stage: stage
 		};
 
 		if (path != "") result.crumbs = path.split("/");
 
-		result.tree_node = this.toc.tree;
+		result.tree_node = this.trees[stage];
 		if (result.crumbs.length > 0) {
 			for (var i=0; i<result.crumbs.length-1; ++i) {
 				var p = result.crumbs[i];
@@ -355,15 +371,15 @@ assets_browser = {
 		return result;
 	},
 
-	make_entry_onclick: function (path, update_search) {
+	make_entry_onclick: function (stage, path, update_search) {
 		var self = this;
 		return function (ev) {
-			var e = self.get_entry_info(path);
+			var e = self.get_entry_info(stage, path);
 			self.make_content_browser(e);
 			self.select_tree_node(e);
 
 			if (e.is_file && update_search) {
-				self.make_asset_search_callback(e.aid)();
+				self.make_asset_search_callback(e.aid, stage)();
 			}
 
 			if (e.is_file) {
@@ -373,14 +389,12 @@ assets_browser = {
 		};
 	},
 
-	make_asset_search_callback: function (aid) {
+	make_asset_search_callback: function (aid, stage_hint) {
 		var self = this;
 		return function () {
 			var s = document.getElementById("search");
-			if (s.value != aid) {
-				s.value = aid;
-				self.search_assets();
-			}
+			s.value = aid;
+			self.search_assets(stage_hint);
 		};
 	},
 
@@ -390,20 +404,22 @@ assets_browser = {
 
 	make_content_browser: function (entry) {
 		var remake_browser = true;
-		if (this._browser_made_for_entry != null && this._browser_made_for_entry.basedir == entry.basedir) {
+		if (this._browser_made_for_entry != null && this._browser_made_for_entry.basedir == entry.basedir && this._browser_made_for_entry.stage == entry.stage) {
 			remake_browser = false;
 		}
 
 		this._browser_made_for_entry = entry;
 
 		if (remake_browser) {
+			var stage = entry.stage;
+
 			var e = document.getElementById("browser");
 			e.innerHTML = "";
 
 			var crumbs = document.createElement("div");
 			crumbs.className = "breadcrumbs";
 
-			function add_breadcrumb(parent, self, full_path, crumb) {
+			function add_breadcrumb(parent, self, stage, full_path, crumb) {
 				if (parent.children.length > 0) {
 					var sep = document.createElement("span");
 					sep.className = "separator";
@@ -412,12 +428,12 @@ assets_browser = {
 
 				var b = createElementWithTextNode("span", crumb);
 				b.className = "breadcrumb";
-				b.onclick = self.make_entry_onclick(full_path, true);
+				b.onclick = self.make_entry_onclick(stage, full_path, true);
 				parent.appendChild(b);
 			}
 
 			var self = this;
-			add_breadcrumb(crumbs, self, "", "home");
+			add_breadcrumb(crumbs, self, stage, "", stage == "" ? "home" : stage);
 
 			var full_path = "";
 			var len = entry.crumbs.length - (entry.is_file ? 1 : 0);
@@ -425,7 +441,7 @@ assets_browser = {
 				for (var i=0; i<len; ++i) {
 					var p = entry.crumbs[i];
 					full_path += p;
-					add_breadcrumb(crumbs, self, full_path, p);
+					add_breadcrumb(crumbs, self, stage, full_path, p);
 					full_path += "/";
 				}
 			}
@@ -436,7 +452,7 @@ assets_browser = {
 				var self = this;
 				ajax.postAndParseJson(
 					"api/thumbnails/list", {
-						stage: entry.stage,
+						stage: stage,
 						path: full_path
 					},
 					function(r) {
@@ -450,7 +466,7 @@ assets_browser = {
 							self._browser_known_thumbnails.add(taid);
 						}
 						if (r.list.length > 0) {
-							if (self._browser_made_for_entry != null && self._browser_made_for_entry.basedir == entry.basedir) {
+							if (self._browser_made_for_entry != null && self._browser_made_for_entry.basedir == entry.basedir && self._browser_made_for_entry.stage == entry.stage) {
 								self._browser_made_for_entry = null; // to trigger remake
 								self.make_content_browser(entry);
 							}
@@ -482,7 +498,7 @@ assets_browser = {
 				var item = document.createElement("span");
 				item.className = "directory";
 				item.appendChild(createElementWithTextNode("span", d));
-				item.onclick = this.make_entry_onclick(entry.basedir + d, true);
+				item.onclick = this.make_entry_onclick(stage, entry.basedir + d, true);
 				folder.appendChild(item);
 			}
 
@@ -492,7 +508,7 @@ assets_browser = {
 				var item = document.createElement("span");
 				item.className = "file" + (is_multiple ? " multiple" : "");
 				item.appendChild(createElementWithTextNode("span", f));
-				item.onclick = this.make_entry_onclick(entry.basedir + f, true);
+				item.onclick = this.make_entry_onclick(stage, entry.basedir + f, true);
 
 				var aid = entry.tree_node[f][0];
 				var taid = entry.stage + "_" + aid;
@@ -545,18 +561,26 @@ assets_browser = {
 		if (this._selected_tree_node != null)
 			this._selected_tree_node.classList.remove("selected");
 
-		var n = document.getElementById("left_column").children[0].children[0];
-		if (e.path == "") {
-			n = n.children[0].children[0];
-		} else {
-			var next = n;
+		var stages_headers = document.getElementById("left_column").querySelectorAll(".directories_tree .entry[data-stage]");
+
+		var stage_header = null;
+		for (var sh of stages_headers) {
+			if (sh.dataset.stage == e.stage) {
+				stage_header = sh;
+				break;
+			}
+		}
+
+		var n = stage_header;
+		if (e.path != "") {
+			var next = n.nextSibling;
 			for (var c of e.crumbs) {
 				n.classList.remove("closed");
 				n = next;
 				for (var i=0; i<n.children.length; ++i) {
 					if (n.children[i].innerText == c) {
 						if (n.children[i].classList.contains("directory"))
-							next = n.children[i+1].children[0];
+							next = n.children[i+1];
 						
 						n = n.children[i];
 						break;
@@ -579,64 +603,33 @@ assets_browser = {
 		e.innerHTML = "";
 
 		var d = document.createElement("div");
+		d.className = "directories_tree";
 		var d2 = document.createElement("div");
 		d.appendChild(d2);
 
+		// stages
+
+		let [stages_spoiler, stages_contents] = make_directory_element(d2, "Stages", "Stages", null, 0);
+		stages_spoiler.classList.add("special");
+		stages_spoiler.classList.remove("closed");
+
 		for (var stage of this.stages) {
-			var self = this;
-			var depth = 0;
-			var f = stage;
-			var c = document.createElement("div");
-			var p = document.createElement("p");
-			p.className = "entry file";
-			p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-			p.style.paddingLeft = (5 + depth*20) + "pt";
-			// p.onclick = function () { self.make_content_browser(""); };
-			// p.onclick = this.make_entry_onclick("", false);
-
-			var s = document.createElement("span");
-			s.className = "fname";
-			s.innerHTML = f;
-			s.title = f;
-			p.appendChild(s);
-			c.appendChild(p);
-			d2.appendChild(c);
+			let [stage_dir, stage_contents] = make_directory_element(stages_contents, stage, stage, this.make_entry_onclick(stage, "", false), 0);
+			stage_dir.dataset.stage = stage;
+			build_tree(this, stage_contents, this.trees[stage], stage, "", 1);
 		}
 
-		// home + separator
+		// archived
 
-		var sep = document.createElement("div");
-		sep.className = "separator";
-		d2.appendChild(sep);
+		let [home_spoiler, home_contents] = make_directory_element(d2, "Game Archive", "Game Archive", this.make_entry_onclick("", "", false), 0);
+		home_spoiler.classList.add("special");
+		home_spoiler.classList.remove("closed");
+		home_spoiler.dataset.stage = "";
+		build_tree(this, home_contents, this.trees[""], "", "", 0);
 
-		{
-			var self = this;
-			var depth = 0;
-			var f = "home";
-			var c = document.createElement("div");
-			var p = document.createElement("p");
-				p.className = "entry file";
-				p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-				p.style.paddingLeft = (5 + depth*20) + "pt";
-				// p.onclick = function () { self.make_content_browser(""); };
-				p.onclick = this.make_entry_onclick("", false);
+		// TODO: move from here?
 
-				var s = document.createElement("span");
-				s.className = "fname";
-				s.innerHTML = f;
-				s.title = f;
-				p.appendChild(s);
-				c.appendChild(p);
-				d2.appendChild(c);
-		}
-
-		//
-
-		d2.appendChild(build_tree(this, this.toc.tree, ""));
-
-		//
-
-		this.make_content_browser(this.get_entry_info(""));
+		this.make_content_browser(this.get_entry_info("", ""));
 		e.appendChild(d);
 
 		// history & favorites
@@ -672,23 +665,20 @@ assets_browser = {
 		} else {
 			for (var a of assets) {
 				var aid = assets_function(a);
-				if (!this.asset_ids.has(aid)) continue;
+				if (!this.assets_info.has(aid)) continue;
 
 				var info = this.assets_info.get(aid);
 				var filepath = info.path;
 				var filename = aid;
-				var onclick;
+				var onclick = this.make_asset_search_callback(aid, "");
 				
 				if (filepath == "") {
 					filepath = aid;
-					onclick = this.make_asset_search_callback(aid);
 				} else {
-					var einfo = this.get_entry_info(filepath);
-					filename = einfo.crumbs[einfo.crumbs.length-1];
-					onclick = this.make_entry_onclick(filepath, true);
+					filename = this.get_basename(filepath);
 				}
 
-				c.appendChild(make_file_entry_generic(onclick, filename, filepath, 0));
+				make_file_element(c, filename, filepath, onclick, 0);
 			}
 		}
 	},
@@ -739,31 +729,17 @@ assets_browser = {
 		this.refresh_favorites_entries();
 	},
 
-	search_assets: function () {
+	search_assets: function (stage_hint) {
 		var e = document.getElementById("search");
 		var v = e.value;
 
-		function add_results(self, array, aid, path) {
-			/*
-			if (path == "") {
-				for (var i of self.toc.assets_map[aid])
-					array.push({index: i[0], archive: i[1], aid: aid, name: aid, path: ""});
-				return;
-			}
-
-			var e = self.get_entry_info(path);
-			var basename = e.crumbs[e.crumbs.length-1];
-			for (var i of e.tree_node[basename][1])
-				array.push({index: i[0], archive: i[1], aid: e.aid, name: basename, path: path});
-			*/
-
+		function add_results(self, array, aid, info) {
 			function get_basename(path) {
 				var i1 = path.lastIndexOf('/');
 				var i2 = path.lastIndexOf('\\');
 				return path.substr(Math.max(i1, i2) + 1);
 			}
 
-			var info = self.assets_info.get(aid);
 			var basename = aid;
 			var path = "";
 			if (info.path != "") {
@@ -772,7 +748,7 @@ assets_browser = {
 			}
 
 			for (var v of info.variants)
-				array.push({aid: aid, span: v.span, archive: v.archive, size: v.size, name: basename, path: path, stage: ""});
+				array.push({aid: aid, span: v.span, archive: v.archive, size: v.size, name: basename, path: path, stage: v.stage});
 		}
 
 		function meets_request(s, terms) {
@@ -789,8 +765,8 @@ assets_browser = {
 		try {
 			this.search.results = [];
 
-			if (this.asset_ids.has(v)) {
-				add_results(this, this.search.results, v, this.asset_ids.get(v));
+			if (this.assets_info.has(v)) {
+				add_results(this, this.search.results, v, this.assets_info.get(v));
 			} else {
 				var parts = v.split(" ");
 				var terms = [];
@@ -811,11 +787,10 @@ assets_browser = {
 					}
 				}
 
-				if (terms.length > 0)
-				{
-					for (let [k, path] of this.asset_ids.entries()) {
-						if ((hexonly && meets_request(k.toLowerCase(), terms)) || (path != "" && meets_request(path, terms)))
-							add_results(this, this.search.results, k, path);
+				if (terms.length > 0) {
+					for (let [k, info] of this.assets_info.entries()) {
+						if ((hexonly && meets_request(k.toLowerCase(), terms)) || (info.path != "" && meets_request(info.path, terms)))
+							add_results(this, this.search.results, k, info);
 					}
 				}
 			}
@@ -828,8 +803,24 @@ assets_browser = {
 
 		if (this.search.results.length >= 1) {
 			var e = document.getElementById("results");
-			e = e.querySelector(".result_entry");
-			if (e != null) e.onclick();
+			var entries = e.querySelectorAll(".result_entry");
+			var best_match = null;
+			var best_match_stage = null;
+			for (var i=0; i<this.search.results.length; ++i) {
+				if (i >= entries.length) break;
+
+				var entry = entries[i];
+				if (entry == null) continue;
+
+				var entry_stage = this.search.results[i].stage;
+				if (best_match == null || (best_match_stage != stage_hint && stage_hint == entry_stage)) {
+					best_match = entry;
+					best_match_stage = entry_stage;
+
+					if (best_match_stage == stage_hint) break; // can't find a better match according to condition above
+				}
+			}
+			if (best_match != null) best_match.onclick();
 		}
 
 		return false; // invalidate form anyways (so it won't refresh the page on submit)
@@ -871,7 +862,51 @@ assets_browser = {
 
 //
 
-function build_tree(self, tree, prefix, depth=0) {
+function make_directory_element(container, text, title, onclick, depth) {
+	var p = document.createElement("p");
+	p.className = "entry directory closed";
+	p.style.marginLeft = "-" + (5 + depth*20) + "pt";
+	p.style.paddingLeft = (5 + depth*20) + "pt";
+	p.onclick = function (ev) {
+		if (ev.target == p) {
+			p.classList.toggle("closed");
+		}
+	};
+
+	var s = createElementWithTextNode("span", text);
+	s.className = "fname";
+	s.title = title;
+	s.onclick = onclick;
+	p.appendChild(s);
+	container.appendChild(p);
+
+	var ct = document.createElement("div");
+	ct.className = "directory_contents";
+	container.appendChild(ct);
+
+	return [p, ct];
+}
+
+function make_file_element(container, text, title, onclick, depth) {
+	var p = document.createElement("p");
+	p.className = "entry file";
+	p.style.marginLeft = "-" + (5 + depth*20) + "pt";
+	p.style.paddingLeft = (5 + depth*20) + "pt";
+	p.onclick = onclick;
+
+	var s = document.createElement("span");
+	s.className = "fname";
+	s.innerHTML = text;
+	s.title = title;
+	p.appendChild(s);
+
+	container.appendChild(p);
+	return p;
+}
+
+//
+
+function build_tree(self, container, tree, stage, prefix, depth=0) {
 	var directories = [];
 	var files = [];
 	for (var k in tree) {
@@ -884,61 +919,14 @@ function build_tree(self, tree, prefix, depth=0) {
 	directories.sort();
 	files.sort();
 
-	var c = document.createElement("div");
 	for (var d of directories) {
-		var p = document.createElement("p");
-		p.className = "entry directory closed";
-		p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-		p.style.paddingLeft = (5 + depth*20) + "pt";
-		p.onclick = make_dir_onclick(self, p, prefix + d);
-
-		var s = document.createElement("span");
-		s.className = "fname";
-		s.innerHTML = d;
-		s.title = d;
-		s.onclick = self.make_entry_onclick(prefix + d, true);
-		p.appendChild(s);
-		c.appendChild(p);
-
-		var ct = document.createElement("div");
-		ct.className = "directory_contents";
-		ct.appendChild(build_tree(self, tree[d], prefix + d + "/", depth+1));
-		c.appendChild(ct);
+		let [p, ct] = make_directory_element(container, d, d, self.make_entry_onclick(stage, prefix + d, true), depth);
+		build_tree(self, ct, tree[d], stage, prefix + d + "/", depth+1);
 	}
 
-	for (var f of files) {		
-		c.appendChild(make_file_entry(self, prefix, f, depth));
+	for (var f of files) {
+		make_file_element(container, f, f, self.make_entry_onclick(stage, prefix + f, true), depth);
 	}
-
-	return c;
-}
-
-function make_dir_onclick(self, p, path) {
-	return function (ev) {
-		if (ev.target == p) {
-			p.classList.toggle("closed");
-		}
-	};
-}
-
-function make_file_entry_generic(onclick, name, tooltip, depth) {
-	var p = document.createElement("p");
-	p.className = "entry file";
-	p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-	p.style.paddingLeft = (5 + depth*20) + "pt";
-	p.onclick = onclick;
-
-	var s = document.createElement("span");
-	s.className = "fname";
-	s.innerHTML = name;
-	s.title = tooltip;
-	p.appendChild(s);
-
-	return p;
-}
-
-function make_file_entry(self, prefix, f, depth) {
-	return make_file_entry_generic(self.make_entry_onclick(prefix + f, true), f, f, depth);
 }
 
 //

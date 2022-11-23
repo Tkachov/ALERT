@@ -130,8 +130,8 @@ class Thumbnails(object):
 				if h > max_side:
 					max_side = h
 				scale = 64/max_side
-				new_width = int(w * scale)
-				new_height = int(h * scale)
+				new_width = max(int(w * scale), 1)
+				new_height = max(int(h * scale), 1)
 				img = img.resize((new_width, new_height), Image.ANTIALIAS)
 				img.save(fn)
 				return True

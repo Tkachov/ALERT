@@ -795,6 +795,11 @@ html, body {
 	flex-direction: column;
 }
 
+#left_column > .directories_tree {
+	display: flex;
+	flex-grow: 1;
+}
+
 #left_column > div {
 	padding: 0;
 	margin: 0;
@@ -865,8 +870,27 @@ html, body {
 	color: rgb(78, 208, 249);
 }
 
+.entry.directory.special {
+}
+
+.entry.directory.special > .fname {
+	font-weight: bold;
+}
+
 .entry.directory.closed + .directory_contents {
 	display: none;
+}
+
+.entry.directory.special + .directory_contents {
+	margin-left: 0pt;
+}
+
+.entry.directory.special + .directory_contents + .entry.directory.special {
+	margin-top: 10pt;
+}
+
+.entry.directory.special.closed + .directory_contents + .entry.directory.special {
+	margin-top: 0;
 }
 
 #left_column .collapsible {
