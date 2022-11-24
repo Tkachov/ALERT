@@ -201,14 +201,36 @@ assets_browser = {
 		e.innerHTML = "";
 
 		e.appendChild(createElementWithTextNode("b", entry.name));
-		if (entry.path != "") {
-			e.appendChild(createElementWithTextNode("p", entry.path + " (" + this._get_archive_name(entry.archive) + ")"));
-			e.appendChild(createElementWithTextNode("span", entry.aid));
-			// TODO: span?
-			// TODO: stage?
-		} else {
-			e.appendChild(createElementWithTextNode("p", this._get_archive_name(entry.archive)));
+
+		// asset location info
+		
+		var pathline = "";
+		pathline += (entry.stage == "" ? "Game Archive" : entry.stage) + " ("
+		if (entry.stage == "") {
+			pathline += this._get_archive_name(entry.archive);
+			pathline += ", ";
 		}
+		pathline += "span " + (entry.stage == "" ? ("#" + entry.span) : entry.span);
+		pathline += ")";
+
+		if (entry.path != "") {
+			pathline += ":";
+		}
+
+		var p = document.createElement("p");
+		p.appendChild(document.createTextNode(pathline));
+		if (entry.path != "") {
+			p.appendChild(document.createElement("br"));
+			p.appendChild(document.createTextNode(entry.path));
+		}
+		// TODO: if current_stage != "", and this asset is staged, display that here
+		e.appendChild(p);
+
+		if (entry.path != "") {
+			e.appendChild(createElementWithTextNode("span", entry.aid));
+		}
+
+		//
 
 		function get_asset_names(self) {
 			var shortname = entry.name;
