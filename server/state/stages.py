@@ -105,7 +105,12 @@ class Stages(object):
 	# API
 
 	def make_api_routes(self, app):
-		pass
+		make_post_json_route(app, "/api/stages/refresh", self.refresh_stages)
+
+	def refresh_stages(self):
+		self.reboot()
+		self.boot()
+		return self.get_boot_info()
 
 	# internal
 

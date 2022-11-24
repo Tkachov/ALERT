@@ -24,6 +24,8 @@ assets_browser = {
 	toc_loaded: function (toc, stages) {
 		this.toc = toc;
 		this.fill_structs(stages);
+		this.make_directories_tree();
+		this.make_content_browser(this.get_entry_info("", ""));
 		this.make_toc_details();
 		this.render();
 	},
@@ -100,6 +102,77 @@ assets_browser = {
 
 		e.appendChild(createElementWithTextNode("b", "TOC"));
 		e.appendChild(createElementWithTextNode("p", this.toc.archives + " archives, " + this.toc.assets + " assets"));
+	},
+
+	make_directory_details: function (entry) {
+		var e = document.getElementById("details");
+		e.innerHTML = "";
+
+		var path = (entry.stage == "" ? "Game Archive" : entry.stage) + (entry.path == "" ? "" : ": ") + entry.path;
+		e.appendChild(createElementWithTextNode("b", path));
+
+		//
+
+		var directories = [];
+		var files = [];
+		var n = entry.tree_node;
+		for (var k in n) {
+			if (is_array(n[k])) {
+				files.push(k);
+			} else {
+				directories.push(k);
+			}
+		}
+
+		var message = "";
+		if (directories.length > 0) message += directories.length + " directories";
+		if (files.length > 0) {
+			if (message != "") message += ", ";
+			message += files.length + " assets";
+		}
+		if (message == "") message = "Empty";
+		e.appendChild(createElementWithTextNode("p", message));
+
+		//
+
+		e.appendChild(document.createElement("hr"));
+
+		var game_archives_actions = false;
+		var stage_actions = false;
+		var archived_directory_actions = false;
+		var staged_directory_actions = false;
+
+		if (entry.path == "") {
+			if (entry.stage == "") {
+				game_archives_actions = true;
+			} else {
+				stage_actions = true;
+			}
+		} else {
+			if (entry.stage == "") {
+				archived_directory_actions = true;
+			} else {
+				staged_directory_actions = true;
+			}
+		}
+
+		if (game_archives_actions) {
+			// none yet
+		}
+
+		if (stage_actions) {
+			// open in explorer
+			// install as mod
+		}
+
+		if (archived_directory_actions) {
+			// stage all files
+			// stage recursively?
+		}
+
+		if (staged_directory_actions) {
+			// open in explorer
+		}
 	},
 
 	make_asset_details: function (entry) {
@@ -311,6 +384,10 @@ assets_browser = {
 	},
 
 	fill_structs: function (stages) {
+		this.assets_info = new Map();
+		this.stages = [];
+		this.trees = {};
+
 		for (var k in this.toc.assets_map) {
 			this.assets_info.set(k, this.make_info_entry("", "", this.toc.assets_map[k]));
 		}
@@ -319,8 +396,6 @@ assets_browser = {
 			this.traverse_tree(s, stages[s].tree, "");
 			this.stages.push(s);
 		}
-
-		this.make_directories_tree();
 	},
 
 	get_crumbs: function (path) {
@@ -378,13 +453,15 @@ assets_browser = {
 			self.make_content_browser(e);
 			self.select_tree_node(e);
 
-			if (e.is_file && update_search) {
-				self.make_asset_search_callback(e.aid, stage)();
-			}
-
 			if (e.is_file) {
+				if (update_search) {
+					self.make_asset_search_callback(e.aid, stage)();
+				}
+
 				controller.remember_in_history(e.aid);
 				self.refresh_history_entries();
+			} else {
+				self.make_directory_details(e);
 			}
 		};
 	},
@@ -598,26 +675,50 @@ assets_browser = {
 		this.refresh_collapsible_selection(e.path);
 	},
 
+	make_stages_directories_tree: function () {
+		var e = document.getElementById("left_column");
+		var d2 = e.querySelector(".directories_tree > div");
+
+		var container;
+		e = document.getElementById("stages_tree");
+		if (e == null) {
+			let [stages_spoiler, stages_contents] = make_directory_element(d2, "Stages", "Stages", null, 0);
+			stages_spoiler.classList.add("special");
+			stages_spoiler.classList.remove("closed");
+			stages_spoiler.id = "stages_tree";
+
+			var refresh_button = createElementWithTextNode("a", "Refresh");
+			refresh_button.className = "refresh_button";
+			refresh_button.onclick = this.refresh_stages.bind(this);
+			stages_spoiler.children[0].appendChild(refresh_button);
+
+			container = stages_contents;
+		} else {
+			container = e.nextSibling;
+			container.innerHTML = "";
+		}
+
+		for (var stage of this.stages) {
+			let [stage_dir, stage_contents] = make_directory_element(container, stage, stage, this.make_entry_onclick(stage, "", false), 0);
+			stage_dir.dataset.stage = stage;
+			build_tree(this, stage_contents, this.trees[stage], stage, "", 1);
+		}
+	},
+
 	make_directories_tree: function () {
 		var e = document.getElementById("left_column");
 		e.innerHTML = "";
 
 		var d = document.createElement("div");
 		d.className = "directories_tree";
+		e.appendChild(d);
+
 		var d2 = document.createElement("div");
 		d.appendChild(d2);
 
 		// stages
 
-		let [stages_spoiler, stages_contents] = make_directory_element(d2, "Stages", "Stages", null, 0);
-		stages_spoiler.classList.add("special");
-		stages_spoiler.classList.remove("closed");
-
-		for (var stage of this.stages) {
-			let [stage_dir, stage_contents] = make_directory_element(stages_contents, stage, stage, this.make_entry_onclick(stage, "", false), 0);
-			stage_dir.dataset.stage = stage;
-			build_tree(this, stage_contents, this.trees[stage], stage, "", 1);
-		}
+		this.make_stages_directories_tree();
 
 		// archived
 
@@ -626,11 +727,6 @@ assets_browser = {
 		home_spoiler.classList.remove("closed");
 		home_spoiler.dataset.stage = "";
 		build_tree(this, home_contents, this.trees[""], "", "", 0);
-
-		// TODO: move from here?
-
-		this.make_content_browser(this.get_entry_info("", ""));
-		e.appendChild(d);
 
 		// history & favorites
 
@@ -855,6 +951,29 @@ assets_browser = {
 			function(e) {				
 				// TODO: self.search.error = e;
 				failure_cb(e);
+			}
+		);
+	},
+
+	refresh_stages: function () {
+		var self = this;
+		ajax.postAndParseJson(
+			"api/stages/refresh", {},
+			function(r) {
+				if (r.error) {
+					// TODO: self.search.error = r.message;
+					return;
+				}
+
+				// TODO: self.search.error = null;
+				self.fill_structs(r.stages);
+				self.make_stages_directories_tree();
+				// TODO: if one of the stages' dirs/assets were selected, reset to default selection
+				// self.make_content_browser(self.get_entry_info("", ""));
+				// self.render();
+			},
+			function(e) {				
+				// TODO: self.search.error = e;
 			}
 		);
 	}

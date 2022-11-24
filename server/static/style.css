@@ -893,6 +893,19 @@ html, body {
 	margin-top: 0;
 }
 
+.entry.directory.special .refresh_button {
+	float: right;
+	font-weight: normal;
+
+	color: #0060BB;
+	text-decoration: underline;
+}
+
+.entry.directory.special .refresh_button:hover {
+	color: #0080FF;
+	cursor: pointer;
+}
+
 #left_column .collapsible {
 	border-top: 1px solid #CCC;
 	max-height: 20vh;

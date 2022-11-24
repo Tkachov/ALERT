@@ -99,6 +99,7 @@ class State(object):
 		self.models_viewer.make_api_routes(app)
 		self.sections_editor.make_api_routes(app)
 		self.sections_viewer.make_api_routes(app)
+		self.stages.make_api_routes(app)
 		self.suits_editor.make_api_routes(app)
 		self.textures.make_api_routes(app)
 		self.thumbnails.make_api_routes(app)
