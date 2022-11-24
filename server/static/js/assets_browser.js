@@ -1042,9 +1042,14 @@ assets_browser = {
 				// TODO: self.search.error = null;
 				self.fill_structs(r.stages);
 				self.make_stages_directories_tree();
-				// TODO: if one of the stages' dirs/assets were selected, reset to default selection
-				// self.make_content_browser(self.get_entry_info("", ""));
-				// self.render();
+
+				if (self._browser_made_for_entry != null) {
+					var old_stage = self._browser_made_for_entry.stage;
+					if (old_stage != "") {
+						var new_stage = (self.stages.includes(old_stage) ? old_stage : "");
+						self.make_entry_onclick(new_stage, "", true)();
+					}
+				}
 			},
 			function(e) {				
 				// TODO: self.search.error = e;
