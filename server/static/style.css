@@ -257,8 +257,43 @@ html, body {
 	height: 100%;
 }
 
-.result_entry {
+#results > table {
+	width: 100%;
+	border: 0;
+	border-spacing: 0;
+}
+
+#results > table th {
+	color: #CCC;
 	padding: 2pt;
+	font-weight: normal;
+	text-align: left;
+	padding-bottom: 4pt;
+}
+
+#results > table th:nth-child(2) {
+	width: 170pt;
+}
+
+#results > table th:nth-child(3) {
+	width: 60pt;
+}
+
+#results > table th:nth-child(4) {
+	width: 80pt;
+}
+
+.result_entry > td {
+	padding: 2pt;
+	padding-right: 20pt;
+}
+
+.result_entry > td:nth-child(1) {
+	font-weight: bold;
+}
+
+.result_entry > td:nth-child(2) {
+	white-space: nowrap;
 }
 
 .result_entry.selected {

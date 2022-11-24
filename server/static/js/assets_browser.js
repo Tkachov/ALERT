@@ -51,8 +51,21 @@ assets_browser = {
 		sp.style.marginBottom = "10pt";
 		e.appendChild(sp);
 
-		for (var r of this.search.results) {
-			e.appendChild(this.make_search_result(e, r));
+		if (this.search.results.length > 0) {
+			var t = document.createElement("table");
+
+			var tr = document.createElement("tr");
+			tr.appendChild(createElementWithTextNode("th", "Name"));
+			tr.appendChild(createElementWithTextNode("th", "Stage"));
+			tr.appendChild(createElementWithTextNode("th", "Span"));
+			tr.appendChild(createElementWithTextNode("th", "Size"));
+			t.appendChild(tr);
+
+			for (var r of this.search.results) {
+				t.appendChild(this.make_search_result(t, r));
+			}
+
+			e.appendChild(t);
 		}
 	},
 
@@ -63,18 +76,28 @@ assets_browser = {
 	},
 
 	make_search_result: function (container, r) {
-		var e = document.createElement("div");
-		e.className = "result_entry";
-		e.appendChild(createElementWithTextNode("b", r.name));
-		e.appendChild(createElementWithTextNode("span", this._get_archive_name(r.archive)));
-		// TODO: span
-		// TODO: size
-		// TODO: stage
-		e.title = r.aid + (r.path != "" ? " - " + r.path : "");
+		var tr = document.createElement("tr");
+		tr.className = "result_entry";
+		tr.title = r.aid + (r.path != "" ? " - " + r.path : "");
+
+		var stage = "";
+		var span = "";
+		if (r.stage == "") {
+			stage = "Game Archive: " + this._get_archive_name(r.archive);
+			span = "#" + r.span;
+		} else {
+			stage = r.stage;
+			span = r.span;
+		}
+
+		tr.appendChild(createElementWithTextNode("td", r.name));
+		tr.appendChild(createElementWithTextNode("td", stage));
+		tr.appendChild(createElementWithTextNode("td", span));
+		tr.appendChild(createElementWithTextNode("td", filesize(r.size)));
 
 		var self = this;
-		e.onclick = function () {
-			self.change_selected(container, e);
+		tr.onclick = function () {
+			self.change_selected(container, tr);
 			self.make_asset_details(r);
 			if (r.path != "") self.make_entry_onclick(r.stage, r.path, false)();
 			else {
@@ -83,7 +106,7 @@ assets_browser = {
 			}
 		}
 
-		return e;
+		return tr;
 	},
 
 	change_selected: function (container, e) {
