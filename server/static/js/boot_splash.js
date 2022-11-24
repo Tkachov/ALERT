@@ -9,6 +9,7 @@ boot_splash = {
 
 		var e = document.getElementById("toc_path");
 		e.value = controller.user.toc_path;
+		setTimeout(function () { e.focus(); }, 100);
 
 		this.render();
 		this.show();
