@@ -9,6 +9,7 @@ import io
 import os
 import os.path
 import platform
+import subprocess
 
 def normalize_path(path):
 	return path.lower().replace('\\', '/').strip()
@@ -106,11 +107,19 @@ class Stages(object):
 
 	def make_api_routes(self, app):
 		make_post_json_route(app, "/api/stages/refresh", self.refresh_stages)
+		make_post_json_route(app, "/api/stages/open_explorer", self.open_explorer)
 
 	def refresh_stages(self):
 		self.reboot()
 		self.boot()
 		return self.get_boot_info()
+
+	def open_explorer(self):
+		stage = get_field(flask.request.form, "stage")
+		path = get_field(flask.request.form, "path")
+		span = get_field(flask.request.form, "span")
+
+		return {"success": self._open_explorer(stage, path, span)}
 
 	# internal
 
@@ -121,6 +130,53 @@ class Stages(object):
 			full_fn = os.path.join("stages/", fn)
 			if os.path.isdir(full_fn):
 				self.stages[fn] = Stage(full_fn)
+
+	def _open_explorer(self, stage, path, span):
+		if platform.system() != "Windows":
+			raise Exception("Bad platform")
+
+		if stage is None or stage == "" or stage not in self.stages:
+			raise Exception("Bad stage")
+
+		s = self.stages[stage]
+		path_to_open = None
+		operation = "explore"
+
+		if span is None or span == "":
+			if path == "":
+				path_to_open = os.path.join("stages/", stage, "")
+			else:
+				# looking for a directory
+				found = False
+				for sp in s.spans:
+					d = os.path.join("stages/", stage, sp, path, "")
+					if os.path.isdir(d):
+						path_to_open = d
+						found = True
+						break
+
+				if not found:
+					raise Exception("Bad path")
+		else:
+			if span not in s.spans:
+				raise Exception("Bad span")
+
+			# looking for a file
+			p = os.path.join("stages/", stage, span, path)
+			if os.path.isfile(p):
+				path_to_open = p
+				operation = "select"
+			else:
+				raise Exception("Bad path")
+
+		if path_to_open is not None:
+			if operation == "select":
+				subprocess.Popen("explorer /select,\"{}\"".format(os.path.abspath(path_to_open)))
+			else:
+				os.startfile(path_to_open, operation)
+			return True
+
+		return False
 
 	#
 

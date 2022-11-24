@@ -156,12 +156,24 @@ assets_browser = {
 			}
 		}
 
+		var self = this;
+		var links = document.createElement("p");
+		links.className = "links";
+
 		if (game_archives_actions) {
 			// none yet
 		}
 
 		if (stage_actions) {
 			// open in explorer
+			{
+				var btn = createElementWithTextNode("a", "Show in Explorer");
+				btn.onclick = function () {
+					self.open_explorer(entry.stage, "");
+				};
+				links.appendChild(btn);
+			}
+
 			// install as mod
 		}
 
@@ -172,7 +184,16 @@ assets_browser = {
 
 		if (staged_directory_actions) {
 			// open in explorer
+			{
+				var btn = createElementWithTextNode("a", "Show in Explorer");
+				btn.onclick = function () {
+					self.open_explorer(entry.stage, entry.path);
+				};
+				links.appendChild(btn);
+			}
 		}
+
+		e.appendChild(links);
 	},
 
 	make_asset_details: function (entry) {
@@ -221,8 +242,16 @@ assets_browser = {
 				links.appendChild(btn);
 			}
 
+			if (entry.stage != "") {
+				var btn = createElementWithTextNode("a", "Show in Explorer");
+				btn.onclick = function () {
+					self.open_explorer(entry.stage, entry.path, entry.span);
+				};
+				links.appendChild(btn);
+			}
+
 			{
-				var is_favorite = controller.user.favorites.includes(entry.aid);				
+				var is_favorite = controller.user.favorites.includes(entry.aid);
 				var btn = createElementWithTextNode("a", (is_favorite ? "Remove from favorites" : "Add to favorites"));
 				var self = this;
 				btn.onclick = function () {
@@ -971,6 +1000,28 @@ assets_browser = {
 				// TODO: if one of the stages' dirs/assets were selected, reset to default selection
 				// self.make_content_browser(self.get_entry_info("", ""));
 				// self.render();
+			},
+			function(e) {				
+				// TODO: self.search.error = e;
+			}
+		);
+	},
+
+	open_explorer: function (stage, path, span) {
+		var self = this;
+		ajax.postAndParseJson(
+			"api/stages/open_explorer", {
+				stage: stage,
+				path: path,
+				span: span||""
+			},
+			function(r) {
+				if (r.error) {
+					// TODO: self.search.error = r.message;
+					return;
+				}
+
+				// TODO: self.search.error = null;
 			},
 			function(e) {				
 				// TODO: self.search.error = e;
