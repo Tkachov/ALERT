@@ -534,6 +534,15 @@ assets_browser = {
 				self.refresh_history_entries();
 			} else {
 				self.make_directory_details(e);
+
+				// deselect all search results, as none of these can be a directory, so .selected
+				// might confuse user when everything else (tree, browser, details) show directory selected
+				var container = document.querySelector("#results > table");
+				if (container != null) {
+					for (var c of container.children) {
+						c.classList.remove("selected");
+					}
+				}
 			}
 		};
 	},
