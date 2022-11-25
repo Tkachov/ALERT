@@ -25,9 +25,7 @@ assets_browser = {
 		this.toc = toc;
 		this.fill_structs(stages);
 		this.make_directories_tree();
-		this.make_content_browser(this.get_entry_info("", ""));
-		this.make_toc_details();
-		this.render();
+		this.select_entry("", "", true);
 	},
 
 	//
@@ -99,7 +97,7 @@ assets_browser = {
 		tr.onclick = function () {
 			self.change_selected(container, tr);
 			self.make_asset_details(r);
-			if (r.path != "") self.make_entry_onclick(r.stage, r.path, false)();
+			if (r.path != "") self.select_entry(r.stage, r.path, false);
 			else {
 				controller.remember_in_history(r.aid);
 				self.refresh_collapsible_selection(r.aid);
@@ -119,20 +117,16 @@ assets_browser = {
 
 	/* details tab */
 
-	make_toc_details: function () {
-		var e = document.getElementById("details");
-		e.innerHTML = "";
-
-		e.appendChild(createElementWithTextNode("b", "TOC"));
-		e.appendChild(createElementWithTextNode("p", this.toc.archives + " archives, " + this.toc.assets + " assets"));
-	},
-
 	make_directory_details: function (entry) {
 		var e = document.getElementById("details");
 		e.innerHTML = "";
 
 		var path = (entry.stage == "" ? "Game Archive" : entry.stage) + (entry.path == "" ? "" : ": ") + entry.path;
 		e.appendChild(createElementWithTextNode("b", path));
+
+		if (entry.stage == "" && entry.path == "") {
+			e.appendChild(createElementWithTextNode("p", this.toc.archives + " archives, " + this.toc.assets + " assets"));
+		}
 
 		//
 
@@ -518,6 +512,10 @@ assets_browser = {
 		}
 
 		return result;
+	},
+
+	select_entry: function (stage, path, update_search) {
+		this.make_entry_onclick(stage, path, update_search)();
 	},
 
 	make_entry_onclick: function (stage, path, update_search) {
@@ -1047,7 +1045,7 @@ assets_browser = {
 					var old_stage = self._browser_made_for_entry.stage;
 					if (old_stage != "") {
 						var new_stage = (self.stages.includes(old_stage) ? old_stage : "");
-						self.make_entry_onclick(new_stage, "", true)();
+						self.select_entry(new_stage, "", true);
 					}
 				}
 			},
