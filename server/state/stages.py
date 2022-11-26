@@ -148,7 +148,7 @@ class Stages(object):
 	def stage_directory(self):
 		stage = get_field(flask.request.form, "stage")
 		path = get_field(flask.request.form, "path")
-		return {"success": False}
+		return self._stage_directory(stage, path)
 
 	# internal
 
@@ -234,6 +234,30 @@ class Stages(object):
 			dst_stage_object.stage_asset(path, locator, self.state)
 
 		return True
+
+	def _stage_directory(self, dst_stage, path):
+		parts = path.split("/")
+		
+		node = self.state.toc_loader.tree
+		for p in parts:
+			if p == "":
+				continue
+			if p not in node:
+				node = None
+				break
+			node = node[p]
+
+		results = {}
+		if node is not None:
+			for k in node:
+				if isinstance(node[k], list):
+					aid = node[k][0]
+					try:
+						results[aid] = self._stage_asset(dst_stage, "/0/" + aid, True)
+					except:
+						results[aid] = False
+
+		return {"success": True, "assets": results}
 
 	#
 

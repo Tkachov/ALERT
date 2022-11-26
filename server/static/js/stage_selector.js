@@ -64,7 +64,10 @@ stage_selector = {
 				if (!confirm("Stage with this name exists, asset(s) will be added there. Proceed?"))
 					return;
 			}
-			self.add_asset_to_stage(input.value, locator, cb.checked);
+			if (is_directory)
+				self.add_directory_to_stage(input.value, locator);
+			else
+				self.add_asset_to_stage(input.value, locator, cb.checked);
 		};
 
 		d.appendChild(d2);
@@ -78,15 +81,18 @@ stage_selector = {
 			var d4 = document.createElement("div");
 			d3.appendChild(d4);
 
-			function make_stage_onclick(self, stage, locator, cb) {
+			function make_stage_onclick(self, stage, locator, cb, is_directory) {
 				return function () {
-					self.add_asset_to_stage(stage, locator, cb.checked);
+					if (is_directory)
+						self.add_directory_to_stage(stage, locator);
+					else
+						self.add_asset_to_stage(stage, locator, cb.checked);
 				}
 			}
 
 			for (var s of assets_browser.stages) {
 				var sb = createElementWithTextNode("span", s);
-				sb.onclick = make_stage_onclick(self, s, locator, cb);
+				sb.onclick = make_stage_onclick(self, s, locator, cb, is_directory);
 				d4.appendChild(sb);
 			}
 
@@ -122,8 +128,26 @@ stage_selector = {
 	},
 
 	add_directory_to_stage: function (stage, path) {
-		// TODO
-		// TODO: open this directory in this stage?
+		var self = this;
+		ajax.postAndParseJson(
+			"api/stages/add_directory", {
+				stage: stage,
+				path: path
+			},
+			function(r) {
+				if (r.error) {
+					// TODO: self.editor.search.error = r.message;
+					return;
+				}
+
+				// TODO: self.editor.search.error = null;
+				assets_browser._refresh_stages({stage: stage, path: path, update_search: true});
+				self._hide();
+			},
+			function(e) {				
+				// TODO: self.editor.search.error = e;
+			}
+		);
 	},
 
 	//

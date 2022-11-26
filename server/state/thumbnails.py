@@ -80,7 +80,6 @@ class Thumbnails(object):
 			return []
 
 		result = []
-		s = self.state.toc_loader.toc.get_assets_section()
 		for k in node:
 			if isinstance(node[k], list):
 				aid = node[k][0]

@@ -196,6 +196,14 @@ assets_browser = {
 
 		if (archived_directory_actions) {
 			// stage all files
+			{
+				var btn = createElementWithTextNode("a", "Add to stage...");
+				btn.onclick = function () {
+					stage_selector.show_selector(entry.path, "", entry.path, true);
+				};
+				links.appendChild(btn);
+			}
+
 			// stage recursively?
 		}
 
@@ -1047,6 +1055,10 @@ assets_browser = {
 	},
 
 	refresh_stages: function () {
+		this._refresh_stages(null);
+	},
+
+	_refresh_stages: function (entry_select) {
 		var self = this;
 		ajax.postAndParseJson(
 			"api/stages/refresh", {},
@@ -1071,6 +1083,9 @@ assets_browser = {
 				}
 
 				self.search_assets(search_stage_hint);
+				if (entry_select != null) {
+					self.select_entry(entry_select.stage, entry_select.path, entry_select.update_search);
+				}
 			},
 			function(e) {				
 				// TODO: self.search.error = e;
