@@ -250,6 +250,7 @@ assets_browser = {
 		//
 
 		function get_asset_names(self) {
+			// TODO: correct name for staged file
 			var shortname = entry.name;
 			var fullname = entry.name;
 			if (entry.path != "")
@@ -285,6 +286,15 @@ assets_browser = {
 				var btn = createElementWithTextNode("a", "Show in Explorer");
 				btn.onclick = function () {
 					self.open_explorer(entry.stage, entry.path, entry.span);
+				};
+				links.appendChild(btn);
+			}
+
+			if (entry.stage == "") {
+				var btn = createElementWithTextNode("a", "Add to stage...");
+				btn.onclick = function () {
+					let [shortname, fullname] = get_asset_names(self);
+					stage_selector.show_selector(locator, shortname, fullname, false);
 				};
 				links.appendChild(btn);
 			}
@@ -1050,13 +1060,17 @@ assets_browser = {
 				self.fill_structs(r.stages);
 				self.make_stages_directories_tree();
 
+				var search_stage_hint = "";				
 				if (self._browser_made_for_entry != null) {
 					var old_stage = self._browser_made_for_entry.stage;
 					if (old_stage != "") {
 						var new_stage = (self.stages.includes(old_stage) ? old_stage : "");
 						self.select_entry(new_stage, "", true);
+						search_stage_hint = new_stage;
 					}
 				}
+
+				self.search_assets(search_stage_hint);
 			},
 			function(e) {				
 				// TODO: self.search.error = e;

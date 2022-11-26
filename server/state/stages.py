@@ -93,6 +93,22 @@ class Stage(object):
 
 		return node[file]
 
+	def _get_span(self, span_index):
+		# TODO: span mappings
+		return "{}".format(span_index)
+
+	def stage_asset(self, path, locator, state):
+		# TODO: maintain correct structs state
+		real_path = os.path.join(self.path, self._get_span(locator.span), path)
+		asset_data = state.get_asset_data(locator)
+
+		dir_path = os.path.dirname(real_path)
+		os.makedirs(dir_path, exist_ok=True)
+
+		f = open(real_path, "wb")
+		f.write(asset_data)
+		f.close()
+
 #
 
 class Stages(object):
@@ -108,6 +124,8 @@ class Stages(object):
 	def make_api_routes(self, app):
 		make_post_json_route(app, "/api/stages/refresh", self.refresh_stages)
 		make_post_json_route(app, "/api/stages/open_explorer", self.open_explorer)
+		make_post_json_route(app, "/api/stages/add_asset", self.stage_asset)
+		make_post_json_route(app, "/api/stages/add_directory", self.stage_directory)
 
 	def refresh_stages(self):
 		self.reboot()
@@ -120,6 +138,17 @@ class Stages(object):
 		span = get_field(flask.request.form, "span")
 
 		return {"success": self._open_explorer(stage, path, span)}
+
+	def stage_asset(self):
+		stage = get_field(flask.request.form, "stage")
+		locator = get_field(flask.request.form, "locator")
+		all_spans = (get_field(flask.request.form, "all_spans") == "true")
+		return {"success": self._stage_asset(stage, locator, all_spans)}
+
+	def stage_directory(self):
+		stage = get_field(flask.request.form, "stage")
+		path = get_field(flask.request.form, "path")
+		return {"success": False}
 
 	# internal
 
@@ -177,6 +206,34 @@ class Stages(object):
 			return True
 
 		return False
+
+	def _stage_asset(self, dst_stage, locator, all_spans):
+		locator = self.state.locator(locator)
+
+		dst_stage_object = None
+		if dst_stage in self.stages:
+			dst_stage_object = self.stages[dst_stage]
+		else:
+			fn = os.path.join("stages/", dst_stage)
+			os.makedirs(fn, exist_ok=True)
+			dst_stage_object = Stage(fn)
+
+		if locator.stage is not None:
+			raise Exception("Bad stage") # TODO: reassess this later
+
+		aid = locator.asset_id
+		path = aid
+		if aid in self.state.toc_loader._known_paths:
+			path = self.state.toc_loader._known_paths[aid]
+
+		if all_spans:
+			locators = self.state.get_asset_variants_locators("", aid)
+			for l in locators:
+				dst_stage_object.stage_asset(path, self.state.locator(l), self.state)
+		else:
+			dst_stage_object.stage_asset(path, locator, self.state)
+
+		return True
 
 	#
 
