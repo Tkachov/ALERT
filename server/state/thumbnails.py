@@ -46,6 +46,8 @@ class Thumbnails(object):
 			checksum = 0
 			try:
 				full_fn = "stages/" + locator.path
+				if not os.path.isfile(full_fn):
+					full_fn = os.path.join("stages/", locator.stage, locator.span, locator.asset_id)
 				if os.path.isfile(full_fn):
 					f = open(full_fn, "rb")
 					checksum = zlib.crc32(f.read(), checksum)
