@@ -224,7 +224,11 @@ class State(object):
 			raise Exception("Invalid Locator passed: {}".format(locator))
 
 		if not locator.is_archived:
-			f = open(os.path.join("stages/", locator.path), "rb")
+			path = os.path.join("stages/", locator.path)
+			if not os.path.exists(path):
+				path = os.path.join("stages/", locator.stage, locator.span, locator.asset_id)
+
+			f = open(path, "rb")
 			data = f.read()
 			f.close()
 

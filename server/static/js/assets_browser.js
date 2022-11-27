@@ -97,8 +97,20 @@ assets_browser = {
 		tr.onclick = function () {
 			self.change_selected(container, tr);
 			self.make_asset_details(r);
-			if (r.path != "") self.select_entry(r.stage, r.path, false);
-			else {
+
+			var entry_selected = false;
+			if (r.path != "") {
+				var e = self.get_entry_info(r.stage, r.path);
+				if (e.tree_node == null) {
+					e = self.get_entry_info(r.stage, r.aid);
+				}
+				if (e.tree_node != null) {
+					self._select_entry(e, false);
+					entry_selected = true;
+				}
+			}
+			
+			if (!entry_selected) {
 				controller.remember_in_history(r.aid);
 				self.refresh_collapsible_selection(r.aid);
 			}
@@ -238,32 +250,36 @@ assets_browser = {
 		pathline += "span " + (entry.stage == "" ? ("#" + entry.span) : entry.span);
 		pathline += ")";
 
-		if (entry.path != "") {
+		var has_path = (entry.path != "" && entry.path != entry.aid);
+		if (has_path) {
 			pathline += ":";
 		}
 
 		var p = document.createElement("p");
 		p.appendChild(document.createTextNode(pathline));
-		if (entry.path != "") {
+		if (has_path) {
 			p.appendChild(document.createElement("br"));
 			p.appendChild(document.createTextNode(entry.path));
 		}
 		// TODO: if current_stage != "", and this asset is staged, display that here
 		e.appendChild(p);
 
-		if (entry.path != "") {
+		if (has_path) {
 			e.appendChild(createElementWithTextNode("span", entry.aid));
 		}
 
 		//
 
 		function get_asset_names(self) {
-			// TODO: correct name for staged file
 			var shortname = entry.name;
 			var fullname = entry.name;
-			if (entry.path != "")
-				fullname = entry.path;
-			fullname += " (" + self._get_archive_name(entry.archive) + ")";
+
+			fullname = pathline;
+			if (has_path)
+				fullname += " " + entry.path;
+			else
+				fullname += ": " + entry.name;
+
 			return [shortname, fullname];
 		}
 
@@ -459,7 +475,7 @@ assets_browser = {
 					this.assets_info.set(tree[k][0], info);
 				} else {
 					var old_info = this.assets_info.get(tree[k][0]);
-					if (old_info.path == "") old_info = info.path;
+					if (old_info.path == "") old_info.path = info.path;
 					for (var v of info.variants)
 						old_info.variants.push(v);
 				}
@@ -511,16 +527,22 @@ assets_browser = {
 		if (result.crumbs.length > 0) {
 			for (var i=0; i<result.crumbs.length-1; ++i) {
 				var p = result.crumbs[i];
+				if (!result.tree_node.hasOwnProperty(p)) {
+					result.tree_node = null;
+					break;
+				}
 				if (is_array(result.tree_node[p])) break;
 				result.tree_node = result.tree_node[p];
 			}
 
-			var last = result.crumbs[result.crumbs.length-1];
-			if (is_array(result.tree_node[last])) {
-				result.is_file = true;
-				result.aid = result.tree_node[last][0];
-			} else {
-				result.tree_node = result.tree_node[last];
+			if (result.tree_node != null) {
+				var last = result.crumbs[result.crumbs.length-1];
+				if (is_array(result.tree_node[last])) {
+					result.is_file = true;
+					result.aid = result.tree_node[last][0];
+				} else {
+					result.tree_node = result.tree_node[last];
+				}
 			}
 		}
 
@@ -536,16 +558,24 @@ assets_browser = {
 		this.make_entry_onclick(stage, path, update_search)();
 	},
 
+	_select_entry: function (e, update_search) {
+		this._make_entry_onclick(e, "", "", update_search)();
+	},
+
 	make_entry_onclick: function (stage, path, update_search) {
+		return this._make_entry_onclick(null, stage, path, update_search);
+	},
+
+	_make_entry_onclick: function (e, stage, path, update_search) {
 		var self = this;
-		return function (ev) {
-			var e = self.get_entry_info(stage, path);
+		return function () {
+			e = e || self.get_entry_info(stage, path);
 			self.make_content_browser(e);
 			self.select_tree_node(e);
 
 			if (e.is_file) {
 				if (update_search) {
-					self.make_asset_search_callback(e.aid, stage)();
+					self.make_asset_search_callback(e.aid, e.stage)();
 				}
 
 				controller.remember_in_history(e.aid);

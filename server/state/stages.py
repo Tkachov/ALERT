@@ -9,6 +9,7 @@ import io
 import os
 import os.path
 import platform
+import re
 import subprocess
 
 def normalize_path(path):
@@ -74,8 +75,12 @@ class Stage(object):
 				if os.path.isdir(full_fn):
 					dirs += [aid_fn]
 				else:
-					aid_fn = normalize_path(aid_fn)
-					aid = "{:016X}".format(crc64.hash(aid_fn))
+					if current_dir == "" and len(fn) == 16 and re.match("^[A-Fa-f0-9]{16}$", fn):
+						aid_fn = fn.upper()
+						aid = aid_fn
+					else:
+						aid_fn = normalize_path(aid_fn)
+						aid = "{:016X}".format(crc64.hash(aid_fn))
 					self._insert_path(aid_fn, aid)
 					asset_info = [span_name, 0, os.path.getsize(full_fn)]
 					self._add_index_to_tree(aid, asset_info)
