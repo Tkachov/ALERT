@@ -281,6 +281,7 @@ html, body {
 
 #results > table th:nth-child(4) {
 	width: 80pt;
+	min-width: 70pt;
 }
 
 .result_entry > td {
