@@ -1,5 +1,5 @@
 import flask
-from server.api_utils import get_int, make_get_json_route, make_post_json_route
+from server.api_utils import get_field, make_get_json_route, make_post_json_route
 
 import io
 
@@ -14,25 +14,24 @@ class Assets(object):
 		make_get_json_route(app, "/api/assets/asset", self.get_asset, False)
 
 	def get_info(self):
-		index = get_int(flask.request.form, "index")
+		locator = get_field(flask.request.form, "locator")
 
-		asset, sz, thumbnail = self.state.extract_asset(index)
+		asset, thumbnail = self.state.get_asset_with_thumbnail(locator)
 
-		info = {"type": None, "magic": None, "sections": None, "size": sz}
+		info = {"type": None, "magic": None, "sections": None}
 		if asset is not None:
 			info = {
 				"type": asset.__class__.__name__,
 				"magic": asset.MAGIC,
-				"sections": len(asset.dat1.sections),
-				"size": sz
+				"sections": len(asset.dat1.sections)
 			}
 
 		return {"asset": info, "thumbnail": thumbnail}
 
 	def get_asset(self):
-		index = get_int(flask.request.args, "index")
+		locator = get_field(flask.request.args, "locator")
 
-		data, asset = self.state._get_asset_by_index(index)
-		filename = self.state._get_asset_name(index)
+		data, asset = self.state.get_asset(locator)
+		filename = self.state._get_asset_name_loc(locator)
 
 		return flask.send_file(io.BytesIO(data), as_attachment=True, download_name=filename, mimetype='application/octet-stream')

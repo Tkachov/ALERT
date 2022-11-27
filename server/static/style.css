@@ -257,8 +257,43 @@ html, body {
 	height: 100%;
 }
 
-.result_entry {
+#results > table {
+	width: 100%;
+	border: 0;
+	border-spacing: 0;
+}
+
+#results > table th {
+	color: #CCC;
 	padding: 2pt;
+	font-weight: normal;
+	text-align: left;
+	padding-bottom: 4pt;
+}
+
+#results > table th:nth-child(2) {
+	width: 170pt;
+}
+
+#results > table th:nth-child(3) {
+	width: 60pt;
+}
+
+#results > table th:nth-child(4) {
+	width: 80pt;
+}
+
+.result_entry > td {
+	padding: 2pt;
+	padding-right: 20pt;
+}
+
+.result_entry > td:nth-child(1) {
+	font-weight: bold;
+}
+
+.result_entry > td:nth-child(2) {
+	white-space: nowrap;
 }
 
 .result_entry.selected {
@@ -795,6 +830,11 @@ html, body {
 	flex-direction: column;
 }
 
+#left_column > .directories_tree {
+	display: flex;
+	flex-grow: 1;
+}
+
 #left_column > div {
 	padding: 0;
 	margin: 0;
@@ -865,8 +905,40 @@ html, body {
 	color: rgb(78, 208, 249);
 }
 
+.entry.directory.special {
+}
+
+.entry.directory.special > .fname {
+	font-weight: bold;
+}
+
 .entry.directory.closed + .directory_contents {
 	display: none;
+}
+
+.entry.directory.special + .directory_contents {
+	margin-left: 0pt;
+}
+
+.entry.directory.special + .directory_contents + .entry.directory.special {
+	margin-top: 10pt;
+}
+
+.entry.directory.special.closed + .directory_contents + .entry.directory.special {
+	margin-top: 0;
+}
+
+.entry.directory.special .refresh_button {
+	float: right;
+	font-weight: normal;
+
+	color: #0060BB;
+	text-decoration: underline;
+}
+
+.entry.directory.special .refresh_button:hover {
+	color: #0080FF;
+	cursor: pointer;
 }
 
 #left_column .collapsible {
@@ -1499,4 +1571,97 @@ html, body {
 	resize: none;
 	padding: 3pt 4pt;
 	color: #000;
+}
+
+/* stage selector */
+
+#stage_selector > div {
+	padding: 10pt;
+	width: 70vh;
+	margin: auto;
+
+	background: #FFF;
+	color: #000;
+	font-size: 11pt;
+	padding-top: 8pt;
+
+	transform: none;
+}
+
+#stage_selector > div p {
+	text-align: left;
+	font-size: 10pt;
+	margin-bottom: 2pt;
+}
+
+#stage_selector > div > p:first-child {
+	font-weight: bold;
+	font-size: 11pt;
+}
+
+#stage_selector .checkbox_line {
+
+}
+
+#stage_selector .checkbox_line > * {
+	vertical-align: middle;
+	line-height: 20pt;
+}
+
+#stage_selector input[type="checkbox"] {
+	display: inline-block;
+	width: auto;
+	margin: 0;
+	margin-right: 6pt;
+}
+
+#stage_selector .new_stage, #stage_selector .existing_stages {
+	padding: 12pt 0;
+}
+
+#stage_selector .new_stage {
+}
+
+#stage_selector .new_stage > p {
+	margin-bottom: 6pt;
+}
+
+#stage_selector .new_stage > input {
+	display: inline-block;
+	font-size: 10pt;
+	padding: 3pt;
+	margin: 0;
+	width: calc(70% - 2*1px - 2*3pt - 8pt);
+	margin-right: 8pt;
+}
+
+#stage_selector .new_stage > button {
+	width: 30%;
+	padding: 3pt;
+	border: 1px solid #AAA;
+}
+
+#stage_selector .existing_stages {
+	border: 0;
+	border-top: 1px solid #EEE;
+	padding-bottom: 0;
+}
+
+#stage_selector .existing_stages > p {
+	margin-bottom: 3pt;
+}
+
+#stage_selector .existing_stages > div {
+	margin: 0 -10pt;
+}
+
+#stage_selector .existing_stages span {
+	display: block;
+	padding: 3pt 10pt;
+	font-size: 10pt;
+}
+
+#stage_selector .existing_stages span:hover {
+	cursor: pointer;
+	background: var(--highlight-color);
 }

@@ -9,6 +9,7 @@ boot_splash = {
 
 		var e = document.getElementById("toc_path");
 		e.value = controller.user.toc_path;
+		setTimeout(function () { e.focus(); }, 100);
 
 		this.render();
 		this.show();
@@ -63,7 +64,7 @@ boot_splash = {
 				}
 
 				self.error = null;
-				controller.toc_loaded(r.toc);
+				controller.toc_loaded(r.toc, r.stages);
 				self.hide();
 			},
 			function(e) {

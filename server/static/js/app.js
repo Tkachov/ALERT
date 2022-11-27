@@ -5,6 +5,7 @@ const USER_STORAGE_KEY = "user";
 // TODO: fix bigger models
 // TODO: model viewer materials preview
 // TODO: scaleable and moveable windows?
+// TODO: localization
 
 var assets_browser = { ready: false };
 var configs_editor = { ready: false };
@@ -12,6 +13,7 @@ var models_viewer = { ready: false };
 var sections_editor = { ready: false };
 var sections_viewer = { ready: false };
 var settings_window = { ready: false };
+var stage_selector = { ready: false };
 var suits_editor = { ready: false };
 var textures_viewer = { ready: false };
 var windows = { ready: false };
@@ -56,8 +58,8 @@ var controller = {
 
 	// events handling
 
-	toc_loaded: function (toc) {
-		assets_browser.toc_loaded(toc);
+	toc_loaded: function (toc, stages) {
+		assets_browser.toc_loaded(toc, stages);
 	},
 
 	escape_pressed: function (e) {

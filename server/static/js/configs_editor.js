@@ -7,13 +7,13 @@ configs_editor = {
 
 	construct_editor: function () {
 		return {
-			index: null,
+			locator: null,
 			info: null,
 			edited: null,
 			container: null,
 
-			init: function (index, info, shortname, fullname) {
-				this.index = index;
+			init: function (locator, info, shortname, fullname) {
+				this.locator = locator;
 				this.info = info;
 				this.edited = null;
 
@@ -38,11 +38,11 @@ configs_editor = {
 		};
 	},
 
-	show_editor: function (index, shortname, fullname) {
+	show_editor: function (locator, shortname, fullname) {
 		var self = this;
 		ajax.postAndParseJson(
 			"api/configs_editor/make", {
-				index: index
+				locator: locator
 			},
 			function(r) {
 				if (r.error) {
@@ -52,7 +52,7 @@ configs_editor = {
 
 				// TODO: self.editor.search.error = null;
 				var e = self.construct_editor();
-				e.init(index, r, shortname, fullname);
+				e.init(locator, r, shortname, fullname);
 			},
 			function(e) {				
 				// TODO: self.editor.search.error = e;

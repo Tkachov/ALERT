@@ -151,19 +151,23 @@ class SuitsEditor(object):
 		make_get_json_route(app, "/api/suits_editor/icon", self.get_icon, False)
 
 	def make_editor(self):
-		return self.get_suits_editor()
+		stage = get_field(flask.request.form, "stage")
+		return self.get_suits_editor(stage)
 
 	def refresh_icons(self):
-		return self.cache_icons()
+		stage = get_field(flask.request.form, "stage")
+		return self.cache_icons(stage)
 
 	def install_suit(self):
 		rq = flask.request
+		stage = get_field(rq.form, "stage")
 		suit = rq.files["suit"].read()
-		return self._install_suit(io.BytesIO(suit))
+		return self._install_suit(stage, io.BytesIO(suit))
 
 	def get_icon(self):
+		stage = get_field(flask.request.args, "stage")
 		aid = get_field(flask.request.args, "aid")
-		return self.get_cached_icon_png(aid)
+		return self.get_cached_icon_png(stage, aid)
 
 	# internal
 
@@ -172,22 +176,19 @@ class SuitsEditor(object):
 
 	#
 
-	def _get_config(self, aid):
+	def _get_config(self, stage, aid):
 		toc = self.state.toc_loader.toc
 		entry = toc.get_asset_entries_by_assetid(aid, True)
 		data, asset = self.state._read_asset(entry[0].index)
 		return asset
 
-	def _get_progression_config(self):
-		return self._get_config(SYSTEM_PROGRESSION_CONFIG_AID)
-
-	def get_suits_editor(self):
+	def get_suits_editor(self, stage):
 		result = {
 			"suits": [],
 			"references": []
 		}
 
-		asset = self._get_progression_config()
+		asset = self._get_config(stage, SYSTEM_PROGRESSION_CONFIG_AID)
 		s = asset.dat1.get_section(CONFIG_CONTENT_TAG)
 		j = s.root
 		for techlist in j["TechWebLists"]:
@@ -205,17 +206,23 @@ class SuitsEditor(object):
 
 	#
 
-	def _get_cached_icon_path(self, aid, index):
-		return ".cache/suits/{}.{:08X}.png".format(aid, self.state.thumbnails._get_asset_metahash(index))
+	def _get_cached_icon_path(self, locator):
+		locator = self.state.locator(locator)
+		prefix = "{}{}".format("" if locator.stage is None else locator.stage, "" if locator.stage is None else "_")
+		return ".cache/suits/{}{}.{:08X}.png".format(prefix, locator.asset_id, self.state.thumbnails._get_asset_metahash(locator))
 
-	def get_cached_icon_png(self, aid):
-		node = self.state.toc_loader._get_node_by_aid(aid)
-		aid, variants = node[0], node[1]
-		for index, archive_index in variants:
-			fn = self._get_cached_icon_path(aid, index)
+	def get_cached_icon_png(self, stage, aid):
+		locators = self.state.get_asset_variants_locators(stage, aid)
+		print(locators)
+		for l in locators:
+			fn = self._get_cached_icon_path(l)
+			print("\t", fn)
 			if os.path.exists(fn):
 				f = open(fn, "rb")
 				return (flask.send_file(f, mimetype='image/png', max_age=0), 200)
+
+		if stage != "":
+			return self.get_cached_icon_png("", aid)
 
 		return (flask.send_file(io.BytesIO(BLANK_PIC), mimetype='image/png', max_age=0), 200)
 
@@ -224,8 +231,8 @@ class SuitsEditor(object):
 	def _normalize_path(self, path):
 		return path.lower().replace('\\', '/')
 
-	def cache_icons(self):
-		editor = self.get_suits_editor()
+	def cache_icons(self, stage):
+		editor = self.get_suits_editor(stage)
 		result = {}
 
 		references_map = {}
@@ -235,24 +242,25 @@ class SuitsEditor(object):
 		for s in editor["suits"]:
 			if "PreviewImage" in s:
 				aid = references_map[self._normalize_path(s["PreviewImage"])]
-				result[aid] = self._cache_icon(aid)
+				result[aid] = self._cache_icon(stage, aid)
 
 		return {"icons": result}
 
-	def _cache_icon(self, aid):
-		node = self.state.toc_loader._get_node_by_aid(aid)
-		aid, variants = node[0], node[1]
-
-		for index, archive_index in variants:
-			if self._try_caching_icon(aid, index):
+	def _cache_icon(self, stage, aid):
+		locators = self.state.get_asset_variants_locators(stage, aid)
+		for l in locators:
+			if self._try_caching_icon(l):
 				return True
+
+		if stage != "":
+			return self._cache_icon("", aid)
 
 		return False
 
-	def _try_caching_icon(self, aid, index):
+	def _try_caching_icon(self, locator):
 		try:
-			fn = self._get_cached_icon_path(aid, index)
-			data, asset = self.state._get_asset_by_index(index)
+			fn = self._get_cached_icon_path(locator)
+			data, asset = self.state.get_asset(locator)
 
 			if isinstance(asset, dat1lib.types.autogen.Texture):
 				img = self.state.textures._load_dds_mipmap(asset, None, 0)
@@ -268,7 +276,7 @@ class SuitsEditor(object):
 
 	#
 
-	def _install_suit(self, suit):
+	def _install_suit(self, stage, suit):
 		global _install_suit_log
 		_install_suit_log = ""
 		zf = zipfile.ZipFile(suit)
@@ -287,10 +295,10 @@ class SuitsEditor(object):
 
 		#
 
-		progression = self._get_progression_config()
-		loadout_list = self._get_config(MASTERITEMLOADOUTLIST_CONFIG_AID)
-		vanity_list = self._get_config(VANITYMASTERLIST_CONFIG_AID)
-		vanity_list_launch = self._get_config(VANITYMASTERLISTLAUNCH_CONFIG_AID)
+		progression = self._get_config(stage, SYSTEM_PROGRESSION_CONFIG_AID)
+		loadout_list = self._get_config(stage, MASTERITEMLOADOUTLIST_CONFIG_AID)
+		vanity_list = self._get_config(stage, VANITYMASTERLIST_CONFIG_AID)
+		vanity_list_launch = self._get_config(stage, VANITYMASTERLISTLAUNCH_CONFIG_AID)
 
 		self._mod_progression(progression, suitname)
 		self._mod_loadout_list(loadout_list, suitname)

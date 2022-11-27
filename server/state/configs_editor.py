@@ -1,5 +1,5 @@
 import flask
-from server.api_utils import get_int, get_json, make_get_json_route, make_post_json_route
+from server.api_utils import get_field, get_int, get_json, make_get_json_route, make_post_json_route
 
 import dat1lib.types.sections
 import dat1lib.types.sections.config.serialized
@@ -61,8 +61,8 @@ class ConfigsEditor(object):
 		"""
 
 	def make_editor(self):
-		index = get_int(flask.request.form, "index")
-		return self.get_config_editor(index)
+		locator = get_field(flask.request.form, "locator")
+		return self.get_config_editor(locator)
 
 	"""
 	def prepare_edited_asset(self):
@@ -88,8 +88,8 @@ class ConfigsEditor(object):
 
 	# internal
 
-	def get_config_editor(self, index):
-		data, asset = self.state._get_asset_by_index(index)
+	def get_config_editor(self, locator):
+		data, asset = self.state.get_asset(locator)
 
 		s = asset.dat1.get_section(dat1lib.types.sections.config.references.ReferencesSection.TAG)
 		refs = []

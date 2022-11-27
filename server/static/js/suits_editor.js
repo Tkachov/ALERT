@@ -9,6 +9,7 @@ suits_editor = {
 
 	construct_editor: function () {
 		return {
+			stage: null,
 			info: null,
 			container: null,
 
@@ -20,7 +21,8 @@ suits_editor = {
 			display_default_suits: true,
 			refreshing_icons: false,
 
-			init: function (info) {
+			init: function (stage, info) {
+				this.stage = stage;
 				this.info = info;
 				this.edited = null;
 
@@ -72,7 +74,7 @@ suits_editor = {
 					var s = this.info.suits[i];
 					var suit_button = document.createElement("img");
 					suit_button.className = "suit" + (i == this.selected_suit ? " selected" : "") + (BUILTIN_SUITS.includes(s.Name) ? " builtin" : "");
-					suit_button.src = "/api/suits_editor/icon?aid=" + references[normalize_path(s.PreviewImage)] + "#" + Date.now();
+					suit_button.src = "/api/suits_editor/icon?stage=" + this.stage + "&aid=" + references[normalize_path(s.PreviewImage)] + "#" + Date.now();
 					suit_button.onclick = make_suit_onclick(this, i);
 					preview.appendChild(suit_button);
 				}
@@ -260,6 +262,7 @@ suits_editor = {
 						var input = this.input_dom;
 						var form_data = new FormData();
 						form_data.set(input.name, input.files[0]);
+						form_data.set("stage", this.stage);
 
 						var self = this;
 						ajax.postFormAndParseJson(
@@ -298,7 +301,7 @@ suits_editor = {
 				var self = this;
 				self.refreshing_icons = true;
 				ajax.postAndParseJson(
-					"api/suits_editor/refresh_icons", {},
+					"api/suits_editor/refresh_icons", { stage: this.stage },
 					function(r) {
 						if (r.error) {
 							// TODO: self.editor.search.error = r.message;
@@ -317,10 +320,10 @@ suits_editor = {
 		};
 	},
 
-	show_editor: function () {
+	show_editor: function (stage) {
 		var self = this;
 		ajax.postAndParseJson(
-			"api/suits_editor/make", {},
+			"api/suits_editor/make", { stage: stage },
 			function(r) {
 				if (r.error) {
 					// TODO: self.editor.search.error = r.message;
@@ -329,7 +332,7 @@ suits_editor = {
 
 				// TODO: self.editor.search.error = null;
 				var e = self.construct_editor();
-				e.init(r);
+				e.init(stage, r);
 			},
 			function(e) {				
 				// TODO: self.editor.search.error = e;
