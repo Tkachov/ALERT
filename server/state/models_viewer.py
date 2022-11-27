@@ -15,5 +15,5 @@ class ModelsViewer(object):
 
 	def get_obj(self):
 		locator = get_field(flask.request.args, "locator")
-		data, asset = self.state._get_asset_by_locator(locator)
+		data, asset = self.state.get_asset(locator)
 		return (server.obj_writer.write(asset), 200)

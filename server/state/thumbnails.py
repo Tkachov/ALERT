@@ -121,7 +121,7 @@ class Thumbnails(object):
 	def _try_making_thumbnail(self, locator, data, asset):
 		try:
 			if data is None or asset is None:
-				data, asset = self.state._get_asset_by_locator(locator)
+				data, asset = self.state.get_asset(locator)
 
 			if isinstance(asset, dat1lib.types.autogen.Texture):
 				img = self.state.textures._load_dds_mipmap(asset, None, 0)

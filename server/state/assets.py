@@ -16,7 +16,7 @@ class Assets(object):
 	def get_info(self):
 		locator = get_field(flask.request.form, "locator")
 
-		asset, thumbnail = self.state.extract_asset_loc(locator)
+		asset, thumbnail = self.state.get_asset_with_thumbnail(locator)
 
 		info = {"type": None, "magic": None, "sections": None}
 		if asset is not None:
@@ -31,7 +31,7 @@ class Assets(object):
 	def get_asset(self):
 		locator = get_field(flask.request.args, "locator")
 
-		data, asset = self.state._get_asset_by_locator(locator)
+		data, asset = self.state.get_asset(locator)
 		filename = self.state._get_asset_name_loc(locator)
 
 		return flask.send_file(io.BytesIO(data), as_attachment=True, download_name=filename, mimetype='application/octet-stream')

@@ -32,7 +32,7 @@ class SectionsEditor(object):
 		locator = get_field(flask.request.args, "locator")
 		section = get_int(flask.request.args, "section")
 
-		data, asset = self.state._get_asset_by_locator(locator)
+		data, asset = self.state.get_asset(locator)
 		section_data = asset.dat1.get_section(section)._raw
 		filename = self.state._get_asset_name_loc(locator) + ".{:08X}.raw".format(section)
 
@@ -41,7 +41,7 @@ class SectionsEditor(object):
 	def get_strings(self):
 		locator = get_field(flask.request.args, "locator")
 
-		data, asset = self.state._get_asset_by_locator(locator)
+		data, asset = self.state.get_asset(locator)
 		strings_data = asset.dat1._raw_strings_data
 		filename = self.state._get_asset_name_loc(locator) + ".strings.raw"
 
@@ -72,7 +72,7 @@ class SectionsEditor(object):
 	# internal
 
 	def get_asset_editor(self, locator):
-		data, asset = self.state._get_asset_by_locator(locator)
+		data, asset = self.state.get_asset(locator)
 
 		#
 

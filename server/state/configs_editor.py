@@ -89,7 +89,7 @@ class ConfigsEditor(object):
 	# internal
 
 	def get_config_editor(self, locator):
-		data, asset = self.state._get_asset_by_locator(locator)
+		data, asset = self.state.get_asset(locator)
 
 		s = asset.dat1.get_section(dat1lib.types.sections.config.references.ReferencesSection.TAG)
 		refs = []

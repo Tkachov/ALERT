@@ -260,7 +260,7 @@ class SuitsEditor(object):
 	def _try_caching_icon(self, locator):
 		try:
 			fn = self._get_cached_icon_path(locator)
-			data, asset = self.state._get_asset_by_locator(locator)
+			data, asset = self.state.get_asset(locator)
 
 			if isinstance(asset, dat1lib.types.autogen.Texture):
 				img = self.state.textures._load_dds_mipmap(asset, None, 0)

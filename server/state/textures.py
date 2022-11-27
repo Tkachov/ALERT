@@ -158,7 +158,7 @@ class Textures(object):
 		return None
 
 	def get_texture_viewer(self, locator):
-		data, asset = self.state._get_asset_by_locator(locator)
+		data, asset = self.state.get_asset(locator)
 		info = asset.dat1.get_section(dat1lib.types.sections.texture.header.TextureHeaderSection.TAG)
 
 		mipmaps = []
@@ -178,7 +178,7 @@ class Textures(object):
 		return {"mipmaps": mipmaps}
 
 	def get_texture_mipmap(self, locator, mipmap_index):
-		data, asset = self.state._get_asset_by_locator(locator)
+		data, asset = self.state.get_asset(locator)
 		info = asset.dat1.get_section(dat1lib.types.sections.texture.header.TextureHeaderSection.TAG)
 
 		hd_data = None

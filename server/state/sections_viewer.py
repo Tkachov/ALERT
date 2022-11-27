@@ -21,7 +21,7 @@ class SectionsViewer(object):
 	# internal
 
 	def get_asset_report(self, locator):
-		data, asset = self.state._get_asset_by_locator(locator)
+		data, asset = self.state.get_asset(locator)
 
 		report = {"header": [], "sections": {}, "strings": ""}
 		report["header"] = [(s.tag, s.offset, s.size) for s in asset.dat1.header.sections]

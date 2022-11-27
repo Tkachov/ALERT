@@ -122,51 +122,12 @@ class State(object):
 
 	# common state methods
 
-	def _read_asset(self, index):
-		data = None
+	def locator(self, s):
+		if not isinstance(s, Locator):
+			return Locator(s)
+		return s
 
-		try:
-			data = self.toc_loader.toc.extract_asset(self.toc_loader.toc.get_asset_entry_by_index(index))
-		except Exception as e:
-			error_msg = "{}".format(e)
-
-			if "Errno 2" in error_msg and "No such file or directory" in error_msg:
-				ri = len(error_msg)-1
-				while ri >= 0:
-					if error_msg[ri] == '/' or error_msg[ri] == '\\':
-						break
-					ri -= 1
-
-				raise Exception("missing archive '{}".format(error_msg[ri+1:]))
-
-			raise
-
-		d = io.BytesIO(data)
-		obj = dat1lib.read(d, try_unknown=False)
-
-		return data, obj
-
-	def extract_asset(self, index):
-		# TODO: what if I want to force reload?
-		s = self.toc_loader.toc.get_sizes_section()
-		sz = s.entries[index].value
-
-		if self.currently_extracted_asset_index == index:
-			return self.currently_extracted_asset, sz, None
-
-		data, obj = self._read_asset(index)
-		self.currently_extracted_asset = obj
-		self.currently_extracted_asset_index = index
-		self.currently_extracted_asset_data = data
-
-		s = self.toc_loader.toc.get_assets_section()
-		aid = "{:016X}".format(s.ids[index])
-		made_thumbnail = self.thumbnails._try_making_thumbnail(aid, index)
-		thumbnail = aid if made_thumbnail else None
-
-		return self.currently_extracted_asset, sz, thumbnail
-
-	def extract_asset_loc(self, locator):
+	def get_asset_with_thumbnail(self, locator):
 		locator = self.locator(locator)
 
 		data, asset = self.get_asset(locator)
@@ -177,45 +138,13 @@ class State(object):
 
 		return asset, thumbnail
 
-	def _get_asset_by_locator(self, locator): # TODO: get rid of this
-		return self.get_asset(locator)
+	def get_asset(self, locator):
+		data = self.get_asset_data(locator)
 
-	def _get_asset_name_loc(self, locator):
-		if not isinstance(locator, Locator):
-			locator = self.locator(locator)
+		d = io.BytesIO(data)
+		asset = dat1lib.read(d, try_unknown=False)
 
-		if not locator.is_archived:
-			return os.path.basename(locator.path)
-
-		aid = locator.asset_id
-		if aid in self.toc_loader._known_paths:
-			return os.path.basename(self.toc_loader._known_paths[aid])
-
-		return aid
-
-	#
-
-	def locator(self, s):
-		if not isinstance(s, Locator):
-			return Locator(s)
-		return s
-
-	def _get_archived_asset_index(self, locator):
-		locator = self.locator(locator)
-
-		toc = self.toc_loader.toc
-		spans_section = toc.get_spans_section()
-		span = spans_section.entries[locator.span]
-
-		int_aid = int(locator.asset_id, 16)
-		assets_section = toc.get_assets_section()
-		ids = assets_section.ids
-		hi = span.asset_index + span.count
-		i = bisect.bisect_left(ids, int_aid, span.asset_index, hi)
-		if i >= hi or ids[i] != int_aid:
-			raise Exception("{} not found in span#{}".format(locator.asset_id, locator.span))
-
-		return i
+		return data, asset
 
 	def get_asset_data(self, locator):
 		locator = self.locator(locator)
@@ -255,13 +184,44 @@ class State(object):
 
 			raise
 
-	def get_asset(self, locator):
-		data = self.get_asset_data(locator)
+	def _get_archived_asset_index(self, locator):
+		locator = self.locator(locator)
 
-		d = io.BytesIO(data)
-		asset = dat1lib.read(d, try_unknown=False)
+		toc = self.toc_loader.toc
+		spans_section = toc.get_spans_section()
+		span = spans_section.entries[locator.span]
 
-		return data, asset
+		int_aid = int(locator.asset_id, 16)
+		assets_section = toc.get_assets_section()
+		ids = assets_section.ids
+		hi = span.asset_index + span.count
+		i = bisect.bisect_left(ids, int_aid, span.asset_index, hi)
+		if i >= hi or ids[i] != int_aid:
+			raise Exception("{} not found in span#{}".format(locator.asset_id, locator.span))
+
+		return i
+
+	def get_asset_basename(self, locator):
+		if not isinstance(locator, Locator):
+			locator = self.locator(locator)
+
+		if not locator.is_archived:
+			return os.path.basename(locator.path)
+
+		aid = locator.asset_id
+		if aid in self.toc_loader._known_paths:
+			return os.path.basename(self.toc_loader._known_paths[aid])
+
+		return aid
+
+	#
+
+	def get_asset_variants_locators(self, stage, aid):
+		if stage != "":
+			return self.stages.get_asset_variants_locators(stage, aid)
+
+		_, variants = self.toc_loader._get_node_by_aid(aid)
+		return ["/{}/{}".format(v[0], aid) for v in variants]
 
 	def _make_hd_locator(self, locator):
 		locator = self.locator(locator)
@@ -290,9 +250,28 @@ class State(object):
 
 		return hd_locator
 
-	def get_asset_variants_locators(self, stage, aid):
-		if stage != "":
-			return self.stages.get_asset_variants_locators(stage, aid)
+	#
 
-		_, variants = self.toc_loader._get_node_by_aid(aid)
-		return ["/{}/{}".format(v[0], aid) for v in variants]
+	def _read_asset(self, index): # TODO: suits_editor.py uses this -- once it has locators/stages support, this can be removed
+		data = None
+
+		try:
+			data = self.toc_loader.toc.extract_asset(self.toc_loader.toc.get_asset_entry_by_index(index))
+		except Exception as e:
+			error_msg = "{}".format(e)
+
+			if "Errno 2" in error_msg and "No such file or directory" in error_msg:
+				ri = len(error_msg)-1
+				while ri >= 0:
+					if error_msg[ri] == '/' or error_msg[ri] == '\\':
+						break
+					ri -= 1
+
+				raise Exception("missing archive '{}".format(error_msg[ri+1:]))
+
+			raise
+
+		d = io.BytesIO(data)
+		obj = dat1lib.read(d, try_unknown=False)
+
+		return data, obj
