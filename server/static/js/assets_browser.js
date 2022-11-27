@@ -28,7 +28,60 @@ assets_browser = {
 		this.select_entry("", "", true);
 	},
 
-	//
+	fill_structs: function (stages) {
+		this.assets_info = new Map();
+		this.stages = [];
+		this.trees = {};
+
+		for (var k in this.toc.assets_map) {
+			this.assets_info.set(k, this.make_info_entry("", "", this.toc.assets_map[k]));
+		}
+		this.traverse_tree("", this.toc.tree, "");
+		for (var s in stages) {
+			this.traverse_tree(s, stages[s].tree, "");
+			this.stages.push(s);
+		}
+	},
+
+	traverse_tree: function (stage, tree, current_path) {
+		if (current_path == "") {
+			this.trees[stage] = tree;
+		}
+
+		for (var k in tree) {
+			if (is_array(tree[k])) {
+				var info = this.make_info_entry(stage, current_path + k, tree[k][1]);
+				if (!this.assets_info.has(tree[k][0])) {
+					this.assets_info.set(tree[k][0], info);
+				} else {
+					var old_info = this.assets_info.get(tree[k][0]);
+					if (old_info.path == "") old_info.path = info.path;
+					for (var v of info.variants)
+						old_info.variants.push(v);
+				}
+			} else {
+				this.traverse_tree(stage, tree[k], current_path + k + "/");
+			}
+		}
+	},
+
+	make_info_entry: function (stage, path, info) {
+		var vars = [];
+		for (var o of info) {
+			vars.push({
+				stage: stage,
+				span: o[0],
+				archive: o[1],
+				size: o[2]
+			});
+		};		
+		return {
+			path: path,
+			variants: vars
+		};
+	},
+
+	// search
 
 	render: function () {
 		this.render_search();
@@ -65,12 +118,6 @@ assets_browser = {
 
 			e.appendChild(t);
 		}
-	},
-
-	/* search */
-
-	_get_archive_name: function (arch) {
-		return this.toc.archives_map[arch].replaceAll("\x00", "");
 	},
 
 	make_search_result: function (container, r) {
@@ -127,7 +174,7 @@ assets_browser = {
 		e.classList.add("selected");
 	},
 
-	/* details tab */
+	// details tab
 
 	make_directory_details: function (entry) {
 		var e = document.getElementById("details");
@@ -449,164 +496,7 @@ assets_browser = {
 		}
 	},
 
-	/* directories tree / content browser */
-
-	make_info_entry: function (stage, path, info) {
-		var vars = [];
-		for (var o of info) {
-			vars.push({
-				stage: stage,
-				span: o[0],
-				archive: o[1],
-				size: o[2]
-			});
-		};		
-		return {
-			path: path,
-			variants: vars
-		};
-	},
-
-	traverse_tree: function (stage, tree, current_path) {
-		if (current_path == "") {
-			this.trees[stage] = tree;
-		}
-
-		for (var k in tree) {
-			if (is_array(tree[k])) {
-				var info = this.make_info_entry(stage, current_path + k, tree[k][1]);
-				if (!this.assets_info.has(tree[k][0])) {
-					this.assets_info.set(tree[k][0], info);
-				} else {
-					var old_info = this.assets_info.get(tree[k][0]);
-					if (old_info.path == "") old_info.path = info.path;
-					for (var v of info.variants)
-						old_info.variants.push(v);
-				}
-			} else {
-				this.traverse_tree(stage, tree[k], current_path + k + "/");
-			}
-		}
-	},
-
-	fill_structs: function (stages) {
-		this.assets_info = new Map();
-		this.stages = [];
-		this.trees = {};
-
-		for (var k in this.toc.assets_map) {
-			this.assets_info.set(k, this.make_info_entry("", "", this.toc.assets_map[k]));
-		}
-		this.traverse_tree("", this.toc.tree, "");
-		for (var s in stages) {
-			this.traverse_tree(s, stages[s].tree, "");
-			this.stages.push(s);
-		}
-	},
-
-	get_crumbs: function (path) {
-		return path.split("/");
-	},
-
-	get_basename: function (path) {
-		var c = this.get_crumbs(path);
-		return c[c.length - 1];
-	},
-
-	get_entry_info: function (stage, path) {
-		var result = {
-			path: path,
-			tree_node: null,
-			crumbs: [],
-			is_file: false,
-			aid: "",
-			basedir: "",
-			thumbnails_info: null,
-			stage: stage
-		};
-
-		if (path != "") result.crumbs = path.split("/");
-
-		result.tree_node = this.trees[stage];
-		if (result.crumbs.length > 0) {
-			for (var i=0; i<result.crumbs.length-1; ++i) {
-				var p = result.crumbs[i];
-				if (!result.tree_node.hasOwnProperty(p)) {
-					result.tree_node = null;
-					break;
-				}
-				if (is_array(result.tree_node[p])) break;
-				result.tree_node = result.tree_node[p];
-			}
-
-			if (result.tree_node != null) {
-				var last = result.crumbs[result.crumbs.length-1];
-				if (is_array(result.tree_node[last])) {
-					result.is_file = true;
-					result.aid = result.tree_node[last][0];
-				} else {
-					result.tree_node = result.tree_node[last];
-				}
-			}
-		}
-
-		var len = result.crumbs.length - (result.is_file ? 1 : 0);
-		for (var i=0; i<len; ++i) {
-			result.basedir += result.crumbs[i] + "/";
-		}
-
-		return result;
-	},
-
-	select_entry: function (stage, path, update_search) {
-		this.make_entry_onclick(stage, path, update_search)();
-	},
-
-	_select_entry: function (e, update_search) {
-		this._make_entry_onclick(e, "", "", update_search)();
-	},
-
-	make_entry_onclick: function (stage, path, update_search) {
-		return this._make_entry_onclick(null, stage, path, update_search);
-	},
-
-	_make_entry_onclick: function (e, stage, path, update_search) {
-		var self = this;
-		return function () {
-			e = e || self.get_entry_info(stage, path);
-			self.make_content_browser(e);
-			self.select_tree_node(e);
-
-			if (e.is_file) {
-				if (update_search) {
-					self.make_asset_search_callback(e.aid, e.stage)();
-				}
-
-				controller.remember_in_history(e.aid);
-				self.refresh_history_entries();
-			} else {
-				self.make_directory_details(e);
-
-				// deselect all search results, as none of these can be a directory, so .selected
-				// might confuse user when everything else (tree, browser, details) show directory selected
-				var container = document.querySelector("#results > table");
-				if (container != null) {
-					for (var c of container.children) {
-						c.classList.remove("selected");
-					}
-				}
-			}
-		};
-	},
-
-	make_asset_search_callback: function (aid, stage_hint) {
-		var self = this;
-		return function () {
-			var s = document.getElementById("search");
-			s.value = aid;
-			self.search_assets(stage_hint);
-		};
-	},
+	// content browser
 
 	_browser_made_for_entry: null,
 	_browser_thumbnails_path: null,
@@ -766,47 +656,22 @@ assets_browser = {
 		}
 	},
 
-	_selected_tree_node: null,
+	// left column
 
-	select_tree_node: function (e) {
-		if (this._selected_tree_node != null)
-			this._selected_tree_node.classList.remove("selected");
+	make_directories_tree: function () {
+		var e = document.getElementById("left_column");
+		e.innerHTML = "";
 
-		var stages_headers = document.getElementById("left_column").querySelectorAll(".directories_tree .entry[data-stage]");
+		var d = document.createElement("div");
+		d.className = "directories_tree";
+		e.appendChild(d);
 
-		var stage_header = null;
-		for (var sh of stages_headers) {
-			if (sh.dataset.stage == e.stage) {
-				stage_header = sh;
-				break;
-			}
-		}
+		var d2 = document.createElement("div");
+		d.appendChild(d2);
 
-		var n = stage_header;
-		if (e.path != "") {
-			var next = n.nextSibling;
-			for (var c of e.crumbs) {
-				n.classList.remove("closed");
-				n = next;
-				for (var i=0; i<n.children.length; ++i) {
-					if (n.children[i].innerText == c) {
-						if (n.children[i].classList.contains("directory"))
-							next = n.children[i+1];
-						
-						n = n.children[i];
-						break;
-					}
-				}
-			}
-		}
-
-		this._selected_tree_node = n;
-		this._selected_tree_node.classList.add("selected");
-		this._selected_tree_node.scrollIntoView({behavior: "smooth", block: "center"});
-
-		//
-
-		this.refresh_collapsible_selection(e.path);
+		this.make_stages_directories_tree();
+		this._make_archived_directories_tree(d2);
+		this._make_history_and_favorites(e);
 	},
 
 	make_stages_directories_tree: function () {
@@ -816,7 +681,7 @@ assets_browser = {
 		var container;
 		e = document.getElementById("stages_tree");
 		if (e == null) {
-			let [stages_spoiler, stages_contents] = make_directory_element(d2, "Stages", "Stages", null, 0);
+			let [stages_spoiler, stages_contents] = this._make_tree_directory_element(d2, "Stages", "Stages", null, 0);
 			stages_spoiler.classList.add("special");
 			stages_spoiler.classList.remove("closed");
 			stages_spoiler.id = "stages_tree";
@@ -833,49 +698,146 @@ assets_browser = {
 		}
 
 		for (var stage of this.stages) {
-			let [stage_dir, stage_contents] = make_directory_element(container, stage, stage, this.make_entry_onclick(stage, "", false), 0);
+			let [stage_dir, stage_contents] = this._make_tree_directory_element(container, stage, stage, this.make_entry_onclick(stage, "", false), 0);
 			stage_dir.dataset.stage = stage;
-			build_tree(this, stage_contents, this.trees[stage], stage, "", 1);
+			this._make_tree(stage_contents, this.trees[stage], stage, "", 1);
 		}
 	},
 
-	make_directories_tree: function () {
-		var e = document.getElementById("left_column");
-		e.innerHTML = "";
-
-		var d = document.createElement("div");
-		d.className = "directories_tree";
-		e.appendChild(d);
-
-		var d2 = document.createElement("div");
-		d.appendChild(d2);
-
-		// stages
-
-		this.make_stages_directories_tree();
-
-		// archived
-
-		let [home_spoiler, home_contents] = make_directory_element(d2, "Game Archive", "Game Archive", this.make_entry_onclick("", "", false), 0);
+	_make_archived_directories_tree: function (container) {
+		let [home_spoiler, home_contents] = this._make_tree_directory_element(container, "Game Archive", "Game Archive", this.make_entry_onclick("", "", false), 0);
 		home_spoiler.classList.add("special");
 		home_spoiler.classList.remove("closed");
 		home_spoiler.dataset.stage = "";
-		build_tree(this, home_contents, this.trees[""], "", "", 0);
+		this._make_tree(home_contents, this.trees[""], "", "", 0);
+	},
 
-		// history & favorites
-
-		d = document.createElement("div");
+	_make_history_and_favorites: function (container) {
+		var d = document.createElement("div");
 		d.className = "history collapsible collapsed";
-		e.appendChild(d);
+		container.appendChild(d);
 		this.refresh_history_entries();
 
 		d = document.createElement("div");
 		d.className = "favorites collapsible collapsed";
-		e.appendChild(d);
+		container.appendChild(d);
 		this.refresh_favorites_entries();
 	},
 
-	make_left_column_collapsible_section: function (d, name, assets, assets_function) {
+	_make_tree: function (container, tree, stage, prefix, depth=0) {
+		var directories = [];
+		var files = [];
+		for (var k in tree) {
+			if (is_array(tree[k])) {
+				files.push(k);
+			} else {
+				directories.push(k);
+			}
+		}
+		directories.sort();
+		files.sort();
+
+		for (var d of directories) {
+			let [p, ct] = this._make_tree_directory_element(container, d, d, this.make_entry_onclick(stage, prefix + d, true), depth);
+			this._make_tree(ct, tree[d], stage, prefix + d + "/", depth+1);
+		}
+
+		for (var f of files) {
+			this._make_tree_file_element(container, f, f, this.make_entry_onclick(stage, prefix + f, true), depth);
+		}
+	},
+
+	_make_tree_directory_element: function (container, text, title, onclick, depth) {
+		var p = document.createElement("p");
+		p.className = "entry directory closed";
+		p.style.marginLeft = "-" + (5 + depth*20) + "pt";
+		p.style.paddingLeft = (5 + depth*20) + "pt";
+		p.onclick = function (ev) {
+			if (ev.target == p) {
+				p.classList.toggle("closed");
+			}
+		};
+
+		var s = createElementWithTextNode("span", text);
+		s.className = "fname";
+		s.title = title;
+		s.onclick = onclick;
+		p.appendChild(s);
+		container.appendChild(p);
+
+		var ct = document.createElement("div");
+		ct.className = "directory_contents";
+		container.appendChild(ct);
+
+		return [p, ct];
+	},
+
+	_make_tree_file_element: function (container, text, title, onclick, depth) {
+		var p = document.createElement("p");
+		p.className = "entry file";
+		p.style.marginLeft = "-" + (5 + depth*20) + "pt";
+		p.style.paddingLeft = (5 + depth*20) + "pt";
+		p.onclick = onclick;
+
+		var s = document.createElement("span");
+		s.className = "fname";
+		s.innerHTML = text;
+		s.title = title;
+		p.appendChild(s);
+
+		container.appendChild(p);
+		return p;
+	},
+
+	// left column: history & favorites
+
+	_selected_collapsible_path: null,
+
+	refresh_history_entries: function () {
+		var e = document.getElementById("left_column");
+		var d = e.children[1];
+		this._make_left_column_collapsible_section(d, "Recently viewed", controller.user.history.entries, function (x) { return x[0]; });
+
+		var d = d.children[1];
+		for (var c of d.children) {
+			if (c.classList.contains("entry") && c.children[0].title == this._selected_collapsible_path) c.classList.add("selected");
+			else c.classList.remove("selected");
+		}
+	},
+
+	_favorites: null,
+
+	refresh_favorites_entries: function () {
+		var e = document.getElementById("left_column");
+		var d = e.children[2];
+
+		if (!equal_arrays(this._favorites, controller.user.favorites)) {
+			this._make_left_column_collapsible_section(d, "Favorites", controller.user.favorites, function (x) { return x; });
+			this._favorites = controller.user.favorites.slice();
+		}
+
+		var d = d.children[1];
+		var selected = null;
+		for (var c of d.children) {
+			if (c.classList.contains("entry") && c.children[0].title == this._selected_collapsible_path) {
+				c.classList.add("selected");
+				selected = c;
+			} else {
+				c.classList.remove("selected");
+			}
+		}
+
+		if (selected != null)
+			selected.scrollIntoView({behavior: "smooth", block: "center"});
+	},
+
+	refresh_collapsible_selection: function (path) {
+		this._selected_collapsible_path = path;
+		this.refresh_history_entries();
+		this.refresh_favorites_entries();
+	},
+
+	_make_left_column_collapsible_section: function (d, name, assets, assets_function) {
 		d.innerHTML = "";
 
 		var h = createElementWithTextNode("span", name);
@@ -908,56 +870,12 @@ assets_browser = {
 					filename = this.get_basename(filepath);
 				}
 
-				make_file_element(c, filename, filepath, onclick, 0);
+				this._make_tree_file_element(c, filename, filepath, onclick, 0);
 			}
 		}
 	},
 
-	_selected_collapsible_path: null,
-
-	refresh_history_entries: function () {
-		var e = document.getElementById("left_column");
-		var d = e.children[1];
-		this.make_left_column_collapsible_section(d, "Recently viewed", controller.user.history.entries, function (x) { return x[0]; });
-
-		var d = d.children[1];
-		for (var c of d.children) {
-			if (c.classList.contains("entry") && c.children[0].title == this._selected_collapsible_path) c.classList.add("selected");
-			else c.classList.remove("selected");
-		}
-	},
-
-	_favorites: null,
-
-	refresh_favorites_entries: function () {
-		var e = document.getElementById("left_column");
-		var d = e.children[2];
-
-		if (!equal_arrays(this._favorites, controller.user.favorites)) {
-			this.make_left_column_collapsible_section(d, "Favorites", controller.user.favorites, function (x) { return x; });
-			this._favorites = controller.user.favorites.slice();
-		}
-
-		var d = d.children[1];
-		var selected = null;
-		for (var c of d.children) {
-			if (c.classList.contains("entry") && c.children[0].title == this._selected_collapsible_path) {
-				c.classList.add("selected");
-				selected = c;
-			} else {
-				c.classList.remove("selected");
-			}
-		}
-
-		if (selected != null)
-			selected.scrollIntoView({behavior: "smooth", block: "center"});
-	},
-
-	refresh_collapsible_selection: function (path) {
-		this._selected_collapsible_path = path;
-		this.refresh_history_entries();
-		this.refresh_favorites_entries();
-	},
+	// search: handler
 
 	search_assets: function (stage_hint) {
 		var e = document.getElementById("search");
@@ -1056,6 +974,150 @@ assets_browser = {
 		return false; // invalidate form anyways (so it won't refresh the page on submit)
 	},
 
+	make_asset_search_callback: function (aid, stage_hint) {
+		var self = this;
+		return function () {
+			var s = document.getElementById("search");
+			s.value = aid;
+			self.search_assets(stage_hint);
+		};
+	},
+
+	// left column: directory tree selection
+
+	_selected_tree_node: null,
+
+	select_tree_node: function (e) {
+		if (this._selected_tree_node != null)
+			this._selected_tree_node.classList.remove("selected");
+
+		var stages_headers = document.getElementById("left_column").querySelectorAll(".directories_tree .entry[data-stage]");
+
+		var stage_header = null;
+		for (var sh of stages_headers) {
+			if (sh.dataset.stage == e.stage) {
+				stage_header = sh;
+				break;
+			}
+		}
+
+		var n = stage_header;
+		if (e.path != "") {
+			var next = n.nextSibling;
+			for (var c of e.crumbs) {
+				n.classList.remove("closed");
+				n = next;
+				for (var i=0; i<n.children.length; ++i) {
+					if (n.children[i].innerText == c) {
+						if (n.children[i].classList.contains("directory"))
+							next = n.children[i+1];
+						
+						n = n.children[i];
+						break;
+					}
+				}
+			}
+		}
+
+		this._selected_tree_node = n;
+		this._selected_tree_node.classList.add("selected");
+		this._selected_tree_node.scrollIntoView({behavior: "smooth", block: "center"});
+
+		//
+
+		this.refresh_collapsible_selection(e.path);
+	},
+
+	// entry click handler
+
+	select_entry: function (stage, path, update_search) {
+		this.make_entry_onclick(stage, path, update_search)();
+	},
+
+	_select_entry: function (e, update_search) {
+		this._make_entry_onclick(e, "", "", update_search)();
+	},
+
+	make_entry_onclick: function (stage, path, update_search) {
+		return this._make_entry_onclick(null, stage, path, update_search);
+	},
+
+	_make_entry_onclick: function (e, stage, path, update_search) {
+		var self = this;
+		return function () {
+			e = e || self.get_entry_info(stage, path);
+			self.make_content_browser(e);
+			self.select_tree_node(e);
+
+			if (e.is_file) {
+				if (update_search) {
+					self.make_asset_search_callback(e.aid, e.stage)();
+				}
+
+				controller.remember_in_history(e.aid);
+				self.refresh_history_entries();
+			} else {
+				self.make_directory_details(e);
+
+				// deselect all search results, as none of these can be a directory, so .selected
+				// might confuse user when everything else (tree, browser, details) show directory selected
+				var container = document.querySelector("#results > table");
+				if (container != null) {
+					for (var c of container.children) {
+						c.classList.remove("selected");
+					}
+				}
+			}
+		};
+	},
+
+	get_entry_info: function (stage, path) {
+		var result = {
+			path: path,
+			tree_node: null,
+			crumbs: [],
+			is_file: false,
+			aid: "",
+			basedir: "",
+			thumbnails_info: null,
+			stage: stage
+		};
+
+		if (path != "") result.crumbs = path.split("/");
+
+		result.tree_node = this.trees[stage];
+		if (result.crumbs.length > 0) {
+			for (var i=0; i<result.crumbs.length-1; ++i) {
+				var p = result.crumbs[i];
+				if (!result.tree_node.hasOwnProperty(p)) {
+					result.tree_node = null;
+					break;
+				}
+				if (is_array(result.tree_node[p])) break;
+				result.tree_node = result.tree_node[p];
+			}
+
+			if (result.tree_node != null) {
+				var last = result.crumbs[result.crumbs.length-1];
+				if (is_array(result.tree_node[last])) {
+					result.is_file = true;
+					result.aid = result.tree_node[last][0];
+				} else {
+					result.tree_node = result.tree_node[last];
+				}
+			}
+		}
+
+		var len = result.crumbs.length - (result.is_file ? 1 : 0);
+		for (var i=0; i<len; ++i) {
+			result.basedir += result.crumbs[i] + "/";
+		}
+
+		return result;
+	},
+
+	// API calls
+
 	extract_asset: function (locator, success_cb, failure_cb) {
 		var self = this;
 		ajax.postAndParseJson(
@@ -1148,78 +1210,22 @@ assets_browser = {
 				// TODO: self.search.error = e;
 			}
 		);
+	},
+
+	// helpers
+
+	get_basename: function (path) {
+		var c = this.get_crumbs(path);
+		return c[c.length - 1];
+	},
+
+	get_crumbs: function (path) {
+		return path.split("/");
+	},
+
+	_get_archive_name: function (arch) {
+		return this.toc.archives_map[arch].replaceAll("\x00", "");
 	}
 };
-
-//
-
-function make_directory_element(container, text, title, onclick, depth) {
-	var p = document.createElement("p");
-	p.className = "entry directory closed";
-	p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-	p.style.paddingLeft = (5 + depth*20) + "pt";
-	p.onclick = function (ev) {
-		if (ev.target == p) {
-			p.classList.toggle("closed");
-		}
-	};
-
-	var s = createElementWithTextNode("span", text);
-	s.className = "fname";
-	s.title = title;
-	s.onclick = onclick;
-	p.appendChild(s);
-	container.appendChild(p);
-
-	var ct = document.createElement("div");
-	ct.className = "directory_contents";
-	container.appendChild(ct);
-
-	return [p, ct];
-}
-
-function make_file_element(container, text, title, onclick, depth) {
-	var p = document.createElement("p");
-	p.className = "entry file";
-	p.style.marginLeft = "-" + (5 + depth*20) + "pt";
-	p.style.paddingLeft = (5 + depth*20) + "pt";
-	p.onclick = onclick;
-
-	var s = document.createElement("span");
-	s.className = "fname";
-	s.innerHTML = text;
-	s.title = title;
-	p.appendChild(s);
-
-	container.appendChild(p);
-	return p;
-}
-
-//
-
-function build_tree(self, container, tree, stage, prefix, depth=0) {
-	var directories = [];
-	var files = [];
-	for (var k in tree) {
-		if (is_array(tree[k])) {
-			files.push(k);
-		} else {
-			directories.push(k);
-		}
-	}
-	directories.sort();
-	files.sort();
-
-	for (var d of directories) {
-		let [p, ct] = make_directory_element(container, d, d, self.make_entry_onclick(stage, prefix + d, true), depth);
-		build_tree(self, ct, tree[d], stage, prefix + d + "/", depth+1);
-	}
-
-	for (var f of files) {
-		make_file_element(container, f, f, self.make_entry_onclick(stage, prefix + f, true), depth);
-	}
-}
-
-//
 
 assets_browser.init();
