@@ -172,7 +172,7 @@ class State(object):
 		data, asset = self.get_asset(locator)
 
 		taid = "{}_{}".format("" if locator.stage is None else locator.stage, locator.asset_id)
-		made_thumbnail = self.thumbnails._try_making_thumbnail(locator)
+		made_thumbnail = self.thumbnails._try_making_thumbnail(locator, data, asset)
 		thumbnail = taid if made_thumbnail else None
 
 		return asset, thumbnail
@@ -266,14 +266,33 @@ class State(object):
 	def _make_hd_locator(self, locator):
 		locator = self.locator(locator)
 
-		hd_locator = copy.deepcopy(locator)
-		hd_locator.span = 1
-		
+		if locator.stage is None:
+			hd_locator = copy.deepcopy(locator)
+			hd_locator.span = 1
+			
+			return hd_locator
+
+		hd_locator = None
+		all_variants = self.get_asset_variants_locators(locator.stage, locator.asset_id)
+		needle_span = self.stages.stages[locator.stage]._get_span(1)
+		for v in all_variants:
+			variant_locator = self.locator(v)
+			if variant_locator.span == locator.span:
+				continue
+			if hd_locator is None:
+				hd_locator = variant_locator
+			else:
+				if hd_locator.span != needle_span and variant_locator.span == needle_span:
+					hd_locator = variant_locator
+
+		if hd_locator is None:
+			raise Exception("HD asset not found")
+
 		return hd_locator
 
 	def get_asset_variants_locators(self, stage, aid):
 		if stage != "":
-			return [] # TODO
+			return self.stages.get_asset_variants_locators(stage, aid)
 
 		_, variants = self.toc_loader._get_node_by_aid(aid)
 		return ["/{}/{}".format(v[0], aid) for v in variants]

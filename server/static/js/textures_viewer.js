@@ -42,7 +42,7 @@ textures_viewer = {
 		d.appendChild(preview);
 
 		var img = document.createElement("img");
-		img.src = "/api/textures_viewer/mipmap?locator=" + locator + "&mipmap_index=0";
+		img.src = "/api/textures_viewer/mipmap?locator=" + locator + "&mipmap_index=0#" + (+Date.now());
 		preview.appendChild(img);
 
 		var controls = document.createElement("div");
@@ -71,7 +71,7 @@ textures_viewer = {
 		controls.appendChild(btn);
 
 		select.onchange = function () {
-			img.src = "/api/textures_viewer/mipmap?locator=" + locator + "&mipmap_index=" + select.selectedIndex;
+			img.src = "/api/textures_viewer/mipmap?locator=" + locator + "&mipmap_index=" + select.selectedIndex + "#" + (+Date.now());
 			btn.href = img.src;
 		};
 	}

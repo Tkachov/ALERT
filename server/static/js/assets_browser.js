@@ -432,6 +432,10 @@ assets_browser = {
 
 			e.appendChild(p);
 			e.appendChild(links);
+
+			if (entry.stage != "") {
+				this.assets.delete(locator); // /get_info every time staged asset is accessed
+			}
 		} else {
 			var self = this;
 			this.extract_asset(
@@ -652,8 +656,9 @@ assets_browser = {
 				}
 			}
 
-			if (this._browser_thumbnails_path != entry.basedir) {
-				this._browser_thumbnails_path = entry.basedir;
+			var thumbs_path = entry.stage + "/" + entry.basedir;
+			if (this._browser_thumbnails_path != thumbs_path) {
+				this._browser_thumbnails_path = thumbs_path;
 
 				var self = this;
 				ajax.postAndParseJson(
@@ -720,7 +725,7 @@ assets_browser = {
 				var taid = entry.stage + "_" + aid;
 				if (this._browser_known_thumbnails.has(taid)) {
 					var thumb = document.createElement("img");
-					thumb.src = "/api/thumbnails/png?stage=" + entry.stage + "&aid=" + aid;
+					thumb.src = "/api/thumbnails/png?stage=" + entry.stage + "&aid=" + aid + "#" + (+Date.now());
 					item.appendChild(thumb);
 					item.className += " with_thumbnail";
 				}

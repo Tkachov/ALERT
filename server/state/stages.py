@@ -76,7 +76,7 @@ class Stage(object):
 					dirs += [aid_fn]
 				else:
 					if current_dir == "" and len(fn) == 16 and re.match("^[A-Fa-f0-9]{16}$", fn):
-						aid_fn = fn.upper()
+						aid_fn = fn.upper() # TODO: reassess; this makes it uppercase to be displayed in UI, but on a case-sensitive FS we won't find this file if it happens to be not in uppercase
 						aid = aid_fn
 					else:
 						aid_fn = normalize_path(aid_fn)
@@ -113,6 +113,37 @@ class Stage(object):
 		f = open(real_path, "wb")
 		f.write(asset_data)
 		f.close()
+
+	def get_asset_variants_locators(self, stage_name, aid):
+		path = self.aid_to_path[aid]
+		results = []
+		for s in self.spans:
+			full_fn = os.path.join(self.path, s, path)
+			if os.path.isfile(full_fn):
+				results += ["{}/{}/{}".format(stage_name, s, path)]
+		return results
+
+	def get_assets_under_path(self, state, stage_name, path):
+		parts = path.split("/")
+
+		node = self.tree
+		for p in parts:
+			if p == "":
+				continue
+			if p not in node:
+				node = None
+				break
+			node = node[p]
+
+		if node is None:
+			return []
+
+		result = []
+		for k in node:
+			if isinstance(node[k], list):
+				aid = node[k][0]
+				result += state.get_asset_variants_locators(stage_name, aid)
+		return result
 
 #
 
@@ -164,6 +195,18 @@ class Stages(object):
 			full_fn = os.path.join("stages/", fn)
 			if os.path.isdir(full_fn):
 				self.stages[fn] = Stage(full_fn)
+
+	def get_asset_variants_locators(self, stage, aid):
+		if stage not in self.stages:
+			raise Exception("Bad stage")
+
+		return self.stages[stage].get_asset_variants_locators(stage, aid)
+
+	def get_assets_under_path(self, stage, path):
+		if stage not in self.stages:
+			raise Exception("Bad stage")
+
+		return self.stages[stage].get_assets_under_path(self.state, stage, path)
 
 	def _open_explorer(self, stage, path, span):
 		if platform.system() != "Windows":

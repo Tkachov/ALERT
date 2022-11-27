@@ -43,7 +43,16 @@ class Thumbnails(object):
 		locator = self.state.locator(locator)
 		
 		if locator.stage is not None:
-			return 0 # TODO: stage support
+			checksum = 0
+			try:
+				full_fn = "stages/" + locator.path
+				if os.path.isfile(full_fn):
+					f = open(full_fn, "rb")
+					checksum = zlib.crc32(f.read(), checksum)
+					f.close()
+			except:
+				pass
+			return checksum
 
 		index = self.state._get_archived_asset_index(locator)
 		toc = self.state.toc_loader.toc
@@ -65,7 +74,15 @@ class Thumbnails(object):
 		parts = path.split("/")
 
 		if stage != "":
-			return [] # TODO: stage support
+			result = []
+			locators = self.state.stages.get_assets_under_path(stage, path)
+			for l in locators:
+				l = self.state.locator(l)
+				fn = self._get_thumbnail_path(l)
+				if os.path.exists(fn):
+					result += [stage + "_" + l.asset_id]
+
+			return result
 		
 		node = self.state.toc_loader.tree
 		for p in parts:
@@ -101,25 +118,17 @@ class Thumbnails(object):
 
 		return ("", 404)
 
-	def make_thumbnail(self, aid):
-		node = self.state.toc_loader._get_node_by_aid(aid)
-		aid, variants = node[0], node[1]
-
-		for index, archive_index in variants:
-			if self._try_making_thumbnail(aid, index):
-				return True
-
-		return False
-
-	def _try_making_thumbnail(self, locator):
+	def _try_making_thumbnail(self, locator, data, asset):
 		try:
-			fn = self._get_thumbnail_path(locator)
-			data, asset = self.state._get_asset_by_locator(locator)
+			if data is None or asset is None:
+				data, asset = self.state._get_asset_by_locator(locator)
 
 			if isinstance(asset, dat1lib.types.autogen.Texture):
 				img = self.state.textures._load_dds_mipmap(asset, None, 0)
 				if img is None:
 					return False
+
+				fn = self._get_thumbnail_path(locator) # don't calculate metahash unless this is a thumbnailable asset, such as texture
 
 				if DEBUG_DDS:
 					img.save(".cache/thumbnails/orig_{}.png".format(aid))
