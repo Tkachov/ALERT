@@ -380,7 +380,7 @@ assets_browser = {
 			}
 
 			// configs/system/system_progression.config
-			if (entry.aid == "9C9C72A303FCFA30") {
+			if (false && entry.aid == "9C9C72A303FCFA30") { // TODO: enable back once it supports stages & MM
 				var sep = document.createElement("span");
 				sep.className = "separator";
 				links.appendChild(sep);
