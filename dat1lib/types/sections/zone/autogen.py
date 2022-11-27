@@ -355,48 +355,6 @@ class x1951BA1F_Section(dat1lib.types.sections.Section):
 
 #
 
-class x2300D240_Section(dat1lib.types.sections.Section):
-	TAG = 0x2300D240
-	TYPE = 'Zone'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 2929 occurrences in 12274 files
-		# size = 16..128176 (avg = 3318.0)
-		#
-		# examples: 92A2BFF3FD07FB68 (min size), 9D199DA44247F6C3 (max size)
-
-		# MM
-		# 1673 occurrences in 10473 files
-		# size = 16..96168 (avg = 2614.8)
-		#
-		# examples: 87B81FEDAAFF3E8A (min size), BE5CA03295D3CE1E (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
-
-	def get_short_suffix(self):
-		return "2300D240 ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 2300D240     | {:6} entries".format(self.TAG, len(self.entries)))
-
-#
-
 class x3D8DBDB8_Section(dat1lib.types.sections.Section):
 	TAG = 0x3D8DBDB8
 	TYPE = 'Zone'
@@ -1486,48 +1444,6 @@ class x80D29828_Section(dat1lib.types.sections.Section):
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 80D29828     | {:6} entries".format(self.TAG, len(self.entries)))
-
-#
-
-class x81999057_Section(dat1lib.types.sections.Section):
-	TAG = 0x81999057
-	TYPE = 'Zone'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 4959 occurrences in 12274 files
-		# size = 32..600556 (avg = 7038.5)
-		#
-		# examples: 8015DB31E416FA83 (min size), AB72D30DF307A8DF (max size)
-
-		# MM
-		# 3802 occurrences in 10473 files
-		# size = 16..2121056 (avg = 10334.6)
-		#
-		# examples: 9F4641AD3DDF206F (min size), 819B7068967A6DB9 (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
-
-	def get_short_suffix(self):
-		return "81999057 ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 81999057     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
