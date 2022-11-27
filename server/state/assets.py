@@ -32,6 +32,6 @@ class Assets(object):
 		locator = get_field(flask.request.args, "locator")
 
 		data, asset = self.state.get_asset(locator)
-		filename = self.state._get_asset_name_loc(locator)
+		filename = self.state.get_asset_basename(locator)
 
 		return flask.send_file(io.BytesIO(data), as_attachment=True, download_name=filename, mimetype='application/octet-stream')

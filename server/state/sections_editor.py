@@ -34,7 +34,7 @@ class SectionsEditor(object):
 
 		data, asset = self.state.get_asset(locator)
 		section_data = asset.dat1.get_section(section)._raw
-		filename = self.state._get_asset_name_loc(locator) + ".{:08X}.raw".format(section)
+		filename = self.state.get_asset_basename(locator) + ".{:08X}.raw".format(section)
 
 		return flask.send_file(io.BytesIO(section_data), as_attachment=True, download_name=filename, mimetype='application/octet-stream')
 
@@ -43,7 +43,7 @@ class SectionsEditor(object):
 
 		data, asset = self.state.get_asset(locator)
 		strings_data = asset.dat1._raw_strings_data
-		filename = self.state._get_asset_name_loc(locator) + ".strings.raw"
+		filename = self.state.get_asset_basename(locator) + ".strings.raw"
 
 		return flask.send_file(io.BytesIO(strings_data), as_attachment=True, download_name=filename, mimetype='application/octet-stream')
 
@@ -151,4 +151,4 @@ class SectionsEditor(object):
 		f.seek(0)
 
 		self.edited_asset = f
-		self.edited_asset_name = self.state._get_asset_name_loc(locator)
+		self.edited_asset_name = self.state.get_asset_basename(locator)
