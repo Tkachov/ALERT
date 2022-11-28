@@ -38,12 +38,12 @@ class ActorModelNameSection(dat1lib.types.sections.Section):
 
 ###
 
-class ActorAssetRefsSection(dat1lib.types.sections.Section):
+class ActorAssetRefsSection(dat1lib.types.sections.ReferencesSection):
 	TAG = 0x3AB204B9 # Actor Asset Refs
 	TYPE = 'Actor'
 
 	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
+		dat1lib.types.sections.ReferencesSection.__init__(self, data, container)
 
 		# MSMR
 		# 4928 occurrences in 5167 files
@@ -56,18 +56,6 @@ class ActorAssetRefsSection(dat1lib.types.sections.Section):
 		# size = 16..2336 (avg = 101.6)
 		#
 		# examples: 80027411351D35BA (min size), BAAE788E4A9CE960 (max size)
-		
-		ENTRY_SIZE = 16
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<QII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
-		# hash(s), string_offset(s), component_type?
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
 
 	def get_short_suffix(self):
 		return "Actor Asset Refs ({})".format(len(self.entries))
@@ -75,15 +63,7 @@ class ActorAssetRefsSection(dat1lib.types.sections.Section):
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Asset Refs   | {:6} entries".format(self.TAG, len(self.entries)))
-		for i, x in enumerate(self.entries):
-			s = self._dat1.get_string(x[1])
-			print("  - {:<2}  {:08X}  {:016X} {}".format(i, x[2], x[0], s))
-			if config.get("section_warnings", True):
-				if s is not None:
-					real_hash = crc64.hash(s)
-					if real_hash != x[0]:
-						print("        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, x[0]))
-		print("")
+		dat1lib.types.sections.ReferencesSection.print_verbose(self, config)
 
 ###
 

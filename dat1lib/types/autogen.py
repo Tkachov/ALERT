@@ -1,8 +1,7 @@
 import dat1lib.types.dat1
-import dat1lib.types.sections
-import dat1lib.utils as utils
 import io
 import struct
+from dat1lib.types.sections.nodegraph.generic import NodeGraphSection
 
 class Actor(object):
 	MAGIC = 0x7C207220
@@ -433,27 +432,6 @@ class MaterialGraph2(MaterialGraph):
 
 #
 
-class NodeGraphSection(dat1lib.types.sections.SerializedSection):
-	TAG = -1
-	TYPE = 'NodeGraph'
-
-	def __init__(self, tag, data, container):
-		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
-		self.tag = tag
-
-	def get_short_suffix(self):
-		return "type"
-
-	def print_verbose(self, config):
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Node         |".format(self.tag))
-		print(json.dumps(self.root, indent=4, sort_keys=True))
-		if len(self.extras) > 0:
-			print(" "*10, self.extras)
-
-	def web_repr(self):
-		return {"name": "Node {:08X}".format(self.tag), "type": "json", "readonly": True, "content": self.root}
-
 class NodeGraph(object):
 	MAGIC = 0x9E4E9BA4
 
@@ -477,7 +455,11 @@ class NodeGraph(object):
 		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
 
 		for i in range(len(self.dat1.header.sections)):
-			self.dat1.sections[i] = NodeGraphSection(self.dat1.header.sections[i].tag, self.dat1._sections_data[i], self.dat1)
+			if self.dat1.sections[i] is None:
+				try:
+					self.dat1.sections[i] = NodeGraphSection(self.dat1.header.sections[i].tag, self.dat1._sections_data[i], self.dat1)
+				except:
+					pass
 
 	def save(self, f):
 		self.size = self.dat1.header.size

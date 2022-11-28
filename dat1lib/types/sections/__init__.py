@@ -356,3 +356,57 @@ class SerializedSection(Section):
 		r = f.tell() % a
 		if r != 0:
 			f.write(b'\0' * (a - r))
+
+###
+
+class ReferencesSection(Section):
+	def __init__(self, data, container):
+		Section.__init__(self, data, container)
+
+		ENTRY_SIZE = 16
+		count = len(data)//ENTRY_SIZE
+		self.entries = [struct.unpack("<QII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for e in self.entries:
+			of.write(struct.pack("<QII", *e))
+		of.seek(0)
+		return of.read()
+
+	def print_verbose(self, config):
+		# crc32s of ".actor", ".config", etc
+		EXTENSIONS_HASHES = {
+			0x37E72F50: "Actor",
+			0xA9C3E1B8: "AnimClip",
+			0xD1AD9F7C: "AnimSet",
+			0xF56C78E4: "Atmosphere",
+			0x57B67E8F: "Cinematic2",
+			0xEA7EFDD4: "Conduit",
+			0xA9F149C4: "Config",
+			0xE978B5BA: "Level",
+			0x08BD74BA: "LevelLight",
+			0x29E2F18F: "Localization",
+			0xB5AAFACC: "Material",
+			0x47048393: "MaterialGraph",
+			0xA4070B70: "Model",
+			0x53B8EA03: "NodeGraph",
+			0x9676F576: "PerformanceClip",
+			0xD1BF8CDA: "PerformanceSet",
+			0xFFA86BB6: "Soundbank",
+			0x95A3A227: "Texture",
+			0xDABA2AEA: "VisualEffect",
+			0xD8A92608: "WwiseLookup",
+			0xE1EE9AA6: "Zone"
+		}
+
+		for i, x in enumerate(self.entries):
+			s = self._dat1.get_string(x[1])
+			ext = EXTENSIONS_HASHES.get(x[2], "{:08X}".format(x[2]))
+			print("  - {:<2}  {:016X}  {}{} {}".format(i, x[0], ext, (16 - len(ext))*" ", s))
+			if config.get("section_warnings", True):
+				if s is not None:
+					real_hash = crc64.hash(s)
+					if real_hash != x[0]:
+						print("        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, x[0]))
+		print("")
