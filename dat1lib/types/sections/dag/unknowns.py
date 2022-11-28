@@ -35,7 +35,7 @@ class AssetTypeSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
-		self.entries = [ord(c) for c in data]
+		self.entries = data
 
 	def get_short_suffix(self):
 		return "types ({})".format(len(self.entries))

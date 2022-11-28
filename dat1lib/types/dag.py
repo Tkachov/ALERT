@@ -97,7 +97,7 @@ class DAG(object):
 
 			print("")
 			print("Building graph...")
-			print("0 %                                          100 %" # 50 chars		)
+			print("0 %                                          100 %") # 50 chars
 			cnt = len(prnts.entries)
 			root = []
 			graph = []

@@ -85,9 +85,8 @@ def read(f, try_unknown=True):
 	magic, = struct.unpack("<I", f.read(4))
 	f.seek(0)
 
-	for k in types.KNOWN_TYPES:
-		if k == magic:
-			return types.KNOWN_TYPES[k](f)
+	if magic in types.KNOWN_TYPES:
+		return types.KNOWN_TYPES[magic](f)
 
 	if try_unknown:
 		try:
