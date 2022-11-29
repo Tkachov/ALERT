@@ -495,6 +495,7 @@ class x707F1B58_Section(dat1lib.types.sections.Section):
 
 ###
 
+"""
 class x380A5744_Section(dat1lib.types.sections.Section):
 	TAG = 0x380A5744
 	TYPE = 'model'
@@ -571,6 +572,7 @@ class x380A5744_Section(dat1lib.types.sections.Section):
 
 		print(self.rest[:32], "...")
 		print("")
+"""
 
 ###
 
