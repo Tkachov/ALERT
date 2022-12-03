@@ -507,7 +507,7 @@ class xA600C108_Section(dat1lib.types.sections.Section):
 
 #
 
-class xDCA379A2_Section(dat1lib.types.sections.Section):
+class xDCA379A2_Section(dat1lib.types.sections.Section): # weights?
 	TAG = 0xDCA379A2
 	TYPE = 'Model'
 
@@ -531,11 +531,11 @@ class xDCA379A2_Section(dat1lib.types.sections.Section):
 		return "DCA379A2 ({} bytes)".format(len(self._raw))
 
 	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print("{:08X} | weights?     | {:6} bytes".format(self.TAG, len(self._raw)))
+
 		if config.get("web", False):
 			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | DCA379A2     | {:6} bytes".format(self.TAG, len(self._raw)))
 
 #
 

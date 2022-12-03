@@ -6,7 +6,7 @@ class MeshDefinition(object):
 	def __init__(self, data):
 		self.unknowns = struct.unpack("<IIIII", data[:20])
 		self.vertexStart, self.indexStart, self.indexCount, self.vertexCount = struct.unpack("<IIII", data[20:36])
-		self.unknowns2 = struct.unpack("<IIIIIII", data[36:])
+		self.unknowns2 = struct.unpack("<IIIffff", data[36:])
 
 class MeshesSection(dat1lib.types.sections.Section): # aka model_subset
 	TAG = 0x78D9CBDE
@@ -36,7 +36,7 @@ class MeshesSection(dat1lib.types.sections.Section): # aka model_subset
 		for m in self.meshes:
 			of.write(struct.pack("<IIIII", m.unknowns))
 			of.write(struct.pack("<IIII", m.vertexStart, m.indexStart, m.indexCount, m.vertexCount))
-			of.write(struct.pack("<IIIIIII", m.unknowns2))
+			of.write(struct.pack("<IIIffff", m.unknowns2))
 		of.seek(0)
 		return of.read()
 
@@ -52,5 +52,5 @@ class MeshesSection(dat1lib.types.sections.Section): # aka model_subset
 			print("         - {:<3}  {:08X}  {:08X}  {:08X}  {:08X}  {:08X}".format(i, *l.unknowns))
 			print("                {:8}  {:8}  {:8}  {:8}".format(l.vertexStart, l.indexStart, l.indexCount, l.vertexCount))
 			print("                {:8}  {:8}  {:8}".format(*l.unknowns2[:3]))
-			print("                {:08X}  {:08X}  {:8}  {:08X}".format(*l.unknowns2[3:]))
+			print("                {:8.3}  {:8.3}  {:8.3}  {:8.3}".format(*l.unknowns2[3:]))
 			print("")
