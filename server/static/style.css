@@ -1747,6 +1747,11 @@ html, body {
 	margin: 0;
 	width: calc(70% - 2*1px - 2*3pt - 8pt);
 	margin-right: 8pt;
+	border: 1px solid #CCC;
+}
+
+#stage_selector .new_stage > input:hover {
+	border-color: var(--interactable-highlight-color);
 }
 
 #stage_selector .new_stage > button {
