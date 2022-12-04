@@ -260,6 +260,11 @@ windows = {
 	open_suits_editor: function () {
 		suits_editor.show_editor(); // TODO: open in current stage
 		this.hide_start_menu();
+	},
+
+	open_suit_importer: function () {
+		suit_importer.show_importer();
+		this.hide_start_menu();
 	}
 };
 

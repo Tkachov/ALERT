@@ -24,34 +24,45 @@ class MaterialSerializedDataSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8010653ABB4F13F1 (min size), AAE9D798DC4426DB (max size)
 
-		self.data_size, self.unk1, self.unk2, self.unk3, self.unk4 = struct.unpack("<IIIII", data[:20])
-		self.materials_count, self.unk5, self.unk6, self.unk7, self.unk8 = struct.unpack("<IIIII", data[20:40])
+		self.data_size, self.params_count, self.unk2, self.unk3, self.params_batch_end = struct.unpack("<IIIII", data[:20])
+		self.textures_count, self.textures_batch_start, self.textures_batch_end, self.unk7, self.unk8 = struct.unpack("<IIIII", data[20:40])
 
-		self.unk9 = data[40:self.unk4]
-		rest = data[self.unk4:]
-
+		params_batch = data[40:self.params_batch_end]
+		params_keys, params_values = params_batch[:8*self.params_count], params_batch[8*self.params_count:]
 		ENTRY_SIZE = 8
-		count = self.materials_count
-		self.materials = [struct.unpack("<II", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
+		count = self.params_count
+		params = [struct.unpack("<HHI", params_keys[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
-		self.strings = rest[self.materials_count*8:] # TODO: use dat1lib.types.sections.StringsSection here?
+		self.params = []
+		for p in params:
+			offset, size, key = p
+			self.params += [(key, params_values[offset:offset+size])]
 
+		textures_batch = data[self.textures_batch_start:self.textures_batch_end]
+		ENTRY_SIZE = 8
+		count = self.textures_count
+		self.textures = [struct.unpack("<II", textures_batch[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
+
+		self.strings = data[self.textures_batch_end:] # TODO: use dat1lib.types.sections.StringsSection here?
+
+	"""
 	def save(self):
 		of = io.BytesIO(bytes())
 
-		self.data_size = self.unk4 + self.materials_count * 8 + len(self.strings)
+		self.data_size = self.params_batch_end + self.textures_count * 8 + len(self.strings)
 
-		of.write(struct.pack("<IIIII", self.data_size, self.unk1, self.unk2, self.unk3, self.unk4))
-		of.write(struct.pack("<IIIII", self.materials_count, self.unk5, self.unk6, self.unk7, self.unk8))
+		of.write(struct.pack("<IIIII", self.data_size, self.params_count, self.unk2, self.unk3, self.params_batch_end))
+		of.write(struct.pack("<IIIII", self.textures_count, self.textures_batch_start, self.textures_batch_end, self.unk7, self.unk8))
 		of.write(self.unk9)		
-		for m in self.materials:
+		for m in self.textures:
 			of.write(struct.pack("<II", *m))
 		of.write(self.strings)
 		of.seek(0)
 		return of.read()
+	"""
 
 	def get_short_suffix(self):
-		return "Material Serialized Data ({})".format(len(self.materials)) # TODO: more like material maps paths? textures paths?
+		return "Material Serialized Data ({}, {})".format(len(self.params), len(self.textures)) # TODO: more like material maps paths? textures paths?
 
 	def _get_string(self, start):
 		i = start
@@ -66,26 +77,40 @@ class MaterialSerializedDataSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Materials SD | {:6} values".format(self.TAG, len(self.materials)))
+		print("{:08X} | Materials SD | {:6} values".format(self.TAG, len(self.textures)))
 
-		print(self.data_size, self.unk1, self.unk2, self.unk3, self.unk4)
-		print(self.materials_count, self.unk5, self.unk6, self.unk7, self.unk8)
-		print(" ".join(["{:02X}".format(c) for c in self.unk9]))
+		print()
+		print("         section_size = {}".format(self.data_size))
+		print("         unknown 1    = {}".format(self.unk2))
+		print("         unknown 2    = {}".format(self.unk3))
+		print("         unknown 3    = {}".format(self.unk7))
+		print("         unknown 4    = {}".format(self.unk8))
 
-		
-		print("")
-		#######........ | 123
-		print("           #    name")
-		print("         -----------")
-		for i in range(len(self.materials)):
-			spos, shash = self.materials[i]
+		print()
+		print("         // {} parameters (until offset={})".format(self.params_count, self.params_batch_end))
+		print()
+		#######........ | 123  12345678  ...
+		print("           #    slotname  value")
+		print("         -----------------------------")
+		for i, (k, v) in enumerate(self.params):
+			print("         - {:<3}  {:08X}  {}".format(i, k, utils.format_bytes(v)))
+		print()
+
+		print()
+		print("         // {} textures (from offset={} until offset={})".format(self.textures_count, self.textures_batch_start, self.textures_batch_end))
+		print()
+		#######........ | 123  12345678  1234  ...
+		print("           #    slotname  ofst  value")
+		print("         -----------------------------")
+		for i in range(len(self.textures)):
+			spos, shash = self.textures[i]
 
 			s = self._get_string(spos)
 			if s is None:
 				s = "<str at {}>".format(spos)
 
-			print("         - {:<3}  {:08X} {:08X}  {:<4}  {}".format(i, shash, crc32.hash(s, False), spos, repr(s)))
-		print("")
+			print("         - {:<3}  {:08X}  {:<4}  {}".format(i, shash, spos, repr(s)))
+		print()
 
 #
 

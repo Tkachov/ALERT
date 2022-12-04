@@ -10,11 +10,13 @@ import subprocess
 
 from server.state.stages.stage import Stage
 from server.state.stages.smpcmod_importer import StagesModImporter
+from server.state.stages.suit_importer import StagesSuitImporter
 
 class Stages(object):
 	def __init__(self, state):
 		self.state = state
 		self.smpcmod_importer = StagesModImporter(self)
+		self.suit_importer = StagesSuitImporter(self)
 		self.reboot()
 
 	def reboot(self):
@@ -28,6 +30,7 @@ class Stages(object):
 		make_post_json_route(app, "/api/stages/add_asset", self.stage_asset)
 		make_post_json_route(app, "/api/stages/add_directory", self.stage_directory)
 		make_post_json_route(app, "/api/stages/import_smpcmod", self.import_smpcmod)
+		make_post_json_route(app, "/api/stages/import_suit", self.import_suit)
 
 	def refresh_stages(self):
 		self.reboot()
@@ -57,6 +60,12 @@ class Stages(object):
 		stage = get_field(rq.form, "stage")
 		smpcmod = rq.files["smpcmod"].read()
 		return self.smpcmod_importer.import_smpcmod(io.BytesIO(smpcmod), stage)
+
+	def import_suit(self):
+		rq = flask.request
+		stage = get_field(rq.form, "stage")
+		suit = rq.files["suit"].read()
+		return self.suit_importer.import_suit(io.BytesIO(suit), stage)
 
 	# internal
 

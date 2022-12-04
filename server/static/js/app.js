@@ -16,6 +16,7 @@ var settings_window = { ready: false };
 var smpcmod_importer = { ready: false };
 var stage_selector = { ready: false };
 var suits_editor = { ready: false };
+var suit_importer = { ready: false };
 var textures_viewer = { ready: false };
 var windows = { ready: false };
 

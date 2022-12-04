@@ -1379,6 +1379,8 @@ html, body {
 }
 
 #start_menu > div a {
+	display: block;
+	margin-bottom: 6pt;
 	cursor: pointer;
 }
 
@@ -1785,9 +1787,10 @@ html, body {
 	background: var(--highlight-color);
 }
 
-/* .smpcmod importer */
+/* .smpcmod & .suit importers */
 
-#smpcmod_importer > div {
+#smpcmod_importer > div,
+#suit_importer > div {
 	background: #FFF;
 	color: #000;
 	width: 22%;
@@ -1799,7 +1802,8 @@ html, body {
 	transform: none;
 }
 
-#smpcmod_importer .import_form {
+#smpcmod_importer .import_form,
+#suit_importer .import_form {
 	display: flex;
 	flex-direction: column;
 	font-size: 10pt;
