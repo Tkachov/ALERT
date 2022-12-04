@@ -12,6 +12,8 @@ import platform
 import re
 import subprocess
 
+from server.state.stages__smpcmod_importer import StagesModImporter
+
 def normalize_path(path):
 	return path.lower().replace('\\', '/').strip()
 
@@ -89,16 +91,19 @@ class Stage(object):
 
 	#
 
-	def stage_asset(self, path, locator, state):
-		# TODO: maintain correct structs state
-		real_path = os.path.join(self.path, self._get_span(locator.span), path)
+	def stage_asset_from_toc(self, path, locator, state):
 		asset_data = state.get_asset_data(locator)
+		self.stage_asset_data(path, locator.span, asset_data)
+
+	def stage_asset_data(self, path, span_index, data):
+		# TODO: maintain correct structs state
+		real_path = os.path.join(self.path, self._get_span(span_index), path)
 
 		dir_path = os.path.dirname(real_path)
 		os.makedirs(dir_path, exist_ok=True)
 
 		f = open(real_path, "wb")
-		f.write(asset_data)
+		f.write(data)
 		f.close()
 
 	def _get_span(self, span_index):
@@ -143,6 +148,7 @@ class Stage(object):
 class Stages(object):
 	def __init__(self, state):
 		self.state = state
+		self.smpcmod_importer = StagesModImporter(self)
 		self.reboot()
 
 	def reboot(self):
@@ -155,6 +161,7 @@ class Stages(object):
 		make_post_json_route(app, "/api/stages/open_explorer", self.open_explorer)
 		make_post_json_route(app, "/api/stages/add_asset", self.stage_asset)
 		make_post_json_route(app, "/api/stages/add_directory", self.stage_directory)
+		make_post_json_route(app, "/api/stages/import_smpcmod", self.import_smpcmod)
 
 	def refresh_stages(self):
 		self.reboot()
@@ -179,6 +186,12 @@ class Stages(object):
 		path = get_field(flask.request.form, "path")
 		return self._stage_directory(stage, path)
 
+	def import_smpcmod(self):
+		rq = flask.request
+		stage = get_field(rq.form, "stage")
+		smpcmod = rq.files["smpcmod"].read()
+		return self.smpcmod_importer.import_smpcmod(io.BytesIO(smpcmod), stage)
+
 	# internal
 
 	def boot(self):
@@ -200,6 +213,18 @@ class Stages(object):
 			raise Exception("Bad stage")
 
 		return self.stages[stage].get_assets_under_path(self.state, stage, path)
+
+	def get_stage(self, stage, create_if_needed=True): # => (Stage, newly_created:bool)
+		if stage in self.stages:
+			return (self.stages[stage], False)
+		
+		if not create_if_needed:
+			return (None, False)
+
+		fn = os.path.join("stages/", stage)
+		os.makedirs(fn, exist_ok=True)
+		self.stages[stage] = Stage(fn)
+		return (self.stages[stage], True)
 
 	#
 
@@ -272,9 +297,9 @@ class Stages(object):
 		if all_spans:
 			locators = self.state.get_asset_variants_locators("", aid)
 			for l in locators:
-				dst_stage_object.stage_asset(path, self.state.locator(l), self.state)
+				dst_stage_object.stage_asset_from_toc(path, self.state.locator(l), self.state)
 		else:
-			dst_stage_object.stage_asset(path, locator, self.state)
+			dst_stage_object.stage_asset_from_toc(path, locator, self.state)
 
 		return True
 

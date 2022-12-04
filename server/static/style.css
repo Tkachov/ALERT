@@ -5,6 +5,8 @@
 	--selected-color: rgb(219, 233, 250);
 
 	--windows-bar-height: 24pt;
+	--windows-bar-scrollbar-height: 10pt;
+	--windows-bar-start-button-width: var(--windows-bar-height);
 
 	--window-header-h-padding: 6pt;
 	--window-header-v-padding: 2pt;
@@ -71,11 +73,11 @@ html, body {
 	font-size: 20pt;
 }
 
-.splash > div form {
+#load_toc > div form {
 	margin-top: 24pt;
 }
 
-.splash input,
+#load_toc input,
 .sections_editor input {
 	display: block;
 	padding: 8pt; /* TODO */
@@ -89,12 +91,12 @@ html, body {
 	font-size: 16pt;
 }
 
-.splash input:hover,
+#load_toc input:hover,
 .sections_editor input:hover {
 	border-color: var(--interactable-highlight-color);
 }
 
-.splash input[type="submit"],
+#load_toc input[type="submit"],
 .sections_editor input[type="submit"] {
 	box-sizing: content-box;
 
@@ -110,7 +112,7 @@ html, body {
 	cursor: pointer;
 }
 
-.splash input[type="submit"]:hover,
+#load_toc input[type="submit"]:hover,
 .sections_editor input[type="submit"]:hover {
 	border-color: var(--interactable-highlight-color);
 	color: var(--interactable-highlight-color);
@@ -1238,6 +1240,21 @@ html, body {
 	flex-shrink: 0;
 }
 
+#windows_bar.has_scrollbar {
+	height: calc(var(--windows-bar-height) + var(--windows-bar-scrollbar-height));
+	position: fixed;
+	bottom: 0;
+}
+
+#windows_bar.has_scrollbar.sliding_scrollbar {
+	transition: all 0.3s ease;
+	bottom: calc(-1 * var(--windows-bar-scrollbar-height));
+}
+
+#windows_bar.has_scrollbar.sliding_scrollbar:hover {
+	bottom: 0;
+}
+
 .window_button {
 	display: inline-flex;
 	max-width: 140pt;
@@ -1267,6 +1284,102 @@ html, body {
 
 .window_button.selected:hover {
 	background: rgba(255, 255, 255, 0.5);
+}
+
+.start_button {
+	min-width: calc(var(--windows-bar-start-button-width) - 2*2pt);
+	max-width: calc(var(--windows-bar-start-button-width) - 2*2pt);
+	margin-left: 0;
+}
+
+.start_button::before {
+	display: block;
+	content: ' ';
+	width: 100%;
+	height: 100%;
+	background: url("img/start.svg");
+	background-size: cover;
+}
+
+.windows_bar_contents {
+	margin-left: 6pt;
+	width: calc(100vw - var(--windows-bar-start-button-width) - 2*2pt - 6pt);
+	overflow: auto;
+	display: flex;
+}
+
+.windows_bar_contents > .window_button:first-child {
+	margin-left: 0;
+}
+
+/* start menu */
+
+#start_menu {
+	position: fixed;
+	z-index: 200;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: calc(100vh - var(--windows-bar-height));
+	background: rgba(0, 0, 0, 0);
+	color: #FFF;
+	display: none;
+	overflow: hidden;
+}
+
+#start_menu.has_scrollbar {
+	height: calc(100vh - var(--windows-bar-height) - var(--windows-bar-scrollbar-height));
+}
+
+#start_menu.open {
+	display: block;
+}
+
+#start_menu.animation_show > div {
+	animation: show_start_menu 0.2s ease-out forwards;
+}
+
+@keyframes show_start_menu {
+	from {
+		bottom: -200pt;
+		opacity: 0;
+	}
+
+	to {
+		bottom: 0;
+		opacity: 1;
+	}
+}
+
+#start_menu.animation_hide > div {
+	animation: hide_start_menu 0.15s ease-in forwards;
+}
+
+@keyframes hide_start_menu {
+	from {
+		bottom: 0;
+		opacity: 1;
+	}
+
+	to {
+		bottom: -200pt;
+		opacity: 0;
+	}
+}
+
+#start_menu > div {
+	width: 300pt;
+	height: 300pt;
+	padding: 10pt;
+	margin: var(--windows-bar-scrollbar-height);
+	background: #333336;
+	color: #FFF;
+	bottom: 0;
+	position: absolute;
+}
+
+#start_menu > div a {
+	cursor: pointer;
 }
 
 /* configs editor */
@@ -1665,4 +1778,43 @@ html, body {
 #stage_selector .existing_stages span:hover {
 	cursor: pointer;
 	background: var(--highlight-color);
+}
+
+/* .smpcmod importer */
+
+#smpcmod_importer > div {
+	background: #FFF;
+	color: #000;
+	width: 22%;
+	height: 80%;
+	margin: auto;
+	padding: 10pt;
+	display: flex;
+	flex-direction: column;
+	transform: none;
+}
+
+#smpcmod_importer .import_form {
+	display: flex;
+	flex-direction: column;
+	font-size: 10pt;
+	text-align: center;
+}
+
+.import_form > b:first-child {
+	font-size: 14pt;
+	text-align: left;
+	margin-bottom: 14pt;
+}
+
+.import_form > input {
+	margin-bottom: 6pt;
+}
+
+.import_form > input + input {
+	margin-bottom: 12pt;
+}
+
+.import_form > button {
+	margin-bottom: 12pt;
 }

@@ -15,6 +15,13 @@ function replaceElementTextById(eid, t) {
 	replaceElementText(document.getElementById(eid), t);
 }
 
+function classListSetIf(e, className, condition) {
+	if (condition)
+		e.classList.add(className);
+	else
+		e.classList.remove(className);
+}
+
 // storage
 
 function save_into_storage(key, obj) {
