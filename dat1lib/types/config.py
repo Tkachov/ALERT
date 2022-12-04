@@ -1,4 +1,6 @@
 import dat1lib.types.dat1
+import dat1lib.types.sections.config.references
+import dat1lib.types.sections.config.serialized
 import dat1lib.utils as utils
 import io
 import struct
@@ -44,6 +46,19 @@ class Config(object):
 		f.write(struct.pack("<II", self.magic, self.dat1.header.size))
 		f.write(self.unk)
 		self.dat1.save(f)
+
+	#
+
+	def get_type_section(self):
+		return self.dat1.get_section(dat1lib.types.sections.config.serialized.ConfigTypeSection.TAG)
+
+	def get_content_section(self):
+		return self.dat1.get_section(dat1lib.types.sections.config.serialized.ConfigContentSection.TAG)
+
+	def get_references_section(self):
+		return self.dat1.get_section(dat1lib.types.sections.config.references.ReferencesSection.TAG)
+
+	#
 
 	def print_info(self, config):
 		print("-------")

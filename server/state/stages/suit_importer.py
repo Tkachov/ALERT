@@ -1,5 +1,6 @@
 import dat1lib
 import dat1lib.crc64 as crc64
+import dat1lib.utils as utils
 import io
 import os.path
 import re
@@ -33,15 +34,26 @@ class StagesSuitImporter(object):
 
 		#
 
+		info_size = len(info)
+		info_version = 0
+		if info_size % 21 == 2:
+			info_version = info[0]
+
+		offset = 0
+		if info_version == 1:
+			offset = 1
+
 		SIZE = 21
 		count = len(info) // SIZE
-		entries = [struct.unpack("<IIIQB", info[i*SIZE:(i+1)*SIZE]) for i in range(count)]
+		entries = [struct.unpack("<IIIQB", info[offset+i*SIZE:offset+(i+1)*SIZE]) for i in range(count)]
 
 		possible_paths = {}
-		self.make_path(possible_paths, "ui\\textures\\pause\\character\\suit_{}.texture".format(suitname))
 		self.make_path(possible_paths, "configs\\inventory\\inv_reward_loadout_{}.config".format(suitname))
 		self.make_path(possible_paths, "configs\\equipment\\equip_techweb_suit_{}.config".format(suitname))
-		self.make_path(possible_paths, "configs\\masteritemloadoutlist\\itemloadout_spiderman_{}.config".format(suitname))
+		self.make_path(possible_paths, "configs\\masteritemloadoutlist\\itemloadout_spiderman_{}.config".format(suitname))		
+		self.make_path(possible_paths, "ui\\textures\\pause\\character\\suit_{}.texture".format(suitname))
+		self.make_path(possible_paths, "ui\\textures\\pause\\character\\suit_thumbs\\suit_{}.texture".format(suitname))
+		self.make_path(possible_paths, "ui\\textures\\pause\\character\\suit_chest\\suit_image_{}.texture".format(suitname))
 
 		for e in entries:
 			self.make_paths_from_asset(e, container, possible_paths)
@@ -54,10 +66,7 @@ class StagesSuitImporter(object):
 	#
 
 	def make_path(self, paths, path):
-		def normalize_path(path):
-			return path.lower().replace('\\', '/') # TODO: utils
-
-		path_normalized = normalize_path(path)
+		path_normalized = utils.normalize_path(path)
 		aid = crc64.hash(path_normalized)
 		paths["{:016X}".format(aid)] = path_normalized
 
@@ -89,7 +98,7 @@ class StagesSuitImporter(object):
 	def make_paths_from_vanity_config(self, asset, possible_paths):
 		# VanityItemConfig -> .model path (not in references section)
 		try:
-			s = asset.dat1.get_section(0xE501186F).root["ModelList"]["Model"]["AssetPath"] # TODO: Config.get_section
+			s = asset.get_content_section().root["ModelList"]["Model"]["AssetPath"]
 			if is_pathlike(s):
 				self.make_path(possible_paths, s)
 		except:
