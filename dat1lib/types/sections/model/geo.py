@@ -80,6 +80,7 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 		#
 		# examples: 83C4C8562CDC453B (min size), 90B61AD0494B91C9 (max size)
 
+		"""
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
 		# self.vertexes = [Vertex(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
@@ -88,6 +89,21 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 
 		BUF_SIZE = len(data)//8
 		buffers = [struct.unpack("<" + "h" * (BUF_SIZE//2), data[i*BUF_SIZE:(i+1)*BUF_SIZE]) for i in range(8)]
+		"""
+
+		BUFS = 8
+		MAX_BUF_SIZE = 0x10000
+
+		buffers = []
+		for i in range(BUFS):
+			buffers += [[]]
+
+		for offset in range(0, len(data), BUFS*MAX_BUF_SIZE):
+			end = min(offset + BUFS*MAX_BUF_SIZE, len(data))
+			batch = data[offset:end]
+			buf_size = (end - offset)//BUFS
+			for i in range(BUFS):
+				buffers[i] += list(struct.unpack("<{}h".format(buf_size//2), batch[i*buf_size:(i+1)*buf_size]))
 
 		self.vertexes = []
 		X, Y, Z = 0, 0, 0
@@ -106,6 +122,9 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 			U ^= u
 			V ^= v
 			self.vertexes += [Vertex((X, Y, Z), (NX, NY, NZ), (U, V))]
+			if i % MAX_BUF_SIZE == 0:
+				l = self.vertexes[i]
+				print("         - {:<5}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}".format(i, l.x, l.y, l.z, l.nx, l.ny, l.nz, l.u, l.v))
 
 	def get_short_suffix(self):
 		return "vertexes ({})".format(len(self.vertexes))
