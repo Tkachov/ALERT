@@ -91,40 +91,38 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 		buffers = [struct.unpack("<" + "h" * (BUF_SIZE//2), data[i*BUF_SIZE:(i+1)*BUF_SIZE]) for i in range(8)]
 		"""
 
+		self.vertexes = []
 		BUFS = 8
 		MAX_BUF_SIZE = 0x10000
-
-		buffers = []
-		for i in range(BUFS):
-			buffers += [[]]
 
 		for offset in range(0, len(data), BUFS*MAX_BUF_SIZE):
 			end = min(offset + BUFS*MAX_BUF_SIZE, len(data))
 			batch = data[offset:end]
 			buf_size = (end - offset)//BUFS
+
+			buffers = []
+			for i in range(BUFS):
+				buffers += [[]]
+
 			for i in range(BUFS):
 				buffers[i] += list(struct.unpack("<{}h".format(buf_size//2), batch[i*buf_size:(i+1)*buf_size]))
 
-		self.vertexes = []
-		X, Y, Z = 0, 0, 0
-		NX, NY, NZ = 0, 0, 0
-		U, V = 0, 0
-		for i in range(len(buffers[0])):
-			x, y, z = buffers[2][i], buffers[3][i], buffers[4][i]
-			nx, ny, nz = buffers[0][i], buffers[1][i], buffers[5][i]
-			u, v = buffers[6][i], buffers[7][i]
-			X ^= x
-			Y ^= y
-			Z ^= z
-			NX ^= nx
-			NY ^= ny
-			NZ ^= nz
-			U ^= u
-			V ^= v
-			self.vertexes += [Vertex((X, Y, Z), (NX, NY, NZ), (U, V))]
-			if i % MAX_BUF_SIZE == 0:
-				l = self.vertexes[i]
-				print("         - {:<5}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}  {:8.3}".format(i, l.x, l.y, l.z, l.nx, l.ny, l.nz, l.u, l.v))
+			X, Y, Z = 0, 0, 0
+			NX, NY, NZ = 0, 0, 0
+			U, V = 0, 0
+			for i in range(len(buffers[0])):
+				x, y, z = buffers[2][i], buffers[3][i], buffers[4][i]
+				nx, ny, nz = buffers[0][i], buffers[1][i], buffers[5][i]
+				u, v = buffers[6][i], buffers[7][i]
+				X ^= x
+				Y ^= y
+				Z ^= z
+				NX ^= nx
+				NY ^= ny
+				NZ ^= nz
+				U ^= u
+				V ^= v
+				self.vertexes += [Vertex((X, Y, Z), (NX, NY, NZ), (U, V))]
 
 	def get_short_suffix(self):
 		return "vertexes ({})".format(len(self.vertexes))

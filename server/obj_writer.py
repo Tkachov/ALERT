@@ -104,11 +104,12 @@ class ObjHelper(object):
 					index_index = mesh.indexStart + j*3
 					deindex = mesh.indexStart
 					deindex = indexes[deindex]
+					deindex = 0
 					self.write_poly([indexes[index_index+2]-deindex, indexes[index_index+1]-deindex, indexes[index_index]-deindex], ["", "", ""])
 
 				self.end_mesh()
 
-				if i > 5:
+				if i > 17:
 					break
 
 		"""
