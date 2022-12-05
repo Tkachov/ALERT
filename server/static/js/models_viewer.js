@@ -22,7 +22,7 @@ models_viewer = {
 
 			__track_resize: true,
 
-			init: function (fullname, shortname) {
+			init: function (shortname, fullname) {
 				var title = fullname + " — Models Viewer";
 				var button_title = shortname + " — Models Viewer";
 				var e = windows.new_window(title, button_title);
