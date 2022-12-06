@@ -34,7 +34,7 @@ class HavokData(object):
 		self.leftover = f.read()
 
 class HavokSection(dat1lib.types.sections.Section):
-	TAG = 0xEFD92E68
+	TAG = 0xEFD92E68 # Model Physics Data
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -60,3 +60,6 @@ class HavokSection(dat1lib.types.sections.Section):
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Havok Data   |".format(self.TAG))
+
+	def web_repr(self):
+		return {"name": "Havok Data", "type": "text", "readonly": True, "content": ""}

@@ -38,6 +38,9 @@ class IndexesSection(dat1lib.types.sections.Section): # aka model_index
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | model_index  | {:6} shorts".format(self.TAG, len(self.values)))
 
+	def web_repr(self):
+		return {"name": "Indexes", "type": "text", "readonly": True, "content": "{} indexes".format(len(self.values))}
+
 ###
 
 class Vertex(object):
@@ -142,6 +145,9 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 		print("...")
 		print("")
 
+	def web_repr(self):
+		return {"name": "Vertexes", "type": "text", "readonly": True, "content": "{} vertexes".format(len(self.vertexes))}
+
 ###
 
 class x6B855EED_Section(dat1lib.types.sections.Section):
@@ -179,6 +185,9 @@ class x6B855EED_Section(dat1lib.types.sections.Section):
 		print(self.values[:32], "...", self.values[-32:])
 		print("")
 
+	def web_repr(self):
+		return {"name": "Vertex-related 1", "type": "text", "readonly": True, "content": "{} uints".format(len(self.values))}
+
 class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 	TAG = 0x5CBA9DE9
 	TYPE = 'model'
@@ -215,4 +224,7 @@ class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 		#s = set(self.values)
 		#print(len(s), min(s), max(s))
 		print("")
+
+	def web_repr(self):
+		return {"name": "Vertex-related 2", "type": "text", "readonly": True, "content": "{} uints".format(len(self.values))}
 

@@ -52,8 +52,20 @@ sections_viewer = {
 
 		// spoilers with reports by section
 
+		function isScrolledIntoView(el) {
+			var rect = el.getBoundingClientRect();
+			var elemTop = rect.top;
+			var elemBottom = rect.bottom;
+
+			return (elemTop < window.innerHeight && elemBottom >= 0);
+		}
+
 		function make_spoiler_onclick(s) {
-			return function () { s.classList.toggle("open"); };
+			return function () {
+				s.classList.toggle("open");
+				if (s.classList.contains("open") && !isScrolledIntoView(s))
+					s.scrollIntoView({behavior: "smooth", block: "start"});
+			};
 		}
 
 		var sections_order = [];

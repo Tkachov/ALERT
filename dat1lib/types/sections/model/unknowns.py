@@ -232,8 +232,8 @@ class xC5354B60_Section(dat1lib.types.sections.Section): # aka model_mirror_ids
 
 ###
 
-class x283D0383_Section(dat1lib.types.sections.Section): # aka model_built
-	TAG = 0x283D0383
+class ModelBuiltSection(dat1lib.types.sections.Section):
+	TAG = 0x283D0383 # Model Built
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -256,13 +256,16 @@ class x283D0383_Section(dat1lib.types.sections.Section): # aka model_built
 		self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
 
 	def get_short_suffix(self):
-		return "model_built? ({})".format(len(self.values))
+		return "Model Built ({})".format(len(self.values))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | model_built? | {:6} shorts".format(self.TAG, len(self.values)))
+		print("{:08X} | Model Built  | {:6} shorts".format(self.TAG, len(self.values)))
 		print(self.values)
 		print("")
+
+	def web_repr(self):
+		return {"name": "Model Built", "type": "text", "readonly": True, "content": "{} shorts:\n{}\n\n".format(len(self.values), self.values)}
 
 ###
 
@@ -333,8 +336,8 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 
 ###
 
-class x06EB7EFC_Section(dat1lib.types.sections.Section): # aka model_look
-	TAG = 0x06EB7EFC
+class ModelLookSection(dat1lib.types.sections.Section):
+	TAG = 0x06EB7EFC # Model Look
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -355,13 +358,16 @@ class x06EB7EFC_Section(dat1lib.types.sections.Section): # aka model_look
 		self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
 
 	def get_short_suffix(self):
-		return "model_look? ({})".format(len(self.values))
+		return "Model Look ({})".format(len(self.values))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | model_look?  | {:6} shorts".format(self.TAG, len(self.values)))
+		print("{:08X} | Model Look   | {:6} shorts".format(self.TAG, len(self.values)))
 		print(self.values)
 		print("")
+
+	def web_repr(self):
+		return {"name": "Model Look", "type": "text", "readonly": True, "content": "{} shorts:\n{}\n\n".format(len(self.values), self.values)}
 
 ###
 
@@ -410,7 +416,7 @@ class x0AD3A708_Section(dat1lib.types.sections.Section):
 ###
 
 class xC61B1FF5_Section(dat1lib.types.sections.Section): # aka model_skin_batch
-	TAG = 0xC61B1FF5
+	TAG = 0xC61B1FF5 # Model Skin Batch
 	TYPE = 'model'
 
 	def __init__(self, data, container):

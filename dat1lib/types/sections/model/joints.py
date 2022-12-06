@@ -3,8 +3,8 @@ import dat1lib.types.sections
 import io
 import struct
 
-class JointsMapSection(dat1lib.types.sections.UintUintMapSection): # aka model_joint_lookup
-	TAG = 0xEE31971C
+class JointsMapSection(dat1lib.types.sections.UintUintMapSection):
+	TAG = 0xEE31971C # Model Joint Lookup
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -29,6 +29,9 @@ class JointsMapSection(dat1lib.types.sections.UintUintMapSection): # aka model_j
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Joints Map   | {:6} joints".format(self.TAG, len(self._map)))
 
+	def web_repr(self):
+		return {"name": "Model Joint Lookup", "type": "text", "readonly": True, "content": "(see 15DF9D3B for index/hash mapping)"}
+
 ###
 
 class JointDefinition(object):
@@ -39,8 +42,8 @@ class JointDefinition(object):
 		# unknown1 is amount of "children" (not only direct, but all in hierarchy) of this joint?
 		# unknown2 some flags? type of joint?
 
-class JointsSection(dat1lib.types.sections.Section): # aka model_joint
-	TAG = 0x15DF9D3B
+class JointsSection(dat1lib.types.sections.Section):
+	TAG = 0x15DF9D3B # Model Joint
 	TYPE = 'model'
 
 	def __init__(self, data, container):

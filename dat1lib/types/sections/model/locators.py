@@ -3,8 +3,8 @@ import dat1lib.types.sections
 import io
 import struct
 
-class LocatorsMapSection(dat1lib.types.sections.UintUintMapSection): # aka model_locator_lookup
-	TAG = 0x731CBC2E
+class LocatorsMapSection(dat1lib.types.sections.UintUintMapSection):
+	TAG = 0x731CBC2E # Model Locator Lookup
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -29,6 +29,9 @@ class LocatorsMapSection(dat1lib.types.sections.UintUintMapSection): # aka model
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Locators Map | {:6} locators".format(self.TAG, len(self._map)))
 
+	def web_repr(self):
+		return {"name": "Model Locator Lookup", "type": "text", "readonly": True, "content": "(see 9F614FAB for index/hash mapping)"}
+
 ###
 
 class LocatorDefinition(object):
@@ -50,8 +53,8 @@ class LocatorDefinition(object):
 		0 0 0, for example
 		"""
 
-class LocatorsSection(dat1lib.types.sections.Section): # aka model_locator
-	TAG = 0x9F614FAB
+class LocatorsSection(dat1lib.types.sections.Section):
+	TAG = 0x9F614FAB # Model Locator
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -134,3 +137,19 @@ class LocatorRelatedSection(dat1lib.types.sections.Section):
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Locator Info | {:6} pairs".format(self.TAG, len(self.pairs)))
+
+	def web_repr(self):
+		content =  "size={}\n".format(self.size)
+		content += "   a={}\n".format(self.unknown1)
+		content += "   b={}\n".format(self.unknown2)
+		content += "   c={}\n".format(self.unknown3)
+		content += "\n"
+		content += "{} pairs".format(len(self.pairs))
+		content += "\n"
+		############........ | 123  12345678  12345678
+		content += "           #           k         v\n"
+		content += "         -------------------------\n"
+		for i, x in enumerate(self.pairs):
+			content += "         - {:<3}  {:08X}  {:08X}\n".format(i, *x)
+		content += "\n"
+		return {"name": "Locators-related Info", "type": "text", "readonly": True, "content": content}

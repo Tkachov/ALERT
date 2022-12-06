@@ -269,6 +269,9 @@ class x5E709570_Section(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 5E709570     | {:6} entries".format(self.TAG, len(self.entries)))
 
+	def web_repr(self):
+		return {"name": "Very Big Section", "type": "text", "readonly": True, "content": "{} 4-byte values".format(len(self.entries))}
+
 #
 
 class xBCE86B01_Section(dat1lib.types.sections.Section):
@@ -507,8 +510,8 @@ class xA600C108_Section(dat1lib.types.sections.Section):
 
 #
 
-class xDCA379A2_Section(dat1lib.types.sections.Section): # weights?
-	TAG = 0xDCA379A2
+class ModelSkinDataSection(dat1lib.types.sections.Section): # vertex weights
+	TAG = 0xDCA379A2 # Model Skin Data
 	TYPE = 'Model'
 
 	def __init__(self, data, container):
@@ -528,14 +531,17 @@ class xDCA379A2_Section(dat1lib.types.sections.Section): # weights?
 		pass
 
 	def get_short_suffix(self):
-		return "DCA379A2 ({} bytes)".format(len(self._raw))
+		return "Model Skin Data ({} bytes)".format(len(self._raw))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | weights?     | {:6} bytes".format(self.TAG, len(self._raw)))
+		print("{:08X} | Skin Data    | {:6} bytes".format(self.TAG, len(self._raw)))
 
 		if config.get("web", False):
 			return
+
+	def web_repr(self):
+		return {"name": "Model Skin Data", "type": "text", "readonly": True, "content": "{} bytes".format(len(self._raw))}
 
 #
 
