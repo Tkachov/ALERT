@@ -1,12 +1,17 @@
 windows = {
 	ready: false,
 
+	start_button: null,
+	bar_dom: null,
+
 	windows: [],
 	focused: null,
 	free_window_id: 1,
 
 	init: function () {
 		this.ready = true;
+
+		this.make_bar_dom();
 
 		var wnd = {
 			title: "Assets Browser",
@@ -19,6 +24,59 @@ windows = {
 		this.make_window_button(wnd);
 		this.windows.push(wnd);
 		wnd.button.click();
+	},
+
+	make_bar_dom: function () {
+		var e = document.getElementById("windows_bar");
+		e.innerHTML = "";
+
+		var b = document.createElement("div");
+		b.className = "window_button start_button";
+		b.onclick = this.toggle_start_menu.bind(this);
+		e.appendChild(b);
+		this.start_button = b;
+
+		// TODO: left/right scrolling buttons here?
+
+		var d = document.createElement("div");
+		d.className = "windows_bar_contents";
+		e.appendChild(d);
+		this.bar_dom = d;
+
+		//
+
+		var self = this;
+		e = document.getElementById("start_menu");
+		e.onclick = function (ev) { if (ev.target == e) self.hide_start_menu(); };
+	},
+
+	toggle_start_menu: function () {
+		var e = document.getElementById("start_menu");
+
+		if (e.classList.contains("animation_show") || e.classList.contains("animation_hide"))
+			return;
+		
+		if (e.classList.contains("open")) {
+			this.start_button.classList.remove("selected");
+			e.classList.add("animation_hide");
+			setTimeout(function () {
+				e.classList.remove("open");
+				e.classList.remove("animation_hide");
+			}, 250);
+		} else {
+			this.start_button.classList.add("selected");
+			e.classList.add("open");
+			e.classList.add("animation_show");
+			setTimeout(function () {
+				e.classList.remove("animation_show");
+			}, 250);
+		}
+	},
+
+	hide_start_menu: function () {
+		var e = document.getElementById("start_menu");
+		if (e.classList.contains("open"))
+			this.toggle_start_menu();
 	},
 
 	//
@@ -79,8 +137,7 @@ windows = {
 		b.title = wnd.button_title;
 		wnd.button = b;
 
-		var e = document.getElementById("windows_bar");
-		e.appendChild(b);
+		this.bar_dom.appendChild(b);
 	},
 
 	toggle_window_focus: function (wnd) {
@@ -101,6 +158,8 @@ windows = {
 	},
 
 	refresh_focus: function () {
+		this.hide_start_menu();
+
 		var new_focused = null;
 		var windows_zordered = this.windows.slice();
 		windows_zordered.sort((a, b) => {
@@ -171,15 +230,41 @@ windows = {
 
 		//
 
-		var e = document.getElementById("windows_bar");
+		var e = this.bar_dom;
 		for (var c of e.children) {
 			if (new_focused != null && c == new_focused.button) {
 				c.classList.add("selected");
-				c.scrollIntoView({behavior: "smooth", block: "center"});
+				c.scrollIntoView({behavior: "smooth", inline: "center"});
 			} else {
 				c.classList.remove("selected");
 			}
 		}
+
+		var has_scrollbar = (e.scrollWidth > e.clientWidth);
+		e = document.getElementById("windows_bar");
+		classListSetIf(e, "has_scrollbar", has_scrollbar);
+		classListSetIf(e, "sliding_scrollbar", controller.user.__windows_bar_sliding_scrollbar);
+		e.style.zIndex = this.windows.length + 15; // above topmost window
+
+		e = document.getElementById("start_menu");
+		classListSetIf(e, "has_scrollbar", has_scrollbar);
+	},
+
+	//
+
+	open_smpcmod_importer: function () {
+		smpcmod_importer.show_importer();
+		this.hide_start_menu();
+	},
+
+	open_suits_editor: function () {
+		suits_editor.show_editor(); // TODO: open in current stage
+		this.hide_start_menu();
+	},
+
+	open_suit_importer: function () {
+		suit_importer.show_importer();
+		this.hide_start_menu();
 	}
 };
 

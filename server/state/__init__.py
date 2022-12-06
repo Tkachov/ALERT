@@ -97,6 +97,9 @@ class State(object):
 	def get_asset(self, locator):
 		data = self.get_asset_data(locator)
 
+		if len(data) < 4:
+			return data, None
+
 		d = io.BytesIO(data)
 		asset = dat1lib.read(d, try_unknown=False)
 

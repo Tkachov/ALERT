@@ -57,3 +57,8 @@ def print_bytes_formatted(bytes_arr, prefix="", columns=4, bytes_per_column=4):
 			line += "  "
 			i += bytes_per_column
 		print(line)
+
+###
+
+def normalize_path(path):
+	return path.lower().replace('\\', '/')

@@ -18,7 +18,9 @@
 				<p id="toc_loading_label">Loading 'toc'...</p>
 			</div>
 		</div>
+		<div id="smpcmod_importer" class="splash"></div>
 		<div id="stage_selector" class="splash"></div>
+		<div id="suit_importer" class="splash"></div>
 		<div id="editor">
 			<div id="windows">
 				<div id="main_window" class="workspace window">
@@ -42,6 +44,13 @@
 				</div>
 			</div>
 			<div id="windows_bar"></div>
+			<div id="start_menu">
+				<div>
+					<a onclick="windows.open_smpcmod_importer();">Import .smpcmod into stage</a>
+					<a onclick="windows.open_suit_importer();">Import .suit into stage</a>
+					<!-- <a onclick="windows.open_suits_editor();">Suits Editor</a> -->
+				</div>
+			</div>
 			<div id="tooltip"></div>
 		</div>
 		<div id="settings_window">
@@ -78,8 +87,10 @@
 		<script src="js/sections_editor.js"></script>
 		<script src="js/sections_viewer.js"></script>
 		<script src="js/settings_window.js"></script>
+		<script src="js/smpcmod_importer.js"></script>
 		<script src="js/stage_selector.js"></script>
 		<script src="js/suits_editor.js"></script>
+		<script src="js/suit_importer.js"></script>
 		<script src="js/textures_viewer.js"></script>
 		<script src="js/windows.js"></script>
 

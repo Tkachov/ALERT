@@ -1,10 +1,6 @@
 import flask
 from server.api_utils import get_field, make_post_json_route
 
-import dat1lib
-import dat1lib.crc64 as crc64
-import dat1lib.types.toc
-import dat1lib.types.autogen
 import io
 import os
 import os.path
@@ -12,137 +8,15 @@ import platform
 import re
 import subprocess
 
-def normalize_path(path):
-	return path.lower().replace('\\', '/').strip()
-
-class Stage(object):
-	def __init__(self, path):
-		self.path = path
-		self.reload()
-
-	def reload(self):
-		self.tree = {}
-		self.aid_to_path = {}
-		self.spans = []
-
-		for fn in os.listdir(self.path):
-			full_fn = os.path.join(self.path, fn)
-			if os.path.isdir(full_fn):
-				self.add_span(fn, full_fn)
-
-	#
-
-	def add_span(self, span_name, path):
-		self.spans += [span_name]
-
-		dirs = [""]
-		while len(dirs) > 0:
-			current_dir = dirs[0]
-			dirs = dirs[1:]
-
-			full_dir = os.path.join(path, current_dir)
-			for fn in os.listdir(full_dir):
-				full_fn = os.path.join(full_dir, fn)
-				aid_fn = os.path.join(current_dir, fn)
-				if os.path.isdir(full_fn):
-					dirs += [aid_fn]
-				else:
-					if current_dir == "" and len(fn) == 16 and re.match("^[A-Fa-f0-9]{16}$", fn):
-						aid_fn = fn.upper() # TODO: reassess; this makes it uppercase to be displayed in UI, but on a case-sensitive FS we won't find this file if it happens to be not in uppercase
-						aid = aid_fn
-					else:
-						aid_fn = normalize_path(aid_fn)
-						aid = "{:016X}".format(crc64.hash(aid_fn))
-					self._insert_path(aid_fn, aid)
-					asset_info = [span_name, 0, os.path.getsize(full_fn)]
-					self._add_index_to_tree(aid, asset_info)
-
-	def _insert_path(self, path, aid):
-		if aid in self.aid_to_path:
-			return
-
-		self.aid_to_path[aid] = path
-
-		parts = path.split("/")
-		dirs, file = parts[:-1], parts[-1]
-		
-		node = self.tree
-		for d in dirs:
-			if d not in node:
-				node[d] = {}
-			node = node[d]
-
-		node[file] = [aid, []]
-
-	def _add_index_to_tree(self, aid, asset_info):
-		path = self.aid_to_path[aid]
-		parts = path.split("/")
-		dirs, file = parts[:-1], parts[-1]
-		
-		node = self.tree
-		for d in dirs:
-			if d not in node:
-				node[d] = {}
-			node = node[d]
-
-		node[file][1] += [asset_info]
-
-	#
-
-	def stage_asset(self, path, locator, state):
-		# TODO: maintain correct structs state
-		real_path = os.path.join(self.path, self._get_span(locator.span), path)
-		asset_data = state.get_asset_data(locator)
-
-		dir_path = os.path.dirname(real_path)
-		os.makedirs(dir_path, exist_ok=True)
-
-		f = open(real_path, "wb")
-		f.write(asset_data)
-		f.close()
-
-	def _get_span(self, span_index):
-		# TODO: span mappings
-		return "{}".format(span_index)
-
-	#
-
-	def get_asset_variants_locators(self, stage_name, aid):
-		path = self.aid_to_path[aid]
-		results = []
-		for s in self.spans:
-			full_fn = os.path.join(self.path, s, path)
-			if os.path.isfile(full_fn):
-				results += ["{}/{}/{}".format(stage_name, s, path)]
-		return results
-
-	def get_assets_under_path(self, state, stage_name, path):
-		parts = path.split("/")
-
-		node = self.tree
-		for p in parts:
-			if p == "":
-				continue
-			if p not in node:
-				node = None
-				break
-			node = node[p]
-
-		if node is None:
-			return []
-
-		result = []
-		for k in node:
-			if isinstance(node[k], list):
-				aid = node[k][0]
-				result += state.get_asset_variants_locators(stage_name, aid)
-		return result
-
-#
+from server.state.stages.stage import Stage
+from server.state.stages.smpcmod_importer import StagesModImporter
+from server.state.stages.suit_importer import StagesSuitImporter
 
 class Stages(object):
 	def __init__(self, state):
 		self.state = state
+		self.smpcmod_importer = StagesModImporter(self)
+		self.suit_importer = StagesSuitImporter(self)
 		self.reboot()
 
 	def reboot(self):
@@ -155,6 +29,8 @@ class Stages(object):
 		make_post_json_route(app, "/api/stages/open_explorer", self.open_explorer)
 		make_post_json_route(app, "/api/stages/add_asset", self.stage_asset)
 		make_post_json_route(app, "/api/stages/add_directory", self.stage_directory)
+		make_post_json_route(app, "/api/stages/import_smpcmod", self.import_smpcmod)
+		make_post_json_route(app, "/api/stages/import_suit", self.import_suit)
 
 	def refresh_stages(self):
 		self.reboot()
@@ -179,6 +55,18 @@ class Stages(object):
 		path = get_field(flask.request.form, "path")
 		return self._stage_directory(stage, path)
 
+	def import_smpcmod(self):
+		rq = flask.request
+		stage = get_field(rq.form, "stage")
+		smpcmod = rq.files["smpcmod"].read()
+		return self.smpcmod_importer.import_smpcmod(io.BytesIO(smpcmod), stage)
+
+	def import_suit(self):
+		rq = flask.request
+		stage = get_field(rq.form, "stage")
+		suit = rq.files["suit"].read()
+		return self.suit_importer.import_suit(io.BytesIO(suit), stage)
+
 	# internal
 
 	def boot(self):
@@ -200,6 +88,18 @@ class Stages(object):
 			raise Exception("Bad stage")
 
 		return self.stages[stage].get_assets_under_path(self.state, stage, path)
+
+	def get_stage(self, stage, create_if_needed=True): # => (Stage, newly_created:bool)
+		if stage in self.stages:
+			return (self.stages[stage], False)
+		
+		if not create_if_needed:
+			return (None, False)
+
+		fn = os.path.join("stages/", stage)
+		os.makedirs(fn, exist_ok=True)
+		self.stages[stage] = Stage(fn)
+		return (self.stages[stage], True)
 
 	#
 
@@ -272,9 +172,9 @@ class Stages(object):
 		if all_spans:
 			locators = self.state.get_asset_variants_locators("", aid)
 			for l in locators:
-				dst_stage_object.stage_asset(path, self.state.locator(l), self.state)
+				dst_stage_object.stage_asset_from_toc(path, self.state.locator(l), self.state)
 		else:
-			dst_stage_object.stage_asset(path, locator, self.state)
+			dst_stage_object.stage_asset_from_toc(path, locator, self.state)
 
 		return True
 

@@ -1,4 +1,4 @@
-const USER_STORED_FIELDS = ["toc_path", "locale", "history", "favorites", "__configs_editor_enabled", "__hexview_experimental"];
+const USER_STORED_FIELDS = ["toc_path", "locale", "history", "favorites", "__configs_editor_enabled", "__hexview_experimental", "__windows_bar_sliding_scrollbar"];
 const USER_STORAGE_KEY = "user";
 
 // TODO: make windows title path a link to browse back to the details
@@ -13,8 +13,10 @@ var models_viewer = { ready: false };
 var sections_editor = { ready: false };
 var sections_viewer = { ready: false };
 var settings_window = { ready: false };
+var smpcmod_importer = { ready: false };
 var stage_selector = { ready: false };
 var suits_editor = { ready: false };
+var suit_importer = { ready: false };
 var textures_viewer = { ready: false };
 var windows = { ready: false };
 
@@ -32,7 +34,8 @@ var controller = {
 		__hexview_experimental: {
 			enabled: false,
 			sections: {}
-		}
+		},
+		__windows_bar_sliding_scrollbar: false
 	},
 
 	init: function () {
