@@ -2,12 +2,14 @@ import dat1lib
 import dat1lib.types.model
 import dat1lib.types.sections.model.geo
 import dat1lib.types.sections.model.meshes
+import dat1lib.types.sections.model.unknowns
 import dat1lib.utils as utils
 import io
 
-SECTION_INDEXES  = dat1lib.types.sections.model.geo.IndexesSection.TAG
-SECTION_VERTEXES = dat1lib.types.sections.model.geo.VertexesSection.TAG
-SECTION_MESHES   = dat1lib.types.sections.model.meshes.MeshesSection.TAG
+SECTION_INDEXES   = dat1lib.types.sections.model.geo.IndexesSection.TAG
+SECTION_VERTEXES  = dat1lib.types.sections.model.geo.VertexesSection.TAG
+SECTION_MESHES    = dat1lib.types.sections.model.meshes.MeshesSection.TAG
+SECTION_MATERIALS = dat1lib.types.sections.model.unknowns.ModelMaterialSection.TAG
 
 class ObjHelper(object):
 	def __init__(self):
@@ -74,6 +76,18 @@ class ObjHelper(object):
 		s = model.dat1.get_section(SECTION_INDEXES)
 		indexes = s.values
 
+		materials_section = model.dat1.get_section(SECTION_MATERIALS)
+
+		def get_material_name(mesh):
+			mat = mesh.get_material()
+			material_formatted = "material{:02}".format(mat)
+			
+			matname = model.dat1.get_string(materials_section.string_offsets[mat][1])
+			if matname is not None:
+				material_formatted = matname
+
+			return material_formatted
+
 		#
 
 		# pizza B3D0E63D7EA1F3E8
@@ -81,6 +95,7 @@ class ObjHelper(object):
 
 		for i, mesh in enumerate(meshes):
 			self.start_mesh("mesh{:02}".format(i))
+			self.usemtl(get_material_name(mesh))
 
 			for vi in range(mesh.vertexStart, mesh.vertexStart + mesh.vertexCount):
 				v = vertexes[vi]
@@ -103,8 +118,6 @@ class ObjHelper(object):
 				break
 
 		"""
-		self.usemtl(new_material)
-
 		vts = ["", "", ""]
 		for vt_ndx in range(len(vrtx)):
 			vts[vt_ndx] = "/" + str(self.cur_vt_offset)

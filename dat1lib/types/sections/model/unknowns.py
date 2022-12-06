@@ -269,8 +269,8 @@ class ModelBuiltSection(dat1lib.types.sections.Section):
 
 ###
 
-class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
-	TAG = 0x3250BB80
+class ModelMaterialSection(dat1lib.types.sections.Section):
+	TAG = 0x3250BB80 # Model Material
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -308,7 +308,7 @@ class x3250BB80_Section(dat1lib.types.sections.Section): # aka model_material
 		return of.read()
 
 	def get_short_suffix(self):
-		return "materials ({})".format(len(self.triples))
+		return "Model Material ({})".format(len(self.triples))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
