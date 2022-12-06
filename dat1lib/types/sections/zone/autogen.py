@@ -137,6 +137,8 @@ class x06ABCAB2_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# matrixes?
+
 		# MSMR
 		# 8749 occurrences in 12274 files
 		# size = 160..7963760 (avg = 197793.3)
@@ -688,48 +690,6 @@ class x3D5E2FEF_Section(dat1lib.types.sections.Section):
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 3D5E2FEF     | {:6} entries".format(self.TAG, len(self.entries)))
-
-#
-
-class x4D7BC1C7_Section(dat1lib.types.sections.Section):
-	TAG = 0x4D7BC1C7
-	TYPE = 'Zone'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 6099 occurrences in 12274 files
-		# size = 40..3762252 (avg = 81807.8)
-		#
-		# examples: 8151F22E4A189346 (min size), 9419A66DCDCE388E (max size)
-
-		# MM
-		# 4950 occurrences in 10473 files
-		# size = 40..3796588 (avg = 69305.3)
-		#
-		# examples: 8035E8D12E1FE889 (min size), 9419A66DCDCE388E (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
-
-	def get_short_suffix(self):
-		return "4D7BC1C7 ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 4D7BC1C7     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -1828,48 +1788,6 @@ class xD86A7934_Section(dat1lib.types.sections.Section):
 
 #
 
-class x91DE11D9_Section(dat1lib.types.sections.Section):
-	TAG = 0x91DE11D9
-	TYPE = 'Zone'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 1248 occurrences in 12274 files
-		# size = 16..12624 (avg = 1178.2)
-		#
-		# examples: 8087A66DB8F99689 (min size), 974EB47F6B2CA8E3 (max size)
-
-		# MM
-		# 1044 occurrences in 10473 files
-		# size = 16..12240 (avg = 1393.1)
-		#
-		# examples: 8060F01DB1EFC3AB (min size), 974EB47F6B2CA8E3 (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
-
-	def get_short_suffix(self):
-		return "91DE11D9 ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 91DE11D9     | {:6} entries".format(self.TAG, len(self.entries)))
-
-#
-
 class xEF8637D5_Section(dat1lib.types.sections.Section):
 	TAG = 0xEF8637D5
 	TYPE = 'Zone'
@@ -2077,48 +1995,6 @@ class x9CCAA06F_Section(dat1lib.types.sections.Section):
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 9CCAA06F     | {:6} entries".format(self.TAG, len(self.entries)))
-
-#
-
-class ZoneMaterialOverridesSection(dat1lib.types.sections.Section):
-	TAG = 0xE4158AC3 # "Zone Material Overrides"
-	TYPE = 'Zone'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 2167 occurrences in 12274 files
-		# size = 16..17712 (avg = 1028.3)
-		#
-		# examples: 8015FB3B80A9AD40 (min size), A050B40CE45C5AFD (max size)
-
-		# MM
-		# 1960 occurrences in 10473 files
-		# size = 16..13216 (avg = 1258.9)
-		#
-		# examples: 8007054377A3EA0F (min size), 869F7D047B334435 (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
-
-	def get_short_suffix(self):
-		return "Zone Material Overrides ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Mat. Ovrrids | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
