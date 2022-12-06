@@ -474,6 +474,7 @@ html, body {
 
 .hex_view td:first-child, .hex_view td:last-child {
 	user-select: none;
+	white-space: pre;
 }
 
 .hex_view td:nth-child(2) {
