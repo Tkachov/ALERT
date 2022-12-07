@@ -450,7 +450,7 @@ assets_browser = {
 				var self = this;
 				btn.onclick = function () {
 					let [shortname, fullname] = get_asset_names(self);
-					models_viewer.show_mesh("/api/models_viewer/obj?locator=" + locator, shortname, fullname);
+					models_viewer.show_mesh(locator, shortname, fullname);
 				};
 			}
 

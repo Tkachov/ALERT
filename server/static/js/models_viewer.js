@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'OrbitControls';
 import { OBJLoader } from 'OBJLoader';
+import { MTLLoader } from 'MTLLoader';
 
 models_viewer = {
 	ready: false,
@@ -34,18 +35,28 @@ models_viewer = {
 				e.appendChild(r);
 			},
 
-			show_mesh: function (model) {
+			show_mesh: function (locator) {
 				this.make_renderer();
 
-				var loader = new OBJLoader();
+				var mtl_url = "/api/models_viewer/mtl?locator=" + locator;
+				var obj_url = "/api/models_viewer/obj?locator=" + locator;
+
 				var self = this;
-				loader.load(model, function (geometry) {
-					geometry.scale.x = 3;
-					geometry.scale.y = 3;
-					geometry.scale.z = 3;
-					self.scene.add(geometry);
-				}, undefined, function (err) {
-					console.error(err);
+				var mtl_loader = new MTLLoader();
+				mtl_loader.resourcePath = "/";
+				mtl_loader.load(mtl_url, function (materials) { // TODO: update models_viewer to have /api endpoint for materials
+					materials.preload();
+
+					var loader = new OBJLoader();
+					loader.setMaterials(materials);
+					loader.load(obj_url, function (geometry) {
+						geometry.scale.x = 3;
+						geometry.scale.y = 3;
+						geometry.scale.z = 3;
+						self.scene.add(geometry);
+					}, undefined, function (err) {
+						console.error(err);
+					});
 				});
 
 				var frontSpot = new THREE.SpotLight(0xFFFFFF);
@@ -168,9 +179,9 @@ models_viewer = {
 		return viewer_instance;
 	},
 
-	show_mesh: function (model, shortname, fullname) {
+	show_mesh: function (locator, shortname, fullname) {
 		var v = this.construct_viewer(shortname, fullname);
-		v.show_mesh(model);
+		v.show_mesh(locator);
 	},
 
 	test: function () {

@@ -5,6 +5,7 @@ import dat1lib.types.sections.model.meshes
 import dat1lib.types.sections.model.unknowns
 import dat1lib.utils as utils
 import io
+import server.mtl_writer
 
 SECTION_INDEXES   = dat1lib.types.sections.model.geo.IndexesSection.TAG
 SECTION_VERTEXES  = dat1lib.types.sections.model.geo.VertexesSection.TAG
@@ -14,7 +15,6 @@ SECTION_MATERIALS = dat1lib.types.sections.model.unknowns.ModelMaterialSection.T
 class ObjHelper(object):
 	def __init__(self):
 		self.cur_vertex_offset = 1
-		self.cur_vt_offset = 1
 		self.current_material = None
 		self.mesh_vertexes = 0
 		self.remembered_vertexes = []
@@ -36,17 +36,16 @@ class ObjHelper(object):
 	def end_mesh(self):
 		self.cur_vertex_offset += self.mesh_vertexes
 
-	def write_vertex(self, x, y, z):
+	def write_vertex(self, v):
 		def transform(x, y, z):
 			return (x, y, z)
 
+		x, y, z = v.x, v.y, v.z
 		x, y, z = transform(x, y, z)
 		self.write("v {} {} {}\n".format(x, y, z))
 		self.mesh_vertexes += 1
 
-	def write_vt(self, u, v):
-		self.write("vt {} {}\n".format(u, v))
-		self.cur_vt_offset += 1
+		self.write("vt {} {}\n".format(v.u, 1.0 - v.v))
 
 	def usemtl(self, mat):
 		if mat != self.current_material:
@@ -54,10 +53,10 @@ class ObjHelper(object):
 			self.current_material = mat
 
 	def write_poly(self, vs, vts):
-		self.write("f {}{} {}{} {}{}\n".format(
-			vs[2] + self.cur_vertex_offset, vts[2],
-			vs[1] + self.cur_vertex_offset, vts[1],
-			vs[0] + self.cur_vertex_offset, vts[0]
+		self.write("f {}/{} {}/{} {}/{}\n".format(
+			vs[2] + self.cur_vertex_offset, vs[2] + self.cur_vertex_offset,
+			vs[1] + self.cur_vertex_offset, vs[1] + self.cur_vertex_offset,
+			vs[0] + self.cur_vertex_offset, vs[0] + self.cur_vertex_offset
 		))
 
 	def get_output(self):
@@ -80,13 +79,7 @@ class ObjHelper(object):
 
 		def get_material_name(mesh):
 			mat = mesh.get_material()
-			material_formatted = "material{:02}".format(mat)
-			
-			matname = model.dat1.get_string(materials_section.string_offsets[mat][1])
-			if matname is not None:
-				material_formatted = matname
-
-			return material_formatted
+			return server.mtl_writer.get_material_name(mat, model.dat1, materials_section)
 
 		#
 
@@ -99,8 +92,7 @@ class ObjHelper(object):
 
 			for vi in range(mesh.vertexStart, mesh.vertexStart + mesh.vertexCount):
 				v = vertexes[vi]
-				self.write_vertex(v.x, v.y, v.z)
-				# TODO: v.u, v.v
+				self.write_vertex(v)
 
 			#
 
@@ -116,13 +108,6 @@ class ObjHelper(object):
 
 			if i > 17:
 				break
-
-		"""
-		vts = ["", "", ""]
-		for vt_ndx in range(len(vrtx)):
-			vts[vt_ndx] = "/" + str(self.cur_vt_offset)
-			self.write_vt(vt_u, vt_v)
-		"""
 
 ###
 
