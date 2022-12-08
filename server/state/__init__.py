@@ -5,6 +5,7 @@ import dat1lib.types.dat1
 import flask
 import io
 import os.path
+import threading
 
 import server.state.assets
 import server.state.configs_editor
@@ -33,6 +34,8 @@ class State(object):
 		self.suits_editor = server.state.suits_editor.SuitsEditor(self)
 		self.textures = server.state.textures.Textures(self)
 		self.thumbnails = server.state.thumbnails.Thumbnails(self)
+
+		self.asset_lock = threading.Lock()
 
 		self.reboot()
 		self.make_api_routes(app)
@@ -95,18 +98,19 @@ class State(object):
 		return asset, thumbnail
 
 	def get_asset(self, locator):
-		data = self.get_asset_data(locator)
+		with self.asset_lock:
+			data = self.get_asset_data(locator)
 
-		if len(data) < 4:
-			return data, None
+			if len(data) < 4:
+				return data, None
 
-		d = io.BytesIO(data)
-		asset = dat1lib.read(d, try_unknown=False)
+			d = io.BytesIO(data)
+			asset = dat1lib.read(d, try_unknown=False)
 
-		if isinstance(asset, dat1lib.types.dat1.DAT1):
-			asset = HeadlessDAT1(asset)
+			if isinstance(asset, dat1lib.types.dat1.DAT1):
+				asset = HeadlessDAT1(asset)
 
-		return data, asset
+			return data, asset
 
 	def get_asset_data(self, locator):
 		locator = self.locator(locator)

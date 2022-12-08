@@ -1,5 +1,5 @@
 import flask
-from server.api_utils import get_field, make_get_json_route
+from server.api_utils import get_field, get_int, make_get_json_route
 
 import io
 import server.mtl_writer
@@ -23,5 +23,9 @@ class ModelsViewer(object):
 
 	def get_obj(self):
 		locator = get_field(flask.request.args, "locator")
+		looks = get_field(flask.request.args, "looks")
+		looks = [int(x) for x in looks.split(",")]
+		lod = get_int(flask.request.args, "lod")
+
 		data, asset = self.state.get_asset(locator)
-		return (server.obj_writer.write(asset), 200)
+		return (server.obj_writer.write(asset, looks, lod), 200)

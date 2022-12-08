@@ -1,6 +1,7 @@
 import dat1lib
 import dat1lib.types.model
 import dat1lib.types.sections.model.geo
+import dat1lib.types.sections.model.look
 import dat1lib.types.sections.model.meshes
 import dat1lib.types.sections.model.unknowns
 import dat1lib.utils as utils
@@ -9,6 +10,7 @@ import server.mtl_writer
 
 SECTION_INDEXES   = dat1lib.types.sections.model.geo.IndexesSection.TAG
 SECTION_VERTEXES  = dat1lib.types.sections.model.geo.VertexesSection.TAG
+SECTION_LOOK      = dat1lib.types.sections.model.look.ModelLookSection.TAG
 SECTION_MESHES    = dat1lib.types.sections.model.meshes.MeshesSection.TAG
 SECTION_MATERIALS = dat1lib.types.sections.model.unknowns.ModelMaterialSection.TAG
 
@@ -52,7 +54,7 @@ class ObjHelper(object):
 			self.write("usemtl {}\n".format(mat))
 			self.current_material = mat
 
-	def write_poly(self, vs, vts):
+	def write_poly(self, vs):
 		self.write("f {}/{} {}/{} {}/{}\n".format(
 			vs[2] + self.cur_vertex_offset, vs[2] + self.cur_vertex_offset,
 			vs[1] + self.cur_vertex_offset, vs[1] + self.cur_vertex_offset,
@@ -65,7 +67,7 @@ class ObjHelper(object):
 
 	#
 
-	def write_model(self, model):
+	def write_model(self, model, looks, lod):
 		s = model.dat1.get_section(SECTION_MESHES)
 		meshes = s.meshes
 
@@ -77,6 +79,8 @@ class ObjHelper(object):
 
 		materials_section = model.dat1.get_section(SECTION_MATERIALS)
 
+		looks_section = model.dat1.get_section(SECTION_LOOK)
+
 		def get_material_name(mesh):
 			mat = mesh.get_material()
 			return server.mtl_writer.get_material_name(mat, model.dat1, materials_section)
@@ -86,7 +90,15 @@ class ObjHelper(object):
 		# pizza B3D0E63D7EA1F3E8
 		# body 878B7EEABDC354A2
 
+		meshes_to_display = set()
+		for look in looks:
+			look_lod = looks_section.looks[look].lods[lod]
+			meshes_to_display |= set(range(look_lod.start, look_lod.start + look_lod.count))
+
 		for i, mesh in enumerate(meshes):
+			if i not in meshes_to_display:
+				continue
+
 			self.start_mesh("mesh{:02}".format(i))
 			self.usemtl(get_material_name(mesh))
 
@@ -99,19 +111,13 @@ class ObjHelper(object):
 			faces_count = mesh.indexCount // 3
 			for j in range(faces_count):
 				index_index = mesh.indexStart + j*3
-				deindex = mesh.indexStart
-				deindex = indexes[deindex]
-				deindex = 0
-				self.write_poly([indexes[index_index+2]-deindex, indexes[index_index+1]-deindex, indexes[index_index]-deindex], ["", "", ""])
+				self.write_poly([indexes[index_index+2], indexes[index_index+1], indexes[index_index]])
 
 			self.end_mesh()
 
-			if i > 17:
-				break
-
 ###
 
-def write(model):
+def write(model, looks, lod):
 	helper = ObjHelper()
-	helper.write_model(model)
+	helper.write_model(model, looks, lod)
 	return helper.get_output()

@@ -35,11 +35,11 @@ models_viewer = {
 				e.appendChild(r);
 			},
 
-			show_mesh: function (locator) {
+			show_mesh: function (locator, looks, lod) {
 				this.make_renderer();
 
 				var mtl_url = "/api/models_viewer/mtl?locator=" + locator;
-				var obj_url = "/api/models_viewer/obj?locator=" + locator;
+				var obj_url = "/api/models_viewer/obj?locator=" + locator + "&looks=" + looks + "&lod=" + lod;
 
 				var self = this;
 				var mtl_loader = new MTLLoader();
@@ -179,9 +179,11 @@ models_viewer = {
 		return viewer_instance;
 	},
 
-	show_mesh: function (locator, shortname, fullname) {
+	show_mesh: function (locator, shortname, fullname, looks, lod) {
+		looks = looks || "0";
+		lod = lod || "0";
 		var v = this.construct_viewer(shortname, fullname);
-		v.show_mesh(locator);
+		v.show_mesh(locator, looks, lod);
 	},
 
 	test: function () {
