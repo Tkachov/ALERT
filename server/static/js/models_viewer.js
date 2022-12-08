@@ -45,8 +45,6 @@ models_viewer = {
 				var mtl_loader = new MTLLoader();
 				mtl_loader.resourcePath = "/";
 				mtl_loader.load(mtl_url, function (materials) { // TODO: update models_viewer to have /api endpoint for materials
-					materials.preload();
-
 					var loader = new OBJLoader();
 					loader.setMaterials(materials);
 					loader.load(obj_url, function (geometry) {
@@ -54,6 +52,7 @@ models_viewer = {
 						geometry.scale.y = 3;
 						geometry.scale.z = 3;
 						self.scene.add(geometry);
+						materials.preload();
 					}, undefined, function (err) {
 						console.error(err);
 					});
