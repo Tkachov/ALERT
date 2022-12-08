@@ -44,43 +44,6 @@ class AmbientShadowPrimsSection(dat1lib.types.sections.Section):
 
 ###
 
-class x811902D7_Section(dat1lib.types.sections.Section):
-	TAG = 0x811902D7
-	TYPE = 'model'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 38298 occurrences in 38298 files (always present)
-		# size = 1624..108882 (avg = 1749.0)
-		#
-		# examples: 80032369552B0B62 (min size), 8FCA3A1C0CF13DD0 (max size)
-
-		# MM
-		# 37147 occurrences in 37147 files (always present)
-		# size = 1624..102562 (avg = 1743.3)
-		#
-		# examples: 80038A947A2C3B00 (min size), AC32788DFEFA4405 (max size)
-
-		size1, = struct.unpack("<I", data[:4])
-		self.uints = utils.read_struct_N_array_data(data[4:], size1//4 - 1, "<I")
-
-		size2 = len(data) - size1
-		self.shorts = utils.read_struct_N_array_data(data[size1:], size2//2, "<H") # includes indexes ranges where indexes go from 0 to N, where N is amount of quintuples from 0x0AD3A708
-
-	def get_short_suffix(self):
-		return "? ({}, {})".format(len(self.uints), len(self.shorts))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | ?            | {:6} uints \t {:6} shorts".format(self.TAG, len(self.uints), len(self.shorts)))
-
-###
-
 class xDCC88A19_Section(dat1lib.types.sections.Section):
 	TAG = 0xDCC88A19
 	TYPE = 'model'
@@ -114,51 +77,6 @@ class xDCC88A19_Section(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Vectors?     | {:6} vectors".format(self.TAG, len(self.vectors)))
 		# TODO: print(vec4f)
-
-###
-
-class xDF9FDF12_Section(dat1lib.types.sections.Section):
-	TAG = 0xDF9FDF12
-	TYPE = 'model'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 38275 occurrences in 38298 files
-		# size = 16..1040 (avg = 17.0)
-		#
-		# examples: 800058C35E144B3F (min size), 8FCA3A1C0CF13DD0 (max size)
-
-		# MM
-		# 37115 occurrences in 37147 files
-		# size = 16..1008 (avg = 16.9)
-		#
-		# examples: 800058C35E144B3F (min size), AC32788DFEFA4405 (max size)
-
-		ENTRY_SIZE = 16
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<IIII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
-		# (0, 70, 0, 2)
-
-	def get_short_suffix(self):
-		return "0-70-0-2? ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 0-70-0-2?    | {:6} tuples".format(self.TAG, len(self.entries)))
-
-		if False:		
-			print("")
-			#######........ | 123  123456  123456  123456  123456
-			print("           #         0      70       0       2")
-			print("         -------------------------------------")
-			for i, l in enumerate(self.entries):
-				print("         - {:<3}  {:6}  {:6}  {:6}  {:6}".format(i, l[0], l[1], l[2], l[3]))
-			print("")
 
 ###
 
@@ -333,41 +251,6 @@ class ModelMaterialSection(dat1lib.types.sections.Section):
 					if real_hash != q[1]:
 						print("        [!] material name real hash {:08X} is not equal to one written in the struct {:08X}".format(real_hash, q[1]))
 		print("")
-
-###
-
-class ModelLookSection(dat1lib.types.sections.Section):
-	TAG = 0x06EB7EFC # Model Look
-	TYPE = 'model'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 38298 occurrences in 38298 files (always present)
-		# size = 32..2080 (avg = 34.1)
-		#
-		# examples: 800058C35E144B3F (min size), 8FCA3A1C0CF13DD0 (max size)
-
-		# MM
-		# 37147 occurrences in 37147 files (always present)
-		# size = 32..2016 (avg = 34.0)
-		#
-		# examples: 800058C35E144B3F (min size), AC32788DFEFA4405 (max size)
-
-		self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
-
-	def get_short_suffix(self):
-		return "Model Look ({})".format(len(self.values))
-
-	def print_verbose(self, config):
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Model Look   | {:6} shorts".format(self.TAG, len(self.values)))
-		print(self.values)
-		print("")
-
-	def web_repr(self):
-		return {"name": "Model Look", "type": "text", "readonly": True, "content": "{} shorts:\n{}\n\n".format(len(self.values), self.values)}
 
 ###
 

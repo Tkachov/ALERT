@@ -20,6 +20,15 @@ def read_struct_N_array_data(data, N, fmt):
 	sz = struct.calcsize(fmt)
 	return [struct.unpack(fmt, data[i*sz:(i+1)*sz])[0] for i in range(N)]
 
+def read_struct_array_data(data, fmt):
+	sz = struct.calcsize(fmt)
+	N = len(data) // sz
+	return [struct.unpack(fmt, data[i*sz:(i+1)*sz]) for i in range(N)]
+
+def read_class_array_data(data, sz, struct_class):
+	N = len(data) // sz
+	return [struct_class(data[i*sz:(i+1)*sz]) for i in range(N)]
+
 ###
 
 def print_table(arr, fmt, entries_per_line):
