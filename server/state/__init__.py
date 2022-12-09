@@ -8,6 +8,7 @@ import os.path
 import threading
 
 import server.state.assets
+import server.state.caches
 import server.state.configs_editor
 import server.state.models_viewer
 import server.state.sections_editor
@@ -25,6 +26,7 @@ class State(object):
 	def __init__(self, app):
 		self.toc_loader = server.state.toc_loader.TocLoader(self)
 		self.stages = server.state.stages.Stages(self)
+		self.caches = server.state.caches.Caches(self)
 
 		self.assets = server.state.assets.Assets(self)
 		self.configs_editor = server.state.configs_editor.ConfigsEditor(self)
@@ -43,10 +45,7 @@ class State(object):
 	def reboot(self):
 		self.toc_loader.reboot()
 		self.stages.reboot()
-
-		self.currently_extracted_asset = None
-		self.currently_extracted_asset_index = None
-		self.currently_extracted_asset_data = None
+		self.caches.reboot()
 
 	# API
 
@@ -71,6 +70,7 @@ class State(object):
 		self.suits_editor.boot()
 		self.textures.boot()
 		self.thumbnails.boot()
+		self.caches.boot()
 
 		tlbi = self.toc_loader.get_boot_info()
 		sbi = self.stages.get_boot_info()
@@ -113,42 +113,7 @@ class State(object):
 			return data, asset
 
 	def get_asset_data(self, locator):
-		locator = self.locator(locator)
-
-		if not locator.is_valid:
-			raise Exception("Invalid Locator passed: {}".format(locator))
-
-		if not locator.is_archived:
-			path = os.path.join("stages/", locator.path)
-			if not os.path.exists(path):
-				path = os.path.join("stages/", locator.stage, locator.span, locator.asset_id)
-
-			f = open(path, "rb")
-			data = f.read()
-			f.close()
-
-			return data
-
-		# extract data from toc
-
-		toc = self.toc_loader.toc
-		i = self._get_archived_asset_index(locator)
-
-		try:
-			return toc.extract_asset(i)
-		except Exception as e:
-			error_msg = "{}".format(e)
-
-			if "Errno 2" in error_msg and "No such file or directory" in error_msg:
-				ri = len(error_msg)-1
-				while ri >= 0:
-					if error_msg[ri] == '/' or error_msg[ri] == '\\':
-						break
-					ri -= 1
-
-				raise Exception("missing archive '{}".format(error_msg[ri+1:]))
-
-			raise
+		return self.caches.get_data(locator)
 
 	def _get_archived_asset_index(self, locator):
 		locator = self.locator(locator)
@@ -195,6 +160,7 @@ class State(object):
 		if locator.stage is None:
 			hd_locator = copy.deepcopy(locator)
 			hd_locator.span = 1
+			hd_locator.path = "/{}/{}".format(hd_locator.span, hd_locator.asset_id)
 			
 			return hd_locator
 
