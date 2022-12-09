@@ -78,41 +78,42 @@ class MtlHelper(object):
 
 		if material is not None:
 			section = material.dat1.get_section(0xF5260180)
-			for texture in section.textures:
-				spos, shash = texture
-				filename = section._get_string(spos)
+			if section is not None:
+				for texture in section.textures:
+					spos, shash = texture
+					filename = section._get_string(spos)
 
-				if filename is None:
-					continue
+					if filename is None:
+						continue
 
-				tex_aid = "{:016X}".format(crc64.hash(filename))
-				locator = get_best_asset_locator(state, stage, tex_aid)
+					tex_aid = "{:016X}".format(crc64.hash(filename))
+					locator = get_best_asset_locator(state, stage, tex_aid)
 
-				if locator is None:
-					continue
+					if locator is None:
+						continue
 
-				locator = state.locator(locator)
-				url = "api/textures_viewer/mipmap?locator={}&mipmap_index=0#".format(locator) + random_suffix
+					locator = state.locator(locator)
+					url = "api/textures_viewer/mipmap?locator={}&mipmap_index=0#".format(locator) + random_suffix
 
-				# TODO: other MTLLoader supported ones:
-				"""				
-				case 'map_ks': // Specular map
+					# TODO: other MTLLoader supported ones:
+					"""				
+					case 'map_ks': // Specular map
 
-				case 'map_ke': // Emissive map
+					case 'map_ke': // Emissive map
 
-				case 'norm': // normal map
+					case 'norm': // normal map
 
-				case 'map_bump':
-				case 'bump': // Bump texture map
+					case 'map_bump':
+					case 'bump': // Bump texture map
 
-				case 'map_d': // Alpha map
-				"""
+					case 'map_d': // Alpha map
+					"""
 
-				if shash == 0xABDAD780 or shash == 0x2EE380F1: # BaseMap2D_Texture; ?
-					maps["map_Kd"] = url
+					if shash == 0xABDAD780 or shash == 0x2EE380F1: # BaseMap2D_Texture; ?
+						maps["map_Kd"] = url
 
-				if shash == 0x7AE34E7A or shash == 0xCAAA9AB5: # NormalMap2D_Texture; ?
-					maps["norm"] = url					
+					if shash == 0x7AE34E7A or shash == 0xCAAA9AB5: # NormalMap2D_Texture; ?
+						maps["norm"] = url					
 
 		if len(maps) == 0:
 			self.write("Kd 1.0 0.0 0.0\n")

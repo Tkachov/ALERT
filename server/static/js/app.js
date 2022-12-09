@@ -100,7 +100,7 @@ var controller = {
 
 		entries.sort((a, b) => {
 			if (a[1] == b[1]) {
-				return a[0].localeCompare(item2.attr);
+				return a[0].localeCompare(b[0]);
 			}
 
 			return b[1] - a[1];
