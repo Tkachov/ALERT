@@ -1,7 +1,6 @@
 import bisect
 import copy
 import dat1lib
-import dat1lib.types.dat1
 import flask
 import io
 import os.path
@@ -19,7 +18,6 @@ import server.state.thumbnails
 import server.state.toc_loader
 from server.api_utils import get_int, get_field, make_get_json_route, make_post_json_route
 from server.state.types.locator import Locator
-from server.state.types.headless_dat1 import HeadlessDAT1
 
 class State(object):
 	def __init__(self, app):
@@ -95,18 +93,7 @@ class State(object):
 		return asset, thumbnail
 
 	def get_asset(self, locator):
-		data = self.get_asset_data(locator)
-
-		if len(data) < 4:
-			return data, None
-
-		d = io.BytesIO(data)
-		asset = dat1lib.read(d, try_unknown=False)
-
-		if isinstance(asset, dat1lib.types.dat1.DAT1):
-			asset = HeadlessDAT1(asset)
-
-		return data, asset
+		return self.caches.get_asset(locator)
 
 	def get_asset_data(self, locator):
 		return self.caches.get_data(locator)

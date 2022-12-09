@@ -189,7 +189,7 @@ class Textures(object):
 			hd_data = None
 			if mipmap_index < info.hd_mipmaps:
 				hd_locator = self.state._make_hd_locator(locator)
-				hd_data, ha = self.state.get_asset(hd_locator)
+				hd_data = self.state.get_asset_data(hd_locator)
 			else:
 				mipmap_index -= info.hd_mipmaps
 
