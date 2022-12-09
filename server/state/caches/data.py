@@ -1,5 +1,6 @@
 import os.path
 import time
+import threading
 
 # TODO: make these configurable
 MAX_CACHED_DATA_SIZE = 256 * 1024 * 1024
@@ -26,13 +27,20 @@ class DataCache(object):
 		self.cached = {}
 		self.cache_size = 0
 
+		self.lock = threading.Lock()
+
 	#
 
 	def clear(self):
-		self.cached = {}
-		self.cache_size = 0
+		with self.lock:
+			self.cached = {}
+			self.cache_size = 0
 
 	def get(self, locator):
+		with self.lock:
+			return self._get(locator)
+
+	def _get(self, locator):
 		log("DataCache.get: {}".format(locator))
 		state = self.caches.state
 		locator = state.locator(locator)
