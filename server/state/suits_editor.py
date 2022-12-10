@@ -263,7 +263,7 @@ class SuitsEditor(object):
 			data, asset = self.state.get_asset(locator)
 
 			if isinstance(asset, dat1lib.types.autogen.Texture):
-				img = self.state.textures._load_dds_mipmap(asset, None, 0)
+				img = self.state.textures.load_mipmap_image(locator, 0, use_hd_data=False) # OK to pass locator after get_asset(), as it should be cached
 				if img is None:
 					return False
 

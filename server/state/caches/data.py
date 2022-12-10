@@ -104,6 +104,9 @@ class DataCache(object):
 		return (len(self.cached) > MAX_CACHED_ENTRIES or self.cache_size > MAX_CACHED_DATA_SIZE)
 
 	def _cache(self, key, data):
+		if key in self.cached:
+			self.cache_size -= len(self.cached[key].data)
+
 		self.cached[key] = CacheEntry(data)
 		self.cache_size += len(data)
 		log("\t-- added {}, now {} entries of {} size".format(key, len(self.cached), self.cache_size))
