@@ -77,7 +77,7 @@ class MaterialSerializedDataSection(dat1lib.types.sections.Section):
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Materials SD | {:6} values".format(self.TAG, len(self.textures)))
+		print("{:08X} | Materials SD |".format(self.TAG))
 
 		print()
 		print("         section_size = {}".format(self.data_size))

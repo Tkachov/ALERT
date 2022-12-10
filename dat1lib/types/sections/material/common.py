@@ -28,14 +28,14 @@ class x1CAFE804_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 8000E61F841EBC5F (min size), 9D7D20AA12DFABFA (max size)
 		
-		ENTRY_SIZE = 4
+		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+		self.entries = [struct.unpack("<IHHII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
 		for e in self.entries:
-			of.write(struct.pack("<I", e))
+			of.write(struct.pack("<IHHII", *e))
 		of.seek(0)
 		return of.read()
 
@@ -43,11 +43,21 @@ class x1CAFE804_Section(dat1lib.types.sections.Section):
 		return "1CAFE804 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 1CAFE804     | {:6} entries".format(self.TAG, len(self.entries)))
+
+		print()
+		#######........ | 123  123456  123456  12345678  12345678  ...
+		print("           #    ?       index?  slot?     type?     texture")
+		print("         ----------------------------------------------------")
+		for i in range(len(self.entries)):
+			spos, a, b, c, d = self.entries[i]
+			s = self._dat1.get_string(spos)
+			if s is None:
+				s = "<str at {}>".format(spos)
+
+			print("         - {:<3}  {:<6}  {:<6}  {:08X}  {:08X}  {}".format(i, a, b, c, d, repr(s)))
+		print()
 
 #
 
@@ -71,27 +81,80 @@ class x45C4F4C0_Section(dat1lib.types.sections.Section):
 		# size = 8..568 (avg = 217.6)
 		#
 		# examples: 80622C8227472B8A (min size), 80993366A7C61A94 (max size)
-		
-		ENTRY_SIZE = 4
+
+		ENTRY_SIZE = 8
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+		self.params_keys = [struct.unpack("<HHI", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
+		for e in self.params_keys:
+			of.write(struct.pack("<HHI", *e))
 		of.seek(0)
 		return of.read()
 
 	def get_short_suffix(self):
-		return "45C4F4C0 ({})".format(len(self.entries))
+		return "45C4F4C0 ({})".format(len(self.params_keys))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 45C4F4C0     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | 45C4F4C0     | {:6} parameters".format(self.TAG, len(self.params_keys)))
+
+		s = self._dat1.get_section(0xA59F667B)
+		params_values = s.data
+
+		params = []
+		for offset, size, key in self.params_keys:
+			params += [(key, params_values[offset:offset+size])]
+
+		print()
+		#######........ | 123  12345678  ...
+		print("           #    slotname  value")
+		print("         -----------------------------")
+		for i, (k, v) in enumerate(params):
+			print("         - {:<3}  {:08X}  {}".format(i, k, utils.format_bytes(v)))
+		print()
+
+#
+
+class xA59F667B_Section(dat1lib.types.sections.Section):
+	TAG = 0xA59F667B
+	TYPE = 'Material/MaterialGraph'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# MSMR
+		# 4389 occurrences in 1049 files
+		# met in Material, MaterialGraph
+		# size = 16..352 (avg = 125.8)
+		#
+		# examples: 8000E61F841EBC5F (min size), 9FC1F81BF116DE2B (max size)
+
+		# MM
+		# 4381 occurrences in 1157 files
+		# met in Material, MaterialGraph
+		# size = 16..368 (avg = 152.5)
+		#
+		# examples: 8000E61F841EBC5F (min size), 815C70A0EAFA956C (max size)
+		
+		self.data = data
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		of.write(self.data)
+		of.seek(0)
+		return of.read()
+
+	def get_short_suffix(self):
+		return "A59F667B ({} bytes)".format(len(self.data))
+
+	def print_verbose(self, config):
+		##### "{:08X} | ............ | {:6} ..."
+		print("{:08X} | A59F667B     | {:6} bytes".format(self.TAG, len(self.data)))
+
+	def web_repr(self):
+		return {"name": "A59F667B", "type": "text", "readonly": True, "content": "{} bytes\n(see 45C4F4C0 for displayed values)\n\n".format(len(self.data))}
 
 #
 
@@ -136,50 +199,6 @@ class x8C049CCA_Section(dat1lib.types.sections.Section):
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 8C049CCA     | {:6} entries".format(self.TAG, len(self.entries)))
-
-#
-
-class xA59F667B_Section(dat1lib.types.sections.Section):
-	TAG = 0xA59F667B
-	TYPE = 'Material/MaterialGraph'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 4389 occurrences in 1049 files
-		# met in Material, MaterialGraph
-		# size = 16..352 (avg = 125.8)
-		#
-		# examples: 8000E61F841EBC5F (min size), 9FC1F81BF116DE2B (max size)
-
-		# MM
-		# 4381 occurrences in 1157 files
-		# met in Material, MaterialGraph
-		# size = 16..368 (avg = 152.5)
-		#
-		# examples: 8000E61F841EBC5F (min size), 815C70A0EAFA956C (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
-
-	def get_short_suffix(self):
-		return "A59F667B ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | A59F667B     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 

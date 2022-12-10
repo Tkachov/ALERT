@@ -251,7 +251,7 @@ models_viewer = {
 				function make_asset_browse(aid) {
 					return function () {
 						assets_browser.make_asset_search_callback(aid, "")(); // TODO: correct stage hint?
-						var w = windows.get_window_by_id(1);
+						var w = windows.get_window_by_id(0);
 						if (w != null) w.button.click();
 					};
 				}
