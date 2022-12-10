@@ -370,6 +370,169 @@ html, body {
 	height: 100%;
 }
 
+.models_viewer .details {
+	display: block;
+	position: absolute;
+	width: 20%;
+	background: #FFF;
+	height: calc(100% - var(--windows-bar-height) - 2*var(--window-header-v-padding));
+	z-index: 10;
+	right: -20%;
+	transition: right 0.4s ease;
+}
+
+.models_viewer .details.open {
+	right: 0;
+}
+
+.models_viewer .details .scrollbox {
+	height: 100%;
+	overflow-y: auto;
+}
+
+/* models viewer: details side opening button */
+
+.models_viewer .details .opener {
+	display: block;
+	width: 24pt;
+	height: 24pt;
+	padding: 2pt 6pt;
+
+	position: absolute;
+	transform: translateX(-100%);
+
+	text-align: center;
+	line-height: 24pt;	
+	color: #FFF;
+}
+
+.models_viewer .details .opener:hover {
+	background: rgba(255,255,255,0.5);
+}
+
+.models_viewer .details .opener::before {
+	content: '<';
+}
+
+.models_viewer .details.open .opener::before {
+	content: '>';
+}
+
+/* models viewer: spoiler sections */
+
+.models_viewer .details .collapsible {
+	border-top: 1px solid #CCC;
+
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.models_viewer .details .collapsible > span {
+	display: block;
+	padding: 5pt 7pt;
+
+	font-size: 11pt;
+	font-weight: bold;
+	text-transform: uppercase;
+	color: #222;
+	background: #EEE;
+	height: 14pt;
+}
+
+.models_viewer .details .collapsible > span:hover {
+	background: #FAFAFA;
+	cursor: pointer;
+}
+
+.models_viewer .details .collapsible > .content {
+	overflow-y: scroll;
+	height: calc(100% - 2*5pt - 14pt - 2*5pt);
+	padding: 7pt 5pt;
+}
+
+.models_viewer .details .collapsible.collapsed {
+	min-height: calc(14pt + 2*5pt);
+}
+
+.models_viewer .details .collapsible.collapsed > .content {
+	display: none;
+}
+
+.models_viewer .details .collapsible > .content > .empty_message {
+	display: block;
+	color: #CCC;
+	text-align: center;
+	padding: 10pt;
+}
+
+/* models viewer: checkboxes */
+
+.models_viewer .details .checkbox_line {
+	font-size: 10pt;
+	margin: 0;
+	margin-left: -2pt;
+	margin-bottom: 2pt;
+	display: flex;
+}
+
+.models_viewer .details .checkbox_line > label {
+	width: 100%;
+	line-height: 1.5em;
+	margin-left: 3pt;
+}
+
+/* models viewer: lookgroups section */
+
+.models_viewer .details .lookgroups {
+	margin: 6pt 0;
+}
+
+.models_viewer .details .lookgroups::before {
+	content: 'Lookgroups:';
+	font-size: 10pt;
+	margin-bottom: 4pt;
+	display: inline-block;
+	margin-left: 1pt;
+	font-weight: bold;
+}
+
+.models_viewer .details select {
+	width: 100%;
+}
+
+.models_viewer .details .lookgroups + .checkbox_line + button {
+	margin-top: 4pt;
+	width: 100%;
+}
+
+/* models viewer: materials section */
+
+.models_viewer .details .material {
+	font-size: 10pt;
+	padding: 2pt 6pt;
+	margin: 0 -4pt;
+}
+
+.models_viewer .details .material:hover {
+	background: #F0F0F0;
+}
+
+.models_viewer .details .material .browse_button {
+	float: right;
+	width: 12pt;
+	height: 12pt;
+	background: url("img/search.svg");
+	display: none;
+}
+
+.models_viewer .details .material:hover .browse_button {
+	display: block;
+}
+
+.models_viewer .details .material .browse_button:hover {
+	cursor: pointer;
+}
+
 /* sections viewer */
 
 .sections_viewer {
