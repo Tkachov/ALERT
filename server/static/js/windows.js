@@ -105,7 +105,8 @@ windows = {
 			element: w,
 			button: null,
 			z: -1,
-			wid: this.free_window_id
+			wid: this.free_window_id,
+			subscribers: []
 		};
 		this.free_window_id += 1;
 		this.make_window_button(wnd);
@@ -151,6 +152,12 @@ windows = {
 	},
 
 	close_window: function (wnd) {
+		for (var cb of wnd.subscribers) {
+			try {
+				cb();
+			} catch (e) {}
+		}
+
 		wnd.element.parentNode.removeChild(wnd.element);
 		wnd.button.parentNode.removeChild(wnd.button);
 		this.windows.splice(this.windows.indexOf(wnd), 1);
@@ -248,6 +255,36 @@ windows = {
 
 		e = document.getElementById("start_menu");
 		classListSetIf(e, "has_scrollbar", has_scrollbar);
+	},
+
+	//
+
+	get_window_by_id: function (wid) {
+		for (var w of this.windows) {
+			if (w.wid == wid)
+				return w;
+		}
+
+		return null;
+	},
+
+	get_latest_window: function () {
+		return this.get_window_by_id(this.free_window_id - 1);
+	},
+
+	subscribe_to_window: function (w, callback) {
+		if (w == null) return;
+
+		w.subscribers.push(callback);
+	},
+
+	unsubscribe_from_window: function (w, callback) {
+		if (w == null) return;
+
+		var i = w.subscribers.indexOf(callback);
+		if (i == -1) return;
+
+		w.subscribers.splice(i, 1);
 	},
 
 	//

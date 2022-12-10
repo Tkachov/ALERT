@@ -5,6 +5,8 @@ import { MTLLoader } from 'MTLLoader';
 
 models_viewer = {
 	ready: false,
+	free_viewer_id: 0,
+	viewers: [],
 
 	init: function () {
 		this.ready = true;
@@ -12,6 +14,9 @@ models_viewer = {
 
 	construct_viewer: function (shortname, fullname) {
 		var viewer_instance = {
+			viewer_id: -1,
+			window_id: -1,
+
 			container: null,
 			renderer: null,
 			camera: null,
@@ -23,7 +28,9 @@ models_viewer = {
 
 			__track_resize: true,
 
-			init: function (shortname, fullname) {
+			init: function (viewer_id, shortname, fullname) {
+				this.viewer_id = viewer_id;
+
 				var title = fullname + " — Models Viewer";
 				var button_title = shortname + " — Models Viewer";
 				var e = windows.new_window(title, button_title);
@@ -33,6 +40,20 @@ models_viewer = {
 				var r = document.createElement("div");
 				r.className = "models_renderer";
 				e.appendChild(r);
+
+				var w = windows.get_latest_window();
+				if (w != null) {
+					this.window_id = w.wid;
+
+					var self = this;
+					var cb = function () {
+						var w2 = windows.get_window_by_id(self.window_id);
+						windows.unsubscribe_from_window(w2, cb);
+						models_viewer.destroy_viewer(self);
+					};
+
+					windows.subscribe_to_window(w, cb);
+				}
 			},
 
 			show_mesh: function (locator, looks, lod) {
@@ -174,8 +195,21 @@ models_viewer = {
 				animate();
 			}
 		};
-		viewer_instance.init(shortname, fullname);
+
+		viewer_instance.init(this.free_viewer_id, shortname, fullname);
+		this.free_viewer_id += 1;
+		this.viewers.push(viewer_instance);
+
 		return viewer_instance;
+	},
+
+	destroy_viewer: function (v) {
+		if (v == null) return;
+
+		var i = this.viewers.indexOf(v);
+		if (i == -1) return;
+
+		this.viewers.splice(i, 1);
 	},
 
 	show_mesh: function (locator, shortname, fullname, looks, lod) {
