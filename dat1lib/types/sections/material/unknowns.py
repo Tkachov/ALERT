@@ -93,7 +93,26 @@ class MaterialSerializedDataSection(dat1lib.types.sections.Section):
 		print("           #    slotname  value")
 		print("         -----------------------------")
 		for i, (k, v) in enumerate(self.params):
-			print("         - {:<3}  {:08X}  {}".format(i, k, utils.format_bytes(v)))
+			base_line = "         - {:<3}  {:08X}  {}".format(i, k, utils.format_bytes(v))
+			prefix = ""
+
+			if k == 0x4BAAD667:
+				prefix = "DiffuseColor = {}".format(struct.unpack("<3f", v))
+
+			elif k == 0x24F4CA4C:
+				prefix = "Glossiness = {}".format(struct.unpack("<f", v)[0])
+
+			elif k == 0x01876E44:
+				prefix = "\"Tiling\" = {}".format(struct.unpack("<f", v)[0])
+
+			if prefix != "":
+				prefix = " -- " + prefix
+
+				target_len = 62
+				if len(base_line) < target_len:
+					prefix = " " * (target_len - len(base_line)) + prefix
+
+			print(base_line + prefix)
 		print()
 
 		print()

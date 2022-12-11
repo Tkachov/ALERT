@@ -77,74 +77,127 @@ class MtlHelper(object):
 		R, G, B = 1.0, 0.0, 0.0
 		maps = {}
 		random_suffix = str(random.randint(0, 10**10))
+		map_scaling = 1.0
+		map_offset_x = 0.0
+		map_offset_y = 0.0
+
+		params = {}
+		textures = {}
 
 		if material is not None:
+			# material template
+
+			template_path = material.dat1.get_string(0x44)
+			if template_path is not None:
+				mtm_aid = "{:016X}".format(crc64.hash(template_path))
+				template = find_asset_by_aid(state, stage, mtm_aid)
+				if template is not None:
+					section = template.dat1.get_section(0x1CAFE804)
+					if section is not None:
+						for i in range(len(section.entries)):
+							spos, _, _, slot, _ = section.entries[i]
+							s = template.dat1.get_string(spos)
+							textures[slot] = s
+
+					params_keys = None
+					params_values = None
+
+					section = template.dat1.get_section(0x45C4F4C0)
+					if section is not None:
+						params_keys = section.params_keys
+
+					section = template.dat1.get_section(0xA59F667B)
+					if section is not None:
+						params_values = section.data
+
+					if params_keys is not None and params_values is not None:
+						for offset, size, key in params_keys:
+							params[key] = params_values[offset:offset+size]
+
+			# material overrides
+
 			section = material.dat1.get_section(0xF5260180)
 			if section is not None:
 				for k, v in section.params:
-					if k == 0x4BAAD667: # DiffuseColor
-						R, G, B = struct.unpack("<3f", v)
-
-					elif k == 0x24F4CA4C: # Glossiness
-						struct.unpack("<f", v)[0]
-
-				#
+					params[k] = v
 
 				for texture in section.textures:
 					spos, shash = texture
 					filename = section._get_string(spos)
-
-					if filename is None:
-						continue
-
-					tex_aid = "{:016X}".format(crc64.hash(filename))
-					locator = get_best_asset_locator(state, stage, tex_aid)
-
-					if locator is None:
-						continue
-
-					locator = state.locator(locator)
-					url = "api/textures_viewer/mipmap?locator={}&mipmap_index=0#".format(locator) + random_suffix
-
-					# TODO: other MTLLoader supported ones:
-					"""				
-					case 'map_ks': // Specular map
-
-					case 'map_ke': // Emissive map
-
-					case 'norm': // normal map
-
-					case 'map_bump':
-					case 'bump': // Bump texture map
-
-					case 'map_d': // Alpha map
-					"""
-
-					if shash == 0xABDAD780 or shash == 0x2EE380F1: # BaseMap2D_Texture; ?
-						maps["map_Kd"] = url
-
-					if shash == 0x7AE34E7A or shash == 0xCAAA9AB5: # NormalMap2D_Texture; ?
-						maps["norm"] = url
+					textures[shash] = filename
 
 			section = material.dat1.get_section(0xD9B12454)
 			if section is not None:
 				filename = material.dat1.get_string(section.texture_c)
 				if filename is not None:
-					tex_aid = "{:016X}".format(crc64.hash(filename))
-					locator = get_best_asset_locator(state, stage, tex_aid)
-					if locator is not None:
-						locator = state.locator(locator)
-						url = "api/textures_viewer/mipmap?locator={}&mipmap_index=0#".format(locator) + random_suffix
-						maps["map_Kd"] = url
+					textures[0xABDAD780] = filename
 
 				filename = material.dat1.get_string(section.texture_n)
 				if filename is not None:
-					tex_aid = "{:016X}".format(crc64.hash(filename))
-					locator = get_best_asset_locator(state, stage, tex_aid)
-					if locator is not None:
-						locator = state.locator(locator)
-						url = "api/textures_viewer/mipmap?locator={}&mipmap_index=0#".format(locator) + random_suffix
-						maps["norm"] = url
+					textures[0x7AE34E7A] = filename
+
+
+		map_prefix = ""
+		for k in params:
+			v = params[k]
+			if v is None:
+				continue
+
+			if k == 0x4BAAD667: # DiffuseColor
+				R, G, B = struct.unpack("<3f", v)
+
+			elif k == 0x24F4CA4C: # Glossiness
+				struct.unpack("<f", v)[0]
+
+			elif k == 0x01876E44:
+				map_scaling = struct.unpack("<f", v)[0]
+
+			elif k == 0x15FA754B:
+				map_offset_y = map_offset_x = 1.0 / struct.unpack("<f", v)[0]
+
+			elif k == 0x7F058428:
+				maps["Kd"] = "{} {} {}".format(*struct.unpack("<3f", v))
+
+		map_prefix = "-s {} {} {} ".format(map_scaling, map_scaling, map_scaling)
+		map_prefix += "-o {} {} {} ".format(map_offset_x, map_offset_y, 0)
+
+		#
+
+		for k in textures:
+			filename = textures[k]
+			if filename is None:
+				continue
+
+			tex_aid = "{:016X}".format(crc64.hash(filename))
+			locator = get_best_asset_locator(state, stage, tex_aid)
+
+			if locator is None:
+				continue
+
+			locator = state.locator(locator)
+			url = "api/textures_viewer/mipmap?locator={}&mipmap_index=0#".format(locator) + random_suffix
+
+			# TODO: other MTLLoader supported ones:
+			"""				
+			case 'map_ks': // Specular map
+
+			case 'map_ke': // Emissive map
+
+			case 'norm': // normal map
+
+			case 'map_bump':
+			case 'bump': // Bump texture map
+
+			case 'map_d': // Alpha map
+			"""
+
+			if k == 0xABDAD780 or k == 0x2EE380F1 or k == 0x2E475254: # BaseMap2D_Texture; ?; ?
+				maps["map_Kd"] = map_prefix + url
+				if "Kd" in maps:
+					del maps["Kd"]
+
+			if k == 0x7AE34E7A or k == 0xCAAA9AB5: # NormalMap2D_Texture; ?
+				maps["norm"] = map_prefix + url
 
 		if len(maps) == 0:
 			self.write("Kd {} {} {}\n".format(R, G, B))

@@ -479,6 +479,8 @@ html, body {
 	width: 100%;
 	line-height: 1.5em;
 	margin-left: 3pt;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 /* models viewer: lookgroups section */

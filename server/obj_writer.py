@@ -99,8 +99,9 @@ class ObjHelper(object):
 			if i not in meshes_to_display:
 				continue
 
-			self.start_mesh("mesh{:02}".format(i))
-			self.usemtl(get_material_name(mesh))
+			matname = get_material_name(mesh)
+			self.start_mesh("mesh{:02}_{}".format(i, matname))
+			self.usemtl(matname)
 
 			for vi in range(mesh.vertexStart, mesh.vertexStart + mesh.vertexCount):
 				v = vertexes[vi]
