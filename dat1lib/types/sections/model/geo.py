@@ -31,6 +31,9 @@ class IndexesSection(dat1lib.types.sections.Section): # aka model_index
 		for i in range(1, len(self._delta_encoded)):
 			self.values += [self.values[i-1] + self._delta_encoded[i]]
 
+		for i in range(len(self.values)):
+			self.values[i] %= 2**16
+
 	def get_short_suffix(self):
 		return "model_index ({})".format(len(self.values))
 
