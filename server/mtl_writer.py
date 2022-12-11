@@ -7,6 +7,7 @@ import dat1lib.types.sections.model.unknowns
 import dat1lib.utils as utils
 import io
 import random
+import struct
 
 SECTION_INDEXES   = dat1lib.types.sections.model.geo.IndexesSection.TAG
 SECTION_VERTEXES  = dat1lib.types.sections.model.geo.VertexesSection.TAG
@@ -73,12 +74,22 @@ class MtlHelper(object):
 
 		#
 
+		R, G, B = 1.0, 0.0, 0.0
 		maps = {}
 		random_suffix = str(random.randint(0, 10**10))
 
 		if material is not None:
 			section = material.dat1.get_section(0xF5260180)
 			if section is not None:
+				for k, v in section.params:
+					if k == 0x4BAAD667: # DiffuseColor
+						R, G, B = struct.unpack("<3f", v)
+
+					elif k == 0x24F4CA4C: # Glossiness
+						struct.unpack("<f", v)[0]
+
+				#
+
 				for texture in section.textures:
 					spos, shash = texture
 					filename = section._get_string(spos)
@@ -116,7 +127,7 @@ class MtlHelper(object):
 						maps["norm"] = url					
 
 		if len(maps) == 0:
-			self.write("Kd 1.0 0.0 0.0\n")
+			self.write("Kd {} {} {}\n".format(R, G, B))
 		else:
 			for k in maps:
 				self.write("{} {}\n".format(k, maps[k]))
