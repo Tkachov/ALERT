@@ -124,7 +124,27 @@ class MtlHelper(object):
 						maps["map_Kd"] = url
 
 					if shash == 0x7AE34E7A or shash == 0xCAAA9AB5: # NormalMap2D_Texture; ?
-						maps["norm"] = url					
+						maps["norm"] = url
+
+			section = material.dat1.get_section(0xD9B12454)
+			if section is not None:
+				filename = material.dat1.get_string(section.texture_c)
+				if filename is not None:
+					tex_aid = "{:016X}".format(crc64.hash(filename))
+					locator = get_best_asset_locator(state, stage, tex_aid)
+					if locator is not None:
+						locator = state.locator(locator)
+						url = "api/textures_viewer/mipmap?locator={}&mipmap_index=0#".format(locator) + random_suffix
+						maps["map_Kd"] = url
+
+				filename = material.dat1.get_string(section.texture_n)
+				if filename is not None:
+					tex_aid = "{:016X}".format(crc64.hash(filename))
+					locator = get_best_asset_locator(state, stage, tex_aid)
+					if locator is not None:
+						locator = state.locator(locator)
+						url = "api/textures_viewer/mipmap?locator={}&mipmap_index=0#".format(locator) + random_suffix
+						maps["norm"] = url
 
 		if len(maps) == 0:
 			self.write("Kd {} {} {}\n".format(R, G, B))

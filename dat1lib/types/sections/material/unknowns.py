@@ -132,27 +132,23 @@ class xD9B12454_Section(dat1lib.types.sections.Section):
 		# size = 52
 		#
 		# examples: 82D70D47FF52BF2F
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
+				
+		self.count, self.a, self.b, self.c, self.d, self.e, self.f, self.g, self.h, self.texture_c, self.texture_n, self.texture_g, self.texture_c2 = struct.unpack("<I8f4I", data)
 
 	def get_short_suffix(self):
-		return "D9B12454 ({})".format(len(self.entries))
+		return "D9B12454"
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | D9B12454     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | D9B12454     |".format(self.TAG))
+		print()
+		print(" "*8+"   count = {}".format(self.count))
+		print(" "*8+"   {:8.3}  {:8.3}  {:8.3}  {:8.3}".format(self.a, self.b, self.c, self.d))
+		print(" "*8+"   {:8.3}  {:8.3}  {:8.3}  {:8.3}".format(self.e, self.f, self.g, self.h))
+		print(" "*8+"   {}".format(repr(self._dat1.get_string(self.texture_c))))
+		print(" "*8+"   {}".format(repr(self._dat1.get_string(self.texture_n))))
+		print(" "*8+"   {}".format(repr(self._dat1.get_string(self.texture_g))))
+		print(" "*8+"   {}".format(repr(self._dat1.get_string(self.texture_c2))))
 
 #
 
