@@ -70,4 +70,19 @@ def print_bytes_formatted(bytes_arr, prefix="", columns=4, bytes_per_column=4):
 ###
 
 def normalize_path(path):
-	return path.lower().replace('\\', '/')
+	result = path.lower().replace('\\', '/')
+
+	replaced = ""
+	had_slash = False
+	for c in result:
+		if c == "/":
+			if had_slash:
+				continue
+			had_slash = True
+		else:
+			had_slash = False
+		
+		replaced += c
+	result = replaced
+
+	return result

@@ -1,3 +1,5 @@
+import dat1lib.utils
+
 # based off of akintos' https://github.com/team-waldo/InsomniacArchive/blob/spiderman_pc/InsomniacArchive/Hash/Crc32.cs
 
 table = [
@@ -42,7 +44,7 @@ def crc32(data, crc):
 
 def hash(data, normalize=True):
 	if normalize:
-		data = data.lower().replace('\\', '/')
+		data = dat1lib.utils.normalize_path(data)
 
 	value = 0xEDB88320
 	value = crc32(data, value)

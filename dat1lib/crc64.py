@@ -1,3 +1,5 @@
+import dat1lib.utils
+
 # based off of akintos' https://github.com/team-waldo/InsomniacArchive/blob/spiderman_pc/InsomniacArchive/Hash/Crc64.cs
 
 table = [
@@ -41,7 +43,7 @@ def crc64(data, crc):
 	return crc
 
 def hash(data):
-	data = data.lower().replace('\\', '/')
+	data = dat1lib.utils.normalize_path(data)
 
 	value = 0xC96C5795D7870F42
 	value = crc64(data, value)

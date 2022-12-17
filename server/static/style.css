@@ -1993,3 +1993,86 @@ html, body {
 .import_form > button {
 	margin-bottom: 12pt;
 }
+
+/* references viewer */
+
+.references_viewer {
+	overflow-y: auto;
+}
+
+.references_viewer > div {
+	padding: 10pt;
+}
+
+.references_viewer .loading {
+	display: block;
+	text-align: center;
+	color: #CCC;
+}
+
+.references_viewer .controls {
+	margin-bottom: 12pt;
+	font-size: 10pt;
+	padding-bottom: 12pt;
+	border-bottom: 1px solid #CCC;
+}
+
+.references_viewer .controls > p {
+	display: inline-block;
+	margin-right: 10pt;
+}
+
+.references_viewer .controls > p:first-child {
+	padding-right: 10pt;
+	border-right: 1px solid #CCC;
+}
+
+.references_viewer .controls .checkbox_line > label {
+	margin-left: 2pt;
+}
+
+.references_viewer .controls input[type="number"] {
+	width: 40pt;
+	padding-right: 0;
+}
+
+.references_viewer table {
+	width: 100%;
+	border: 0;
+	border-spacing: 0;
+}
+
+.references_viewer table th {
+	color: #CCC;
+	padding: 2pt;
+	padding-bottom: 2pt;
+	font-weight: normal;
+	text-align: left;
+	padding-bottom: 4pt;
+}
+
+.references_viewer table th:nth-child(1) {
+	width: 60pt;
+}
+
+.references_viewer .result_entry > td:nth-child(1) {
+	font-weight: normal;
+}
+
+.references_viewer .result_entry .browse_button {
+	float: right;
+	display: block;
+	width: 12pt;
+	height: 12pt;
+	background: url("img/search.svg");
+	visibility: hidden;
+	padding: 1pt;
+}
+
+.references_viewer .result_entry:hover .browse_button {
+	visibility: visible;
+}
+
+.references_viewer .result_entry .browse_button:hover {
+	cursor: pointer;
+}

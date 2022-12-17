@@ -410,6 +410,15 @@ assets_browser = {
 						sections_editor.show_editor(locator, shortname, fullname);
 					};
 				}
+
+				{
+					var btn = createElementWithTextNode("a", "View references");
+					links.appendChild(btn);
+					btn.onclick = function () {
+						let [shortname, fullname] = get_asset_names(self);
+						references_viewer.show_viewer(locator, shortname, fullname);
+					};
+				}
 			}
 
 			// config
