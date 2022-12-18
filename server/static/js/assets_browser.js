@@ -250,6 +250,15 @@ assets_browser = {
 				links.appendChild(btn);
 			}
 
+			// export as .suit
+			{
+				var btn = createElementWithTextNode("a", "Export as .suit");
+				btn.onclick = function () {
+					suit_exporter.show_exporter(entry.stage);
+				};
+				links.appendChild(btn);
+			}
+
 			// install as mod
 		}
 

@@ -1953,10 +1953,11 @@ html, body {
 	background: var(--highlight-color);
 }
 
-/* .smpcmod & .suit importers */
+/* .smpcmod & .suit importers, .suit exporter */
 
 #smpcmod_importer > div,
-#suit_importer > div {
+#suit_importer > div,
+#suit_exporter > div {
 	background: #FFF;
 	color: #000;
 	width: 22%;
@@ -1969,20 +1970,23 @@ html, body {
 }
 
 #smpcmod_importer .import_form,
-#suit_importer .import_form {
+#suit_importer .import_form,
+#suit_exporter .export_form {
 	display: flex;
 	flex-direction: column;
 	font-size: 10pt;
 	text-align: center;
 }
 
-.import_form > b:first-child {
+.import_form > b:first-child,
+.export_form > b:first-child {
 	font-size: 14pt;
 	text-align: left;
 	margin-bottom: 14pt;
 }
 
-.import_form > input {
+.import_form > input,
+.export_form > input {
 	margin-bottom: 6pt;
 }
 
@@ -1992,6 +1996,41 @@ html, body {
 
 .import_form > button {
 	margin-bottom: 12pt;
+}
+
+/* .suit exporter */
+
+#suit_exporter .loading {
+	margin-top: 10pt;
+	text-align: center;
+	color: #CCC;
+}
+
+#suit_exporter .error {
+	margin-top: 10pt;
+}
+
+.export_form {
+	margin-top: 10pt;
+}
+
+.export_form label {
+	text-align: left;
+	margin-top: 6pt;
+	margin-bottom: 4pt;
+	padding-left: 4pt;
+}
+
+.export_form select + label {
+	margin-top: 12pt;
+}
+
+.export_form .hidden {
+	display: none;
+}
+
+.export_form > button {
+	margin-top: 12pt;
 }
 
 /* references viewer */

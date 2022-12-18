@@ -1,5 +1,5 @@
 import flask
-from server.api_utils import get_field, make_post_json_route
+from server.api_utils import get_field, make_get_json_route, make_post_json_route
 
 import io
 import os
@@ -11,12 +11,14 @@ import subprocess
 from server.state.stages.stage import Stage
 from server.state.stages.smpcmod_importer import StagesModImporter
 from server.state.stages.suit_importer import StagesSuitImporter
+from server.state.stages.suit_exporter import StagesSuitExporter
 
 class Stages(object):
 	def __init__(self, state):
 		self.state = state
 		self.smpcmod_importer = StagesModImporter(self)
 		self.suit_importer = StagesSuitImporter(self)
+		self.suit_exporter = StagesSuitExporter(self)
 		self.reboot()
 
 	def reboot(self):
@@ -31,6 +33,9 @@ class Stages(object):
 		make_post_json_route(app, "/api/stages/add_directory", self.stage_directory)
 		make_post_json_route(app, "/api/stages/import_smpcmod", self.import_smpcmod)
 		make_post_json_route(app, "/api/stages/import_suit", self.import_suit)
+		make_post_json_route(app, "/api/stages/make_export_suit", self.make_export_suit)
+		make_post_json_route(app, "/api/stages/export_suit", self.export_suit)
+		make_get_json_route(app, "/api/stages/exported_suit", self.get_exported_suit, False)
 
 	def refresh_stages(self):
 		self.reboot()
@@ -67,6 +72,20 @@ class Stages(object):
 		suit = rq.files["suit"].read()
 		return self.suit_importer.import_suit(io.BytesIO(suit), stage)
 
+	def make_export_suit(self):
+		rq = flask.request
+		stage = get_field(rq.form, "stage")
+		return self.suit_exporter.make_export_suit(stage)
+
+	def export_suit(self):
+		rq = flask.request
+		return self.suit_exporter.export_suit(rq.form)
+
+	def get_exported_suit(self):
+		rq = flask.request
+		filename = get_field(rq.args, "filename")
+		return flask.send_file(self.suit_exporter.get_exported_suit(filename), as_attachment=True, download_name=filename, mimetype='application/octet-stream')
+
 	# internal
 
 	def boot(self):
@@ -76,6 +95,8 @@ class Stages(object):
 			full_fn = os.path.join("stages/", fn)
 			if os.path.isdir(full_fn):
 				self.stages[fn] = Stage(full_fn)
+
+		self.suit_exporter.boot()
 
 	def get_asset_variants_locators(self, stage, aid):
 		if stage not in self.stages:

@@ -177,8 +177,8 @@ class References(object):
 
 		result = []
 
-		def is_pathlike(x):
-			return (x.find("/") != -1 or x.find("\\") != -1)
+		def is_pathlike(s):
+			return (s is not None and "." in s and ("/" in s or "\\" in s))
 
 		for s in asset.dat1._strings_inverse_map:
 			if is_pathlike(s):

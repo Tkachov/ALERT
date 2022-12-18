@@ -6,6 +6,12 @@ function createElementWithTextNode(tag, text) {
 	return e;
 }
 
+function createElementWithTextNodeAndClass(tag, className, text) {
+	var e = createElementWithTextNode(tag, text);
+	e.className = className;
+	return e;
+}
+
 function replaceElementText(e, t) {
 	e.innerHTML = "";
 	e.appendChild(document.createTextNode(t));

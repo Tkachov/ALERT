@@ -367,6 +367,12 @@ class ReferencesSection(Section):
 		count = len(data)//ENTRY_SIZE
 		self.entries = [struct.unpack("<QII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
+	@classmethod
+	def make(cls, container):
+		data = bytearray()
+		c = cls(data, container)
+		return c
+
 	def save(self):
 		of = io.BytesIO(bytes())
 		for e in self.entries:

@@ -206,8 +206,10 @@ class DAT1(object):
 
 		h = self.header
 		out.write(struct.pack("<IIIHH", h.magic, h.unk1, h.size, len(h.sections), len(h.unknowns)))
-		for s in h.sections:
-			out.write(struct.pack("<III", s.tag, s.offset, s.size))
+		sorted_sections = [(s.tag, s.offset, s.size) for s in h.sections]
+		sorted_sections = sorted(sorted_sections)
+		for s in sorted_sections:
+			out.write(struct.pack("<III", *s))
 		out.write(h.unknowns)
 
 		out.write(self._raw_strings_data)
