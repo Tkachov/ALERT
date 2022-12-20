@@ -192,3 +192,45 @@ class xC5354B60_Section(dat1lib.types.sections.Section): # aka model_mirror_ids
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Some Offsets | {:6} offsets".format(self.TAG, len(self.offsets)))
+
+#
+
+class x90CDB60C_Section(dat1lib.types.sections.Section):
+	TAG = 0x90CDB60C
+	TYPE = 'Model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# MSMR
+		# 2311 occurrences in 38298 files
+		# size = 80
+		#
+		# examples: 8007367BDC86C66B
+
+		# MM
+		# 2004 occurrences in 37147 files
+		# size = 80
+		#
+		# examples: 8008B62FF6E72FDE
+		
+		ENTRY_SIZE = 4
+		count = len(data)//ENTRY_SIZE
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for e in self.entries:
+			of.write(struct.pack("<I", e))
+		of.seek(0)
+		return of.read()
+
+	def get_short_suffix(self):
+		return "90CDB60C ({})".format(len(self.entries))
+
+	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
+		##### "{:08X} | ............ | {:6} ..."
+		print("{:08X} | 90CDB60C     | {:6} entries".format(self.TAG, len(self.entries)))
