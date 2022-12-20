@@ -86,3 +86,109 @@ class JointsSection(dat1lib.types.sections.Section):
 					print("        [!] name real hash {:08X} is not equal to one written in the struct {:08X}".format(nhsh, l.hash))
 
 		print("")
+
+###
+
+class xDCC88A19_Section(dat1lib.types.sections.Section):
+	TAG = 0xDCC88A19
+	TYPE = 'model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# MSMR
+		# 2311 occurrences in 38298 files
+		# size = 128..355712 (avg = 6332.5)
+		#
+		# examples: 800804287BB19C92 (min size), BBCAFC4308D39DEC (max size)
+
+		# MM
+		# 2004 occurrences in 37147 files
+		# size = 128..350912 (avg = 5300.5)
+		#
+		# examples: 800B08BE9B0E1249 (min size), B699EAFFCD4834D0 (max size)
+
+		ENTRY_SIZE = 16
+		count = len(data)//ENTRY_SIZE
+		self.vectors = [struct.unpack("<ffff", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
+
+	def get_short_suffix(self):
+		return "vectors? ({})".format(len(self.vectors))
+
+	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
+		##### "{:08X} | ............ | {:6} ..."
+		print("{:08X} | Vectors?     | {:6} vectors".format(self.TAG, len(self.vectors)))
+		# TODO: print(vec4f)
+
+###
+
+class xB7380E8C_Section(dat1lib.types.sections.Section):
+	TAG = 0xB7380E8C
+	TYPE = 'model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# MSMR
+		# 2311 occurrences in 38298 files
+		# size = 2..6346 (avg = 79.1)
+		#
+		# examples: 800804287BB19C92 (min size), BBCAFC4308D39DEC (max size)
+
+		# MM
+		# 2004 occurrences in 37147 files
+		# size = 2..6264 (avg = 65.3)
+		#
+		# examples: 8008B62FF6E72FDE (min size), B699EAFFCD4834D0 (max size)
+
+		# some unique numbers from 0, but with some gaps
+		# for example, 146 numbers from 0 up to 220
+		self.indexes = utils.read_struct_N_array_data(data, len(data)//2, "<H")
+
+	def get_short_suffix(self):
+		return "indexes? ({})".format(len(self.indexes))
+
+	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
+		##### "{:08X} | ............ | {:6} ..."
+		print("{:08X} | Some Indexes | {:6} indexes".format(self.TAG, len(self.indexes)))
+
+###
+
+class xC5354B60_Section(dat1lib.types.sections.Section): # aka model_mirror_ids
+	TAG = 0xC5354B60 # Model Mirror Ids
+	TYPE = 'model'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# MSMR
+		# 2311 occurrences in 38298 files
+		# size = 4..12704 (avg = 182.0)
+		#
+		# examples: 800804287BB19C92 (min size), BBCAFC4308D39DEC (max size)
+
+		# MM
+		# 2004 occurrences in 37147 files
+		# size = 4..12532 (avg = 153.3)
+		#
+		# examples: 800B08BE9B0E1249 (min size), B699EAFFCD4834D0 (max size)
+
+		# some offset-like numbers in "mostly" increasing order
+		# (sometimes value returns back to a smaller number and continues to increase)
+		self.offsets = utils.read_struct_N_array_data(data, len(data)//4, "<I")
+
+	def get_short_suffix(self):
+		return "offsets? ({})".format(len(self.offsets))
+
+	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
+		##### "{:08X} | ............ | {:6} ..."
+		print("{:08X} | Some Offsets | {:6} offsets".format(self.TAG, len(self.offsets)))
