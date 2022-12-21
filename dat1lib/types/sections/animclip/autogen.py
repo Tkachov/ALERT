@@ -186,14 +186,14 @@ class x14014CB6_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 800E090BA1F2F337 (min size), 815B25AB2285CEA5 (max size)
 		
-		ENTRY_SIZE = 4
+		ENTRY_SIZE = 40
 		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+		self.entries = [struct.unpack("<10I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
 		for e in self.entries:
-			of.write(struct.pack("<I", e))
+			of.write(struct.pack("<10I", e))
 		of.seek(0)
 		return of.read()
 
@@ -201,11 +201,23 @@ class x14014CB6_Section(dat1lib.types.sections.Section):
 		return "14014CB6 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 14014CB6     | {:6} entries".format(self.TAG, len(self.entries)))
+
+		print("")
+		#######........ | 123  12345678  
+		print("           #        hash  name")
+		print("         -------------------------------------------------------------------------")
+		for i, l in enumerate(self.entries):
+			print("         - {:<3}  {:08X}  {}  {}".format(i, l[0], self._dat1._strings_map.get(l[1], None), l[2:]))
+			# l[2], l[3] -- zeros
+			# l[4] -- offset in 116EB684?
+			# l[5] -- 257 (== count of bones?)
+			# l[6], l[7] -- zeros
+			# l[8] -- 1 or 69, affects offset in l[4] (1 is 16 bytes, 69 is 288 bytes)
+			# l[9] -- zero
+
+		print("")
 
 #
 
@@ -311,6 +323,8 @@ class x3976E44C_Section(dat1lib.types.sections.Section):
 		# size = 128
 		#
 		# examples: 80006FCEB83F81B3
+
+		# two matrixes 4x4 (like I + translation vector)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -433,26 +447,43 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 		#
 		# examples: 800032F7B1757E90
 		
+		"""
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
 		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+		"""
+		self.entries = struct.unpack("<I46H", data)
 
+	"""
 	def save(self):
 		of = io.BytesIO(bytes())
 		for e in self.entries:
 			of.write(struct.pack("<I", e))
 		of.seek(0)
 		return of.read()
+	"""
 
 	def get_short_suffix(self):
 		return "Anim Clip Built ({})".format(len(self.entries))
 
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
+	def print_verbose(self, config):		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Clip Built   | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Clip Built   |".format(self.TAG))
+
+		print(" "*10, self._dat1._strings_map.get(self.entries[0], None)) #  self._dat1.get_string(self.entries[0]))
+
+		prefixes = {
+			9: "bones count (A3B26640)",
+			15: "bones count (A3B26640)",
+			17: "? count (D070D358)",
+			28: "anims count (14014CB6)"
+		}
+
+		for i in range(1, 46):
+			pref = ""
+			if i in prefixes:
+				pref = " -- " + prefixes[i]
+			print(" "*10, "{0:5} {0:04X}{1}".format(self.entries[i], pref))
 
 #
 
@@ -522,11 +553,18 @@ class xA3B26640_Section(dat1lib.types.sections.Section):
 		return "A3B26640 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | A3B26640     | {:6} entries".format(self.TAG, len(self.entries)))
+
+		print("")
+		#######........ | 123  12345678
+		print("           #    bonehash")
+		print("         ----------------")
+		for i, e in enumerate(self.entries):
+			print("         - {:<3}  {:08X}".format(i, e))
+
+		print("")
+
 
 #
 
@@ -536,6 +574,13 @@ class AnimClipTriggerDataSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		self.extra = struct.unpack("<4I", data[:16])
+		self.jsons = None
+		try:
+			self.jsons = dat1lib.types.sections.SerializedSection(data[16:], self._dat1)
+		except:
+			pass
 
 		# MSMR
 		# 9621 occurrences in 101563 files
@@ -548,27 +593,20 @@ class AnimClipTriggerDataSection(dat1lib.types.sections.Section):
 		# size = 32..34224 (avg = 1060.4)
 		#
 		# examples: 8016138A3C568830 (min size), 85AA1DDD57D6B350 (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
 
 	def get_short_suffix(self):
-		return "Anim Clip Trigger Data ({})".format(len(self.entries))
+		return "Anim Clip Trigger Data"
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Trigger Data | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Trigger Data |".format(self.TAG))
+		print(" "*10, self.extra)
+		try:
+			print(" "*10, self.jsons.root)
+			if len(self.jsons.extras) > 0:
+				print(" "*10, self.jsons.extras)
+		except:
+			pass
 
 #
 
@@ -759,24 +797,40 @@ class xD070D358_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 800E6D4C6EE30DC5 (min size), 8EE1B61ADADF360C (max size)
 		
-		ENTRY_SIZE = 4
+		ENTRY_SIZE = 5
 		count = len(data)//ENTRY_SIZE
+
+		ENTRY_SIZE = 4
 		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
+		offset = ENTRY_SIZE * count
+		ENTRY_SIZE = 1
+		self.entries2 = [struct.unpack("<B", data[offset+i*ENTRY_SIZE:offset+(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+
+	"""
 	def save(self):
 		of = io.BytesIO(bytes())
 		for e in self.entries:
 			of.write(struct.pack("<I", e))
+		for e in self.entries2:
+			of.write(struct.pack("<B", e))
+		for i in range((4 - (len(self.entries)%4))%4):
+			of.write(b'\x00')
 		of.seek(0)
 		return of.read()
+	"""
 
 	def get_short_suffix(self):
 		return "D070D358 ({})".format(len(self.entries))
 
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
+	def print_verbose(self, config):		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | D070D358     | {:6} entries".format(self.TAG, len(self.entries)))
 
+		print("")
+		#######........ | 123  12345678  123
+		print("           #        hash  ndx")
+		print("         ---------------------")
+		for i, l in enumerate(self.entries):
+			print("         - {:<3}  {:08X}  {}".format(i, l, self.entries2[i]))
+		print("")

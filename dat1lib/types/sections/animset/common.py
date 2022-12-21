@@ -28,53 +28,45 @@ class x212BD372_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 8066767AB8665577 (min size), BA773355A0CA1F3E (max size)
 
-		self.version, self.count = struct.unpack("<HH", data[:4])
+		self.count1, self.count2 = struct.unpack("<HH", data[:4])
 
-		self.ab, self.c, self.d, self.unk2, self.count2, self.count3 = None, None, None, None, None, None
-		off = 20
-		if self.version == 1:
-			off = 16
-			self.ab, self.c, self.d, self.unk2 = struct.unpack("<IHHI", data[4:16])
-		else:
-			self.ab, = struct.unpack("<I", data[4:8]) # `unk1` times "<H"?
-			self.c, self.d = struct.unpack("<HH", data[8:12])
-			self.unk2, self.count2, self.count3 = struct.unpack("<IHH", data[12:20])
+		off = 4
+		ENTRY_SIZE = 4
+		count = self.count1
+		self.values1 = [struct.unpack("<I", data[off + i*ENTRY_SIZE:off + (i+1)*ENTRY_SIZE])[0] for i in range(count)]
+		off += count*ENTRY_SIZE
 
-		cnt = self.count
-		self.values = []
-		for i in range(cnt):
-			self.values += [struct.unpack("<Q", data[off:off+8])[0]]
+		self.unk1, self.unk2 = struct.unpack("<HH", data[off:off+4])
+		off += 4
+		
+		count = self.count2
+		self.hashes = []
+		for i in range(count):
+			self.hashes += [struct.unpack("<Q", data[off:off+8])[0]]
 			off += 8
 
-		self.values2 = []
-		if self.version == 1:
-			rest = data[off:]
-			ENTRY_SIZE = 4
-			count = len(data)//ENTRY_SIZE
-			self.values2 = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-		else:
-			for i in range(cnt):
-				self.values2 += [struct.unpack("<I", data[off:off+4])[0]]
-				off += 4		
+		self.string_offsets = []
+		for i in range(count):
+			self.string_offsets += [struct.unpack("<I", data[off:off+4])[0]]
+			off += 4
 
 	def get_short_suffix(self):
-		return "212BD372 ({})".format(len(self.values))
+		return "212BD372 ({}/{})".format(self.count1, self.count2)
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 212BD372     | {:6} entries".format(self.TAG, len(self.values)))
-		print("  {} {} {:08X} {} {} {:08X} {} {}".format(self.version, self.count, self.ab, self.c, self.d, self.unk2, self.count2, self.count3))
-		if self.version == 1:
-			for i in range(len(self.values)):
-				print("  - {:<3}  {:016X}".format(i, self.values[i]))
-			print(self.values2)
-		else:
-			for i in range(len(self.values)):
-				print("  - {:<3}  {:016X} {}".format(i, self.values[i], self.values2[i]))
-		print("")
+		print("{:08X} | 212BD372     |".format(self.TAG))
+		print("  {} {} {} {}".format(self.count1, self.count2, self.unk1, self.unk2))
+		print()
+
+		for i in range(self.count1):
+			print("  - {:<3}  {:08X}".format(i, self.values1[i]))
+		print()
+
+		for i in range(self.count2):
+			s = self._dat1._strings_map.get(self.string_offsets[i], None)
+			print("  - {:<3}  {:016X} {}".format(i, self.hashes[i], s))
+		print()
 
 #
 
@@ -158,9 +150,6 @@ class AnimDriverClassBuiltSection(dat1lib.types.sections.Section):
 		return "Anim Driver Class built ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Class Built  | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
@@ -214,9 +203,6 @@ class AnimClipLookupSection(dat1lib.types.sections.Section): # aka anim_clip_loo
 		return "Anim Clip Lookup ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Clip Lookup  | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
@@ -262,9 +248,6 @@ class AnimDriverClassDataSection(dat1lib.types.sections.Section):
 		return "Anim Driver Class data ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Class data   | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):
@@ -311,9 +294,6 @@ class AnimDriverClassLookupSection(dat1lib.types.sections.Section):
 		return "Anim Driver Class lookup ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Class Lookup | {:6} entries".format(self.TAG, len(self.entries)))
 		for i, x in enumerate(self.entries):

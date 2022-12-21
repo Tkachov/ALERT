@@ -44,10 +44,9 @@ class ClipsListSection(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Clips List   | {:6} .performanceclips".format(self.TAG, len(self.entries)))
 
-		if config.get("web", False):
-			##### "  - 123  12345678 12345678 1234567812345678 1234567812345678
-			print("      #         ?        ? .performanceclip        .animclip")
-			print("  ----------------------------------------------------------")
-			for i, x in enumerate(self.entries):
-				print("  - {:<3}  {:08X} {:08X} {:016X} {:016X}".format(i, *x))
-			print("")
+		##### "  - 123  12345678 12345678 1234567812345678 1234567812345678
+		print("      #         ?        ? .performanceclip        .animclip")
+		print("  ----------------------------------------------------------")
+		for i, x in enumerate(self.entries):
+			print("  - {:<3}  {:08X} {:08X} {:016X} {:016X}".format(i, *x))
+		print("")

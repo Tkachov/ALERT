@@ -1,5 +1,7 @@
 import dat1lib.crc32 as crc32
+import dat1lib.crc64 as crc64
 import dat1lib.types.sections
+import dat1lib.utils as utils
 import io
 import struct
 
