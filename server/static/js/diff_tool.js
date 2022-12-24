@@ -4,6 +4,7 @@ diff_tool = {
 	viewers: [],
 
 	files_to_compare: [],
+	info_map: {},
 
 	init: function () {
 		this.ready = true;
@@ -17,6 +18,8 @@ diff_tool = {
 			window_id: -1,
 
 			container: null,
+			left_index: 0,
+			right_index: 0,
 
 			init: function (viewer_id) {
 				this.viewer_id = viewer_id;
@@ -51,6 +54,66 @@ diff_tool = {
 
 				var d = document.createElement("div");
 				e.appendChild(d);
+
+				this.render_controls(d);
+			},
+
+			render_controls: function (d) {
+				var self = this;
+				var controls = document.createElement("div");
+				controls.className = "controls";
+
+				// panes
+				// left options
+				// right options
+				// Compare button
+				// Diff button
+
+				function make_file_option(locator) {
+					var entry = diff_tool.info_map[locator];
+
+					var text = "";
+					text += (entry.stage == "" ? "Game Archive" : entry.stage);
+					text += " (span " + (entry.stage == "" ? ("#" + entry.span) : entry.span) + "): ";
+					text += entry.name;
+
+					var o = createElementWithTextNode("option", text);
+					o.value = locator;
+					return o;
+				}
+
+				function make_files_select(index, onchange) {
+					var select = document.createElement("select");
+					for (var f of diff_tool.files_to_compare)
+						select.appendChild(make_file_option(f));
+					
+					select.selectedIndex = index;
+					if (diff_tool.files_to_compare.length < 2) select.disabled = true;
+
+					select.onchange = function () {
+						onchange(select.selectedIndex);
+					};
+					return select;
+				}
+
+				var p1 = document.createElement("div");
+				p1.className = "pane";
+
+				var p1_left = document.createElement("div");
+				p1_left.appendChild(make_files_select(this.left_index, function (index) { self.left_index = index; self.render(); }));
+				p1.appendChild(p1_left);
+
+				var p1_right = document.createElement("div");
+				p1_right.appendChild(make_files_select(this.right_index, function (index) { self.right_index = index; self.render(); }));
+				p1.appendChild(p1_right);
+
+				controls.appendChild(p1);
+
+				// panes
+				// selected left info
+				// selected right info
+
+				d.appendChild(controls);
 			},
 
 			//
@@ -105,9 +168,16 @@ diff_tool = {
 		this.construct_viewer();
 	},
 
-	add_to_compare: function (locator) {
+	add_to_compare: function (locator, stage, span, aid, shortname, fullname) {
 		if (!this.is_in_compare(locator))
 			this.files_to_compare.push(locator);
+		this.info_map[locator] = {
+			stage: stage,
+			span: span,
+			aid: aid,
+			name: shortname,
+			path: fullname
+		};
 	},
 
 	remove_from_compare: function (locator) {

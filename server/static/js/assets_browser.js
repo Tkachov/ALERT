@@ -398,8 +398,11 @@ assets_browser = {
 				var btn = createElementWithTextNode("a", (is_compared ? "Remove from compare list" : "Add to compare list") + " (" + diff_tool.files_to_compare.length + ")");
 				var self = this;
 				btn.onclick = function () {
-					if (is_favorite) diff_tool.remove_from_compare(locator);
-					else diff_tool.add_to_compare(locator);
+					if (is_compared) diff_tool.remove_from_compare(locator);
+					else {
+						let [shortname, fullname] = get_asset_names(self);
+						diff_tool.add_to_compare(locator, entry.stage, entry.span, entry.aid, shortname, fullname);
+					}
 
 					self.make_asset_details(entry);
 				};

@@ -2206,3 +2206,28 @@ html, body {
 	width: 200pt;
 	display: inline-block;
 }
+
+/* diff tool */
+
+.diff_tool {
+	overflow-y: auto;
+}
+
+.diff_tool > div {
+	padding: 10pt;
+}
+
+.diff_tool .pane {
+	display: flex;
+}
+
+.diff_tool .pane > div {
+	width: calc(50% - 10pt);
+}
+
+.diff_tool .pane > div + div {
+	width: calc(50% - 10pt - 1px);
+	border-left: 1px solid #CCC;
+	padding-left: 10pt;
+	margin-left: 10pt;
+}
