@@ -9,6 +9,7 @@ const USER_STORAGE_KEY = "user";
 
 var assets_browser = { ready: false };
 var configs_editor = { ready: false };
+var diff_tool = { ready: false };
 var models_viewer = { ready: false };
 var references_viewer = { ready: false };
 var sections_editor = { ready: false };

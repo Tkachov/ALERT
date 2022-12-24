@@ -302,6 +302,11 @@ windows = {
 	open_suit_importer: function () {
 		suit_importer.show_importer();
 		this.hide_start_menu();
+	},
+
+	open_diff_tool: function () {
+		diff_tool.show_viewer();
+		this.hide_start_menu();
 	}
 };
 
