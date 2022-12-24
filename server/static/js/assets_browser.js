@@ -425,7 +425,7 @@ assets_browser = {
 					links.appendChild(btn);
 					btn.onclick = function () {
 						let [shortname, fullname] = get_asset_names(self);
-						references_viewer.show_viewer(locator, shortname, fullname);
+						references_viewer.show_viewer(locator, shortname, fullname, entry.aid);
 					};
 				}
 			}

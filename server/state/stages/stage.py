@@ -84,6 +84,11 @@ class Stage(object):
 		asset_data = state.get_asset_data(locator)
 		self.stage_asset_data(path, locator.span, asset_data)
 
+	def stage_asset_from_stage(self, path, locator, state):
+		asset_data = state.get_asset_data(locator)
+		span_index = int(locator.span) # TODO
+		self.stage_asset_data(path, span_index, asset_data)
+
 	def stage_asset_data(self, path, span_index, data):
 		# TODO: maintain correct structs state
 		real_path = os.path.join(self.path, self._get_span(span_index), path)

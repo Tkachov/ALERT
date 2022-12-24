@@ -2066,6 +2066,25 @@ html, body {
 	border-right: 1px solid #CCC;
 }
 
+.references_viewer .controls > button {
+	margin-right: 10pt;
+}
+
+.references_viewer .controls > .selected_actions_group {
+	padding-left: 10pt;
+	border-left: 1px solid #CCC;
+	display: none;
+}
+
+.references_viewer .controls > .selected_actions_group + button {
+	display: none;
+}
+
+.references_viewer .controls.has_selected > .selected_actions_group,
+.references_viewer .controls.has_selected > .selected_actions_group + button {
+	display: inline-block;
+}
+
 .references_viewer .controls .checkbox_line > label {
 	margin-left: 2pt;
 }
@@ -2075,43 +2094,115 @@ html, body {
 	padding-right: 0;
 }
 
-.references_viewer table {
-	width: 100%;
-	border: 0;
-	border-spacing: 0;
+.references_viewer .ref {
 }
 
-.references_viewer table th {
-	color: #CCC;
+.references_viewer .ref_line {
 	padding: 2pt;
-	padding-bottom: 2pt;
-	font-weight: normal;
-	text-align: left;
+}
+
+.references_viewer .headers > .ref_line {
+	color: #CCC;
 	padding-bottom: 4pt;
 }
 
-.references_viewer table th:nth-child(1) {
-	width: 60pt;
+.references_viewer .ref .ref_line:hover {
+	background: var(--highlight-color);
 }
 
-.references_viewer .result_entry > td:nth-child(1) {
-	font-weight: normal;
+.references_viewer .ref .ref_line.selected, .references_viewer .ref .ref_line.selected:hover {
+	background: var(--selected-color);
 }
 
-.references_viewer .result_entry .browse_button {
-	float: right;
-	display: block;
+.references_viewer .ref .content {
+}
+
+.references_viewer .ref.closed > .content {
+	display: none;
+}
+
+.references_viewer .ref.has_contents {
+	padding-bottom: 10pt;
+}
+
+.references_viewer .ref.has_contents.closed {
+	padding-bottom: 0;
+}
+
+.references_viewer .ref_line > .checkbox_column {
+	display: inline-block;
+	width: 30pt;
+}
+
+.references_viewer .ref_line > .checkbox_column > label {
+	width: 30pt;
+	display: inline-block;
+}
+
+.references_viewer .ref_line > .name_column {
+	display: inline-block;
+	width: calc(50% - 40pt);
+}
+
+.references_viewer .ref_line > .name_column::before {
+	content: '›';
+	display: inline-block;
+	transform: rotate(90deg);
+	color: #444;
+	font-size: 14pt;
+	text-align: center;
+	vertical-align: middle;
+	margin: 0 4pt;
+	line-height: 0;
+	visibility: hidden;
+	margin-right: 10pt;
+}
+
+.references_viewer .ref.closed > .ref_line > .name_column::before {
+	transform: rotate(0deg) translateX(-1pt);
+	color: #AAA;
+	margin-top: -4pt;
+}
+
+.references_viewer .ref_line:hover > .name_column::before,
+.references_viewer .ref.closed > .ref_line > .name_column:hover::before {
+	cursor: pointer;
+	color: rgb(78, 208, 249);
+}
+
+.references_viewer .ref.has_contents > .ref_line > .name_column::before {
+	visibility: visible;
+}
+
+.references_viewer .ref_line > .info_column {
+	display: inline-block;
+	margin-left: -2pt;
+}
+
+.references_viewer .ref_line .browse_button {
 	width: 12pt;
 	height: 12pt;
 	background: url("img/search.svg");
 	visibility: hidden;
 	padding: 1pt;
+
+	display: inline-block;
+	width: 10pt;
+	height: 10pt;
+	vertical-align: bottom;
+	margin-bottom: 1pt;
+	margin-right: 20pt;
 }
 
-.references_viewer .result_entry:hover .browse_button {
+.references_viewer .ref > .ref_line:hover .browse_button {
 	visibility: visible;
 }
 
-.references_viewer .result_entry .browse_button:hover {
+.references_viewer .ref > .ref_line .browse_button:hover {
 	cursor: pointer;
+}
+
+.references_viewer .ref_line > .info_column > span:nth-child(2) {
+	width: 200pt;
+	display: inline-block;
 }

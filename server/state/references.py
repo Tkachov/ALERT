@@ -48,6 +48,9 @@ class References(object):
 	def get_references_viewer(self, locator, depth):
 		references = []
 
+		locator = self.state.locator(locator)
+		default_stage = locator.stage
+
 		refs = self.get_references(locator, depth)
 		for d, ref in refs:
 			ref_in = []
@@ -58,11 +61,16 @@ class References(object):
 			if len(ref_in) > 1 and "Strings Block" in ref_in:
 				ref_in.remove("Strings Block")
 
+			best_locator = self._get_best_locator(ref.locators, default_stage)
+			if best_locator is not None:
+				best_locator = str(best_locator)
+
 			references += [{
 				"depth": d,
 				"asset_id": ref.aid,
 				"filename": ref.filename,
 				"referenced_in": ref_in,
+				"locator": best_locator,
 				"comment": self._make_comment(ref)
 			}]
 
@@ -137,17 +145,7 @@ class References(object):
 				already_added.add(aid)
 
 				if current_depth < depth and aid not in parent_assets:
-					best_locator = None
-
-					for l in refmap[aid].locators:
-						lo = self.state.locator(l)
-						if lo.stage == default_stage:
-							best_locator = lo
-							break
-
-					if best_locator is None and len(refmap[aid].locators) > 0:
-						best_locator = refmap[aid].locators[0]
-
+					best_locator = self._get_best_locator(refmap[aid].locators, default_stage)
 					if best_locator is not None:
 						append_to_q += [(append_after, current_depth+1, best_locator, parent_assets + [aid])]
 
@@ -161,6 +159,17 @@ class References(object):
 			q = append_to_q + q
 
 		return order
+
+	def _get_best_locator(self, locators, default_stage):
+		for l in locators:
+			lo = self.state.locator(l)
+			if lo.stage == default_stage:
+				return lo
+
+		if len(locators) > 0:
+			return locators[0]
+
+		return None
 
 	def _get_references(self, asset):
 		result = []

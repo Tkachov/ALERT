@@ -87,3 +87,9 @@ function filesize(sz) {
 
 	return sz + " " + units;
 }
+
+function get_basename(path) {
+	var i1 = path.lastIndexOf('/');
+	var i2 = path.lastIndexOf('\\');
+	return path.substr(Math.max(i1, i2) + 1);
+}

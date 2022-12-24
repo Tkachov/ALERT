@@ -183,7 +183,7 @@ class Stages(object):
 			dst_stage_object = Stage(fn)
 
 		if locator.stage is not None:
-			raise Exception("Bad stage") # TODO: reassess this later
+			return self._stage_asset_from_stage(locator, dst_stage_object, all_spans)
 
 		aid = locator.asset_id
 		path = aid
@@ -196,6 +196,25 @@ class Stages(object):
 				dst_stage_object.stage_asset_from_toc(path, self.state.locator(l), self.state)
 		else:
 			dst_stage_object.stage_asset_from_toc(path, locator, self.state)
+
+		return True
+
+	def _stage_asset_from_stage(self, locator, dst_stage_object, all_spans):
+		src_stage = locator.stage
+		path = locator.asset_path
+		aid = locator.asset_id
+		if path is None:
+			path = aid
+
+		if src_stage not in self.stages:
+			raise Exception("Bad stage")
+
+		if all_spans:
+			locators = self.get_asset_variants_locators(src_stage, aid)	
+			for l in locators:
+				dst_stage_object.stage_asset_from_stage(path, self.state.locator(l), self.state)
+		else:
+			dst_stage_object.stage_asset_from_stage(path, locator, self.state)
 
 		return True
 
