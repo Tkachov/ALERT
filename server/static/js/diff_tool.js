@@ -44,6 +44,11 @@ diff_tool = {
 					windows.subscribe_to_window(w, cb);
 				}
 
+				if (diff_tool.files_to_compare.length > 1) {
+					this.left_index = diff_tool.files_to_compare.length - 2;
+					this.right_index = diff_tool.files_to_compare.length - 1;
+				}
+
 				this.render();
 			},
 
@@ -113,6 +118,35 @@ diff_tool = {
 				// selected left info
 				// selected right info
 
+				function make_file_info(container, index) {
+					if (index < 0 || index >= diff_tool.files_to_compare.length) return;
+
+					var locator = diff_tool.files_to_compare[index];
+					var entry = diff_tool.info_map[locator];
+					container.appendChild(createElementWithTextNode("p", "Path: " + (entry.path == "" ? entry.name : entry.path)));
+					container.appendChild(createElementWithTextNode("p", entry.aid));
+
+					var desc = "";
+					if (entry.type != null) {
+						desc = entry.type + " (" + entry.sections + " sections)\n";
+					}						
+					desc += filesize(entry.size);
+					container.appendChild(createElementWithTextNode("p", desc));
+				}
+
+				var p2 = document.createElement("div");
+				p2.className = "pane info";
+
+				var p2_left = document.createElement("div");
+				make_file_info(p2_left, this.left_index);
+				p2.appendChild(p2_left);
+
+				var p2_right = document.createElement("div");
+				make_file_info(p2_right, this.right_index);
+				p2.appendChild(p2_right);
+
+				controls.appendChild(p2);
+
 				d.appendChild(controls);
 			},
 
@@ -168,15 +202,19 @@ diff_tool = {
 		this.construct_viewer();
 	},
 
-	add_to_compare: function (locator, stage, span, aid, shortname, fullname) {
+	add_to_compare: function (locator, entry, info) {
 		if (!this.is_in_compare(locator))
 			this.files_to_compare.push(locator);
 		this.info_map[locator] = {
-			stage: stage,
-			span: span,
-			aid: aid,
-			name: shortname,
-			path: fullname
+			stage: entry.stage,
+			span: entry.span,
+			aid: entry.aid,
+			size: entry.size,
+			name: entry.name,
+			path: entry.path,
+
+			type: info.type,
+			sections: info.sections
 		};
 	},
 

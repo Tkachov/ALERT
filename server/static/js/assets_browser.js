@@ -399,10 +399,7 @@ assets_browser = {
 				var self = this;
 				btn.onclick = function () {
 					if (is_compared) diff_tool.remove_from_compare(locator);
-					else {
-						let [shortname, fullname] = get_asset_names(self);
-						diff_tool.add_to_compare(locator, entry.stage, entry.span, entry.aid, shortname, fullname);
-					}
+					else diff_tool.add_to_compare(locator, entry, info);
 
 					self.make_asset_details(entry);
 				};

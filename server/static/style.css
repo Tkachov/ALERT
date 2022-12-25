@@ -2231,3 +2231,26 @@ html, body {
 	padding-left: 10pt;
 	margin-left: 10pt;
 }
+
+.diff_tool .controls .info {
+	font-size: 10pt;
+}
+
+.diff_tool .controls .info > div > p {
+	padding: 0 3pt;
+}
+
+.diff_tool .controls .info > div > p:first-child {
+	margin-bottom: 2pt;
+}
+
+.diff_tool .controls .info > div > p:first-child + p {
+	margin-top: 2pt;
+	margin-bottom: 8pt;
+	color: #AAA;
+}
+
+.diff_tool .controls .info > div > p:first-child + p + p {
+	margin-top: 8pt;
+	white-space: pre;
+}
