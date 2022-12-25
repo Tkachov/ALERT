@@ -52,14 +52,6 @@ sections_viewer = {
 
 		// spoilers with reports by section
 
-		function isScrolledIntoView(el) {
-			var rect = el.getBoundingClientRect();
-			var elemTop = rect.top;
-			var elemBottom = rect.bottom;
-
-			return (elemTop < window.innerHeight && elemBottom >= 0);
-		}
-
 		function make_spoiler_onclick(s) {
 			return function () {
 				s.classList.toggle("open");
@@ -68,128 +60,20 @@ sections_viewer = {
 			};
 		}
 
-		var sections_order = [];
-		for (var s of report.header) {
-			sections_order.push([s[0], s[1], s[2]]);
-		}
-		sections_order.sort(function(a, b) {
-			return a[1] - b[1];
-		});
+		var sections_order = this._make_sections_order(report);
 
 		var sections = {};
 		if (report.strings.length > 0) {
-			var s = document.createElement("div");
-			s.className = "spoiler";
-			var sh = document.createElement("div");
-			var clr = document.createElement("span");
-			clr.style.background = "#EEE";
-			sh.appendChild(clr);
-			sh.appendChild(createElementWithTextNode("span", "Strings block"));
-			s.appendChild(sh);
-			sh.onclick = make_spoiler_onclick(s);
-			var c = createElementWithTextNode("pre", report.strings);
-			s.appendChild(c);
+			var s = this._make_strings_block_spoiler(report);
+			s.children[0].onclick = make_spoiler_onclick(s);
 			sp.appendChild(s);
 			sections["SB"] = s;
 		}
 
 		for (var sect of sections_order) {
 			var k = "" + sect[0];
-			var tag = sect[0].toString(16).toUpperCase();
-			var color = tag.substr(1, 6);
-
-			var section = report.sections[k];
-
-			var s = document.createElement("div");
-			s.className = "spoiler";
-			var sh = document.createElement("div");
-			var clr = document.createElement("span");
-			clr.style.background = "#" + color;
-			sh.appendChild(clr);
-			sh.appendChild(createElementWithTextNode("span", section.name));
-			s.appendChild(sh);
-			sh.onclick = make_spoiler_onclick(s);
-			if (section.type == "text") {
-				if (section.content != "") {
-					var c = createElementWithTextNode("pre", section.content);
-					s.appendChild(c);
-				}
-
-				// TODO: not readonly => editable text
-			} else if (section.type == "json") {
-				var c = createElementWithTextNode("pre", JSON.stringify(section.content, null, 4));
-				s.appendChild(c);
-
-				// TODO: not readonly => editable json
-			} else if (section.type == "bytes") {
-				var raw = atob(section.content);
-				var contents = document.createElement("div");
-
-				var t = document.createElement("table");
-				t.className = "hex_view";
-
-				var section_settings = {
-					width: 16,
-					absolute: true
-				};
-				if (controller.user.__hexview_experimental.enabled) {
-					var settings = controller.user.__hexview_experimental;
-					if (settings.sections.hasOwnProperty(tag)) {
-						section_settings = settings.sections[tag];
-					}
-
-					var controls = document.createElement("div");
-					controls.className = "hex_view_controls";
-
-					var gr = document.createElement("span");
-					gr.className = "hex_view_absolute";
-					var cb_id = "hex_view_offset_absolute_" + tag +  "_" + Date.now();
-					var cb = document.createElement("input");
-					cb.type = "checkbox";
-					cb.id = cb_id;
-					cb.checked = (section_settings.absolute);
-
-					var lb = createElementWithTextNode("label", "Absolute offset");
-					lb.htmlFor = cb_id;
-					gr.appendChild(cb);
-					gr.appendChild(lb);
-					controls.appendChild(gr);
-
-					gr = document.createElement("span");
-					gr.className = "hex_view_width";
-					var nm_id = "hex_view_width_" + tag +  "_" + Date.now();
-					var nm = document.createElement("input");
-					nm.type = "number";
-					nm.id = nm_id;
-					nm.value = section_settings.width;
-
-					lb = createElementWithTextNode("label", "Row width");
-					lb.htmlFor = nm_id;
-					gr.appendChild(lb);
-					gr.appendChild(nm);
-					controls.appendChild(gr);
-
-					var btn = createElementWithTextNode("button", "Apply");
-					btn.onclick = this.make_hexview_settings_onclick(tag, cb, nm, t, section);
-					controls.appendChild(btn);
-
-					gr = document.createElement("span");
-					gr.className = "separator";
-					controls.appendChild(gr);
-
-					btn = createElementWithTextNode("button", "Copy hex");
-					btn.onclick = this.make_hexview_copy_onclick(t);
-					controls.appendChild(btn);
-					
-					contents.appendChild(controls);
-				}
-				
-				this.make_hexview(t, raw, section_settings.width, section_settings.absolute ? section.offset : 0);
-				contents.appendChild(t)
-				s.appendChild(contents);
-
-				// TODO: not readonly => hex editor
-			}
+			var s = this._make_section_spoiler(report, sect);
+			s.children[0].onclick = make_spoiler_onclick(s);
 			sp.appendChild(s);
 			sections[k] = s;
 		}
@@ -199,22 +83,158 @@ sections_viewer = {
 		h.appendChild(createElementWithTextNode("b", report.header.length + " sections"));
 
 		if (report.strings.length > 0) {
-			var x = createElementWithTextNode("span", "Strings block");
-			x.style.background = "#EEE";
+			var x = this._make_header_strings_block_button();
 			x.onclick = make_spoiler_onclick(sections["SB"]);
 			h.appendChild(x);
 		}
 		
 		for (var s of sections_order) {
-			var tag = s[0].toString(16).toUpperCase();
-			var x = createElementWithTextNode("span", report.sections[s[0]].name + " - " + s[2] + " bytes");
-
-			var color = tag.substr(1, 6);
-			x.style.background = "#" + color;
-			x.style.color = (hexToLuma(color) < 0.6 ? "#FFF" : "#000");
+			var x = this._make_header_section_button(report, s);
 			x.onclick = make_spoiler_onclick(sections[s[0]]);
 			h.appendChild(x);
 		}
+	},
+
+	_make_sections_order: function (report) {
+		var sections_order = [];
+		for (var s of report.header) {
+			sections_order.push([s[0], s[1], s[2]]);
+		}
+		sections_order.sort(function(a, b) {
+			return a[1] - b[1];
+		});
+		return sections_order;
+	},
+
+	_make_strings_block_spoiler: function (report) {
+		var s = document.createElement("div");
+		s.className = "spoiler";
+		var sh = document.createElement("div");
+		var clr = document.createElement("span");
+		clr.style.background = "#EEE";
+		sh.appendChild(clr);
+		sh.appendChild(createElementWithTextNode("span", "Strings block"));
+		s.appendChild(sh);
+		var c = createElementWithTextNode("pre", report.strings);
+		s.appendChild(c);
+		return s;
+	},
+
+	_make_section_spoiler: function (report, sect) {
+		var k = "" + sect[0];
+		var tag = sect[0].toString(16).toUpperCase();
+		var color = tag.substr(1, 6);
+
+		var section = report.sections[k];
+
+		var s = document.createElement("div");
+		s.className = "spoiler";
+		var sh = document.createElement("div");
+		var clr = document.createElement("span");
+		clr.style.background = "#" + color;
+		sh.appendChild(clr);
+		sh.appendChild(createElementWithTextNode("span", section.name));
+		s.appendChild(sh);
+		
+		if (section.type == "text") {
+			if (section.content != "") {
+				var c = createElementWithTextNode("pre", section.content);
+				s.appendChild(c);
+			}
+
+			// TODO: not readonly => editable text
+		} else if (section.type == "json") {
+			var c = createElementWithTextNode("pre", JSON.stringify(section.content, null, 4));
+			s.appendChild(c);
+
+			// TODO: not readonly => editable json
+		} else if (section.type == "bytes") {
+			var raw = atob(section.content);
+			var contents = document.createElement("div");
+
+			var t = document.createElement("table");
+			t.className = "hex_view";
+
+			var section_settings = {
+				width: 16,
+				absolute: true
+			};
+			if (controller.user.__hexview_experimental.enabled) {
+				var settings = controller.user.__hexview_experimental;
+				if (settings.sections.hasOwnProperty(tag)) {
+					section_settings = settings.sections[tag];
+				}
+
+				var controls = document.createElement("div");
+				controls.className = "hex_view_controls";
+
+				var gr = document.createElement("span");
+				gr.className = "hex_view_absolute";
+				var cb_id = "hex_view_offset_absolute_" + tag +  "_" + Date.now();
+				var cb = document.createElement("input");
+				cb.type = "checkbox";
+				cb.id = cb_id;
+				cb.checked = (section_settings.absolute);
+
+				var lb = createElementWithTextNode("label", "Absolute offset");
+				lb.htmlFor = cb_id;
+				gr.appendChild(cb);
+				gr.appendChild(lb);
+				controls.appendChild(gr);
+
+				gr = document.createElement("span");
+				gr.className = "hex_view_width";
+				var nm_id = "hex_view_width_" + tag +  "_" + Date.now();
+				var nm = document.createElement("input");
+				nm.type = "number";
+				nm.id = nm_id;
+				nm.value = section_settings.width;
+
+				lb = createElementWithTextNode("label", "Row width");
+				lb.htmlFor = nm_id;
+				gr.appendChild(lb);
+				gr.appendChild(nm);
+				controls.appendChild(gr);
+
+				var btn = createElementWithTextNode("button", "Apply");
+				btn.onclick = this.make_hexview_settings_onclick(tag, cb, nm, t, section);
+				controls.appendChild(btn);
+
+				gr = document.createElement("span");
+				gr.className = "separator";
+				controls.appendChild(gr);
+
+				btn = createElementWithTextNode("button", "Copy hex");
+				btn.onclick = this.make_hexview_copy_onclick(t);
+				controls.appendChild(btn);
+				
+				contents.appendChild(controls);
+			}
+			
+			this.make_hexview(t, raw, section_settings.width, section_settings.absolute ? section.offset : 0);
+			contents.appendChild(t)
+			s.appendChild(contents);
+
+			// TODO: not readonly => hex editor
+		}
+
+		return s;
+	},
+
+	_make_header_strings_block_button: function () {
+		var x = createElementWithTextNode("span", "Strings block");
+		x.style.background = "#EEE";
+		return x;
+	},
+
+	_make_header_section_button: function (report, s) {
+		var tag = s[0].toString(16).toUpperCase();
+		var x = createElementWithTextNode("span", report.sections[s[0]].name + " - " + s[2] + " bytes");
+
+		var color = tag.substr(1, 6);
+		x.style.background = "#" + color;
+		x.style.color = (hexToLuma(color) < 0.6 ? "#FFF" : "#000");
+		return x;
 	},
 
 	make_hexview_settings_onclick: function (tag, absolute_checkbox, width_number, t, section) {

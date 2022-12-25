@@ -28,6 +28,14 @@ function classListSetIf(e, className, condition) {
 		e.classList.remove(className);
 }
 
+function isScrolledIntoView(el) {
+	var rect = el.getBoundingClientRect();
+	var elemTop = rect.top;
+	var elemBottom = rect.bottom;
+
+	return (elemTop < window.innerHeight && elemBottom >= 0);
+}
+
 // storage
 
 function save_into_storage(key, obj) {
@@ -87,6 +95,8 @@ function filesize(sz) {
 
 	return sz + " " + units;
 }
+
+// paths
 
 function get_basename(path) {
 	var i1 = path.lastIndexOf('/');

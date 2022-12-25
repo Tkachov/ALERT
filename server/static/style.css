@@ -537,12 +537,12 @@ html, body {
 
 /* sections viewer */
 
-.sections_viewer {
+.sections_viewer.window_contents {
 	height: 100%;
 	overflow-y: auto;
 }
 
-.sections_viewer > div {
+.sections_viewer.window_contents > div {
 	background: #FFF;
 	color: #000;
 	padding: 10pt;
@@ -2232,6 +2232,17 @@ html, body {
 	margin-left: 10pt;
 }
 
+.diff_tool .controls select {
+	min-width: 40%;
+	max-width: calc(100% - 2*80pt - 2*10pt);
+}
+
+.diff_tool .controls button {
+	margin-left: 10pt;
+	width: 80pt;
+	float: right;
+}
+
 .diff_tool .controls .info {
 	font-size: 10pt;
 }
@@ -2253,4 +2264,28 @@ html, body {
 .diff_tool .controls .info > div > p:first-child + p + p {
 	margin-top: 8pt;
 	white-space: pre;
+}
+
+.diff_tool .not_actual {
+	opacity: 0.5;
+}
+
+.diff_tool .compare .header {
+	margin-bottom: 0;
+	padding-top: 20pt;
+	padding-bottom: 20pt;
+}
+
+.diff_tool .compare .missing {
+	display: flex;
+	color: #AAA;
+	border: 1px solid #EEE;
+	width: calc(100% - 4pt - 2*1px);
+	height: calc(100% - 5pt - 2*1px);
+	margin-bottom: 5pt;
+	margin-right: 4pt;
+}
+
+.diff_tool .compare .missing > span {
+	margin: auto;
 }

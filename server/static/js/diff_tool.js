@@ -18,8 +18,20 @@ diff_tool = {
 			window_id: -1,
 
 			container: null,
+			local_files_to_compare: [],
 			left_index: 0,
 			right_index: 0,
+
+			loading: 0,
+			error: null,
+			message: null,
+			left_info: null,
+			right_info: null,
+			mode: "compare",
+
+			compare_dom: null,
+			compare_dom_left_index: -1,
+			compare_dom_right_index: -1,
 
 			init: function (viewer_id) {
 				this.viewer_id = viewer_id;
@@ -44,9 +56,11 @@ diff_tool = {
 					windows.subscribe_to_window(w, cb);
 				}
 
-				if (diff_tool.files_to_compare.length > 1) {
-					this.left_index = diff_tool.files_to_compare.length - 2;
-					this.right_index = diff_tool.files_to_compare.length - 1;
+				this.local_files_to_compare = diff_tool.files_to_compare.slice();
+
+				if (this.local_files_to_compare.length > 1) {
+					this.left_index = this.local_files_to_compare.length - 2;
+					this.right_index = this.local_files_to_compare.length - 1;
 				}
 
 				this.render();
@@ -61,6 +75,7 @@ diff_tool = {
 				e.appendChild(d);
 
 				this.render_controls(d);
+				this.render_compare(d);
 			},
 
 			render_controls: function (d) {
@@ -89,11 +104,11 @@ diff_tool = {
 
 				function make_files_select(index, onchange) {
 					var select = document.createElement("select");
-					for (var f of diff_tool.files_to_compare)
+					for (var f of self.local_files_to_compare)
 						select.appendChild(make_file_option(f));
 					
 					select.selectedIndex = index;
-					if (diff_tool.files_to_compare.length < 2) select.disabled = true;
+					if (self.local_files_to_compare.length < 2) select.disabled = true;
 
 					select.onchange = function () {
 						onchange(select.selectedIndex);
@@ -110,6 +125,16 @@ diff_tool = {
 
 				var p1_right = document.createElement("div");
 				p1_right.appendChild(make_files_select(this.right_index, function (index) { self.right_index = index; self.render(); }));
+
+				// `float: right` buttons
+				var diff_button = createElementWithTextNode("button", "Diff");
+				diff_button.onclick = this.diff_files.bind(this);
+				p1_right.appendChild(diff_button);
+
+				var cmp_button = createElementWithTextNode("button", "Compare");
+				cmp_button.onclick = this.compare_files.bind(this);
+				p1_right.appendChild(cmp_button);
+
 				p1.appendChild(p1_right);
 
 				controls.appendChild(p1);
@@ -119,9 +144,9 @@ diff_tool = {
 				// selected right info
 
 				function make_file_info(container, index) {
-					if (index < 0 || index >= diff_tool.files_to_compare.length) return;
+					if (index < 0 || index >= self.local_files_to_compare.length) return;
 
-					var locator = diff_tool.files_to_compare[index];
+					var locator = self.local_files_to_compare[index];
 					var entry = diff_tool.info_map[locator];
 					container.appendChild(createElementWithTextNode("p", "Path: " + (entry.path == "" ? entry.name : entry.path)));
 					container.appendChild(createElementWithTextNode("p", entry.aid));
@@ -150,7 +175,270 @@ diff_tool = {
 				d.appendChild(controls);
 			},
 
+			render_compare: function (d) {
+				if (this.compare_dom != null) {
+					d.appendChild(this.compare_dom);
+					classListSetIf(this.compare_dom, "not_actual", (this.left_index != this.compare_dom_left_index || this.right_index != this.compare_dom_right_index));
+					return;
+				}
+
+				var self = this;
+				var compare = document.createElement("div");
+				compare.className = "compare";
+				d.appendChild(compare);
+				this.compare_dom = compare;
+
+				if (this.loading > 0) {
+					compare.appendChild(createElementWithTextNodeAndClass("span", "loading", "Loading..."));
+					return;
+				}
+
+				if (this.error != null) {
+					compare.appendChild(createElementWithTextNodeAndClass("b", "error", "Error:\n" + this.error));
+					return;
+				}
+
+				if (this.message != null) {
+					compare.appendChild(createElementWithTextNodeAndClass("span", "message", this.message));
+					return;
+				}
+
+				if (this.left_info == null && this.right_info == null) {
+					return;
+				}
+
+				if (this.left_info == null || this.right_info == null) {
+					this.error = "Failed to get information on some of the selected files";
+					this.render();
+					return;
+				}
+
+				if (this.mode == "compare")
+					this.render_mode_compare(compare);
+			},
+
+			render_mode_compare: function (compare) {
+				compare.classList.add("sections_viewer");
+
+				// make headers
+
+				var p1 = document.createElement("div");
+				p1.className = "pane";
+
+				var p1_left = document.createElement("div");
+				p1_left.className = "header";
+				p1.appendChild(p1_left);
+
+				var p1_right = document.createElement("div");
+				p1_right.className = "header";
+				p1.appendChild(p1_right);
+
+				compare.appendChild(p1);
+
+				// make spoilers
+
+				function make_spoiler_onclick(sections, other_sections, key) {
+					return function () {
+						var s1 = null;
+						if (key in sections) s1 = sections[key];
+
+						var s2 = null;
+						if (key in other_sections) s2 = other_sections[key];
+
+						if (s1 != null) {
+							s1.classList.toggle("open");
+							if (s1.classList.contains("open") && !isScrolledIntoView(s1))
+								s1.scrollIntoView({behavior: "smooth", block: "start"});
+						}
+
+						if (s2 != null) {
+							s2.classList.toggle("open");
+							if (s1 == null && s2.classList.contains("open") && !isScrolledIntoView(s2))
+								s2.scrollIntoView({behavior: "smooth", block: "start"});
+						}
+					};
+				}
+
+				var left_sections_order = sections_viewer._make_sections_order(this.left_info);
+				var right_sections_order = sections_viewer._make_sections_order(this.right_info);
+
+				var left_sections = {};
+				var right_sections = {};
+
+				function make_section_pane(compare, k, left, right, left_sections, right_sections) {
+					if (left != null) {
+						left.children[0].onclick = make_spoiler_onclick(left_sections, right_sections, k);
+						left_sections[k] = left;
+					}
+
+					if (right != null) {
+						right.children[0].onclick = make_spoiler_onclick(left_sections, right_sections, k);
+						right_sections[k] = right;
+					}
+
+					if (left != null || right != null) {
+						var p = document.createElement("div");
+						p.className = "pane";
+
+						var p_left = document.createElement("div");
+						if (left == null) {
+							var m = document.createElement("div");
+							m.className = "missing";
+							m.appendChild(createElementWithTextNode("span", "Not present in this asset"));
+							p_left.appendChild(m);
+						}
+						else p_left.appendChild(left);
+						p.appendChild(p_left);
+
+						var p_right = document.createElement("div");
+						if (right == null) {
+							var m = document.createElement("div");
+							m.className = "missing";
+							m.appendChild(createElementWithTextNode("span", "Not present in this asset"));
+							p_right.appendChild(m);
+						}
+						else p_right.appendChild(right);
+						p.appendChild(p_right);
+
+						compare.appendChild(p);
+					}
+				}
+
+				var left_strings = null;
+				if (this.left_info.strings.length > 0) {
+					left_strings = sections_viewer._make_strings_block_spoiler(this.left_info);
+				}
+
+				var right_strings = null;
+				if (this.right_info.strings.length > 0) {
+					right_strings = sections_viewer._make_strings_block_spoiler(this.right_info);
+				}
+
+				make_section_pane(compare, "SB", left_strings, right_strings, left_sections, right_sections);
+
+				for (var sect of left_sections_order) {
+					var k = "" + sect[0];
+					var left = sections_viewer._make_section_spoiler(this.left_info, sect);
+					var right = null;
+					for (var sect2 of right_sections_order) {
+						var k2 = "" + sect2[0];
+						if (k == k2) {
+							right = sections_viewer._make_section_spoiler(this.right_info, sect2);
+							break;
+						}
+					}
+					make_section_pane(compare, k, left, right, left_sections, right_sections);
+				}
+
+				for (var sect of right_sections_order) {
+					var k = "" + sect[0];
+					if (k in left_sections) continue;
+
+					var right = sections_viewer._make_section_spoiler(this.right_info, sect);
+					var left = null;
+					for (var sect2 of left_sections_order) {
+						var k2 = "" + sect2[0];
+						if (k == k2) {
+							left = sections_viewer._make_section_spoiler(this.left_info, sect2);
+							break;
+						}
+					}
+					make_section_pane(compare, k, left, right, left_sections, right_sections);
+				}
+
+				// fill headers
+
+				function fill_header(h, report, sections, other_sections, sections_order) {
+					h.appendChild(createElementWithTextNode("b", report.header.length + " sections"));
+
+					if (report.strings.length > 0) {
+						var x = sections_viewer._make_header_strings_block_button();
+						x.onclick = make_spoiler_onclick(sections, other_sections, "SB");
+						h.appendChild(x);
+					}
+		
+					for (var s of sections_order) {
+						var x = sections_viewer._make_header_section_button(report, s);
+						x.onclick = make_spoiler_onclick(sections, other_sections, s[0]);
+						h.appendChild(x);
+					}
+				}
+
+				fill_header(p1_left, this.left_info, left_sections, right_sections, left_sections_order);
+				fill_header(p1_right, this.right_info, left_sections, right_sections, right_sections_order);
+			},
+
 			//
+
+			compare_files: function () {
+				var i1 = this.left_index;
+				var i2 = this.right_index;
+				if (i1 < 0 || i2 < 0 || i1 >= this.local_files_to_compare.length || i2 >= this.local_files_to_compare.length) return;
+
+				this.error = null;
+				this.message = null;
+				this.left_info = null;
+				this.right_info = null;
+				this.mode = "compare";
+				this.compare_dom = null;
+				this.compare_dom_left_index = i1;
+				this.compare_dom_right_index = i2;
+
+				if (i1 == i2) {
+					this.message = "Selected files are the same";
+					this.render();
+					return;
+				}
+
+				var left_locator = this.local_files_to_compare[i1];
+				var right_locator = this.local_files_to_compare[i2];
+				var left_entry = diff_tool.info_map[left_locator];
+				var right_entry = diff_tool.info_map[right_locator];
+				if (left_entry.type == null || right_entry.type == null) {
+					this.message = "Some of the selected files are not comparable";
+					this.render();
+					return;
+				}
+
+				this.loading = 2;
+
+				function load_info(self, locator, on_success) {
+					ajax.postAndParseJson(
+						"api/sections_viewer/make", { locator: locator },
+						function(r) {
+							self.loading -= 1;
+							self.compare_dom = null;
+
+							if (r.error) {
+								if (self.error == null) self.error = r.message;
+								else self.error += "\n" + r.message;
+								self.render();
+								return;
+							}
+
+							on_success(r.report);
+							self.render();
+						},
+						function(e) {
+							self.loading -= 1;
+							self.compare_dom = null;
+
+							if (self.error == null) self.error = e;
+							else self.error += "\n" + e;
+							self.render();
+						}
+					);
+				}
+
+				var self = this;
+				load_info(self, left_locator, function (info) { self.left_info = info; });
+				load_info(self, right_locator, function (info) { self.right_info = info; });
+
+				this.render();
+			},
+
+			diff_files: function () {
+			}
 
 			/*
 			get_references: function () {
