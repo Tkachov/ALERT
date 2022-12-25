@@ -27,6 +27,7 @@ diff_tool = {
 			message: null,
 			left_info: null,
 			right_info: null,
+			diff_info: null,
 			mode: "compare",
 
 			compare_dom: null,
@@ -203,6 +204,13 @@ diff_tool = {
 					return;
 				}
 
+				if (this.mode == "compare")
+					this.render_mode_compare(compare);
+				else if (this.mode == "diff")
+					this.render_mode_diff(compare);
+			},
+
+			render_mode_compare: function (compare) {
 				if (this.left_info == null && this.right_info == null) {
 					return;
 				}
@@ -213,11 +221,6 @@ diff_tool = {
 					return;
 				}
 
-				if (this.mode == "compare")
-					this.render_mode_compare(compare);
-			},
-
-			render_mode_compare: function (compare) {
 				compare.classList.add("sections_viewer");
 
 				// make headers
@@ -368,6 +371,67 @@ diff_tool = {
 				fill_header(p1_right, this.right_info, left_sections, right_sections, right_sections_order);
 			},
 
+			render_mode_diff: function (compare) {
+				if (this.diff_info.length == 0) {
+					compare.appendChild(createElementWithTextNodeAndClass("span", "message", "Files are the same"));
+					return;
+				}
+
+				compare.classList.add("sections_viewer");
+				compare.classList.add("diff");
+
+				this._fill_diff(compare, this.diff_info);
+			},
+
+			_fill_diff: function (container, info) {
+				function make_spoiler_onclick(s) {
+					return function () {
+						s.classList.toggle("open");
+					};
+				}
+
+				for (var d of info) {
+					if ("message" in d) {
+						container.appendChild(createElementWithTextNodeAndClass("span", "message", d.message));
+						continue;
+					}
+
+					if ("group" in d) {
+						var s = document.createElement("div");
+						s.className = "spoiler";
+
+						var sh = document.createElement("div");
+						var clr = document.createElement("span");
+						clr.style.background = "#BBB";
+						sh.appendChild(clr);
+						sh.appendChild(createElementWithTextNode("span", d.group));
+						s.appendChild(sh);
+
+						var c = document.createElement("div");
+						this._fill_diff(c, d.differences);
+						s.appendChild(c);
+
+						sh.onclick = make_spoiler_onclick(s);
+
+						container.appendChild(s);
+						continue;
+					}
+
+					var p = document.createElement("div");
+					p.className = "pane diff_left_right";
+
+					var p_left = document.createElement("div");
+					p_left.appendChild(createElementWithTextNode("span", (d.left == null ? "" : d.left)));
+					p.appendChild(p_left);
+
+					var p_right = document.createElement("div");
+					p_right.appendChild(createElementWithTextNode("span", (d.right == null ? "" : d.right)));
+					p.appendChild(p_right);
+
+					container.appendChild(p);
+				}
+			},
+
 			//
 
 			compare_files: function () {
@@ -438,36 +502,56 @@ diff_tool = {
 			},
 
 			diff_files: function () {
-			}
+				var i1 = this.left_index;
+				var i2 = this.right_index;
+				if (i1 < 0 || i2 < 0 || i1 >= this.local_files_to_compare.length || i2 >= this.local_files_to_compare.length) return;
 
-			/*
-			get_references: function () {
+				this.error = null;
+				this.message = null;
+				this.left_info = null;
+				this.right_info = null;
+				this.mode = "diff";
+				this.compare_dom = null;
+				this.compare_dom_left_index = i1;
+				this.compare_dom_right_index = i2;
+
+				if (i1 == i2) {
+					this.message = "Selected files are the same";
+					this.render();
+					return;
+				}
+
+				var left_locator = this.local_files_to_compare[i1];
+				var right_locator = this.local_files_to_compare[i2];				
+				this.loading = 1;
+
 				var self = this;
-				self.info = null;
-
 				ajax.postAndParseJson(
-					"api/diff_tool/make", {
-						locator: this.locator,
-						depth: this.depth
-					},
+					"api/diff_tool/diff", { locator1: left_locator, locator2: right_locator },
 					function(r) {
+						self.loading = 0;
+						self.compare_dom = null;
+
 						if (r.error) {
-							// TODO: self.editor.search.error = r.message;
+							self.error = r.message;
+							self.render();
 							return;
 						}
 
-						// TODO: self.editor.search.error = null;
-						self.info = r.viewer;
+						self.error = null;
+						self.diff_info = r.differences;
 						self.render();
 					},
-					function(e) {				
-						// TODO: self.editor.search.error = e;
+					function(e) {
+						self.loading = 0;
+						self.compare_dom = null;
+						self.error = e;
+						self.render();
 					}
 				);
 
-				self.render();
+				this.render();
 			}
-			*/
 		};
 
 		viewer_instance.init(this.free_viewer_id);

@@ -2289,3 +2289,19 @@ html, body {
 .diff_tool .compare .missing > span {
 	margin: auto;
 }
+
+.diff_tool .compare .message {
+	text-align: center;
+	display: block;
+}
+
+.diff_tool .compare.sections_viewer.diff > .spoiler {
+	margin-right: 0;
+	margin-top: 6pt;
+	margin-bottom: 0;
+}
+
+.diff_tool .compare.sections_viewer.diff .diff_left_right span {
+	white-space: pre;
+	font-family: monospace;
+}

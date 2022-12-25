@@ -8,6 +8,7 @@ import os.path
 import server.state.assets
 import server.state.caches
 import server.state.configs_editor
+import server.state.diff_tool
 import server.state.models_viewer
 import server.state.references
 import server.state.sections_editor
@@ -28,6 +29,7 @@ class State(object):
 
 		self.assets = server.state.assets.Assets(self)
 		self.configs_editor = server.state.configs_editor.ConfigsEditor(self)
+		self.diff_tool = server.state.diff_tool.DiffTool(self)
 		self.models_viewer = server.state.models_viewer.ModelsViewer(self)
 		self.references = server.state.references.References(self)
 		self.sections_editor = server.state.sections_editor.SectionsEditor(self)
@@ -51,6 +53,7 @@ class State(object):
 
 		self.assets.make_api_routes(app)
 		self.configs_editor.make_api_routes(app)
+		self.diff_tool.make_api_routes(app)
 		self.models_viewer.make_api_routes(app)
 		self.references.make_api_routes(app)
 		self.sections_editor.make_api_routes(app)
