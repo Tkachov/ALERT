@@ -1,4 +1,4 @@
-const USER_STORED_FIELDS = ["toc_path", "locale", "history", "favorites", "__configs_editor_enabled", "__hexview_experimental", "__windows_bar_sliding_scrollbar"];
+const USER_STORED_FIELDS = ["toc_path", "locale", "history", "favorites", "__configs_editor_enabled", "__hexview_experimental", "__windows_bar_sliding_scrollbar", "__sb_overrides"];
 const USER_STORAGE_KEY = "user";
 
 // TODO: make windows title path a link to browse back to the details
@@ -38,7 +38,14 @@ var controller = {
 			enabled: false,
 			sections: {}
 		},
-		__windows_bar_sliding_scrollbar: false
+		__windows_bar_sliding_scrollbar: false,
+		__sb_overrides: {
+			prefix: false,
+			header: true,
+			base: 10,
+			pad: 0,
+			little_endian: false
+		}
 	},
 
 	init: function () {

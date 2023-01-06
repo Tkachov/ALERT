@@ -3,6 +3,7 @@ from server.api_utils import get_field, make_post_json_route
 
 import base64
 import io
+import server.state.types.headless_dat1
 import sys
 
 class SectionsViewer(object):
@@ -23,7 +24,7 @@ class SectionsViewer(object):
 	def get_asset_report(self, locator):
 		data, asset = self.state.get_asset(locator)
 
-		report = {"header": [], "sections": {}, "strings": ""}
+		report = {"header": [], "sections": {}, "strings": {"offset": 0, "prefix": 0, "strings": []}}
 		report["header"] = [(s.tag, s.offset, s.size) for s in asset.dat1.header.sections]
 
 		#
@@ -73,12 +74,10 @@ class SectionsViewer(object):
 		try:
 			items = asset.dat1._strings_map.items()
 			items = sorted(items, key=lambda x: x[0])
-			########## 123  123456  ...
-			result =  "#    offset  value\n"
-			result += "------------------\n"
-			for i, (offset, s) in enumerate(items):
-				result += "{:<3}  {:6}  {}\n".format(i, offset, repr(s))
-			report["strings"] = result
+			report["strings"]["offset"] = asset.dat1.header.get_offset()
+			if not isinstance(asset, server.state.types.headless_dat1.HeadlessDAT1):
+				report["strings"]["prefix"] = 36 # TODO: reassess this
+			report["strings"]["strings"] = [[offset, repr(s)] for (offset, s) in items]
 		except:
 			pass
 

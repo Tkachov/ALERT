@@ -692,6 +692,26 @@ html, body {
 	content: '|';
 }
 
+.strings_block {
+	font-family: monospace;
+	border-spacing: 0;
+}
+
+.strings_block th, .strings_block td {
+	padding: 2pt 6pt;
+	text-align: left;
+}
+
+.strings_block th {
+	font-weight: normal;
+	padding-bottom: 4pt;
+	border-bottom: 1px solid #CCC;
+}
+
+.strings_block td:nth-child(2) {
+	text-align: right;
+}
+
 /* sections editor */
 
 .sections_editor {

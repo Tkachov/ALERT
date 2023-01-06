@@ -308,12 +308,12 @@ diff_tool = {
 				}
 
 				var left_strings = null;
-				if (this.left_info.strings.length > 0) {
+				if (this.left_info.strings.strings.length > 0) {
 					left_strings = sections_viewer._make_strings_block_spoiler(this.left_info);
 				}
 
 				var right_strings = null;
-				if (this.right_info.strings.length > 0) {
+				if (this.right_info.strings.strings.length > 0) {
 					right_strings = sections_viewer._make_strings_block_spoiler(this.right_info);
 				}
 
@@ -354,7 +354,7 @@ diff_tool = {
 				function fill_header(h, report, sections, other_sections, sections_order) {
 					h.appendChild(createElementWithTextNode("b", report.header.length + " sections"));
 
-					if (report.strings.length > 0) {
+					if (report.strings.strings.length > 0) {
 						var x = sections_viewer._make_header_strings_block_button();
 						x.onclick = make_spoiler_onclick(sections, other_sections, "SB");
 						h.appendChild(x);

@@ -63,7 +63,7 @@ sections_viewer = {
 		var sections_order = this._make_sections_order(report);
 
 		var sections = {};
-		if (report.strings.length > 0) {
+		if (report.strings.strings.length > 0) {
 			var s = this._make_strings_block_spoiler(report);
 			s.children[0].onclick = make_spoiler_onclick(s);
 			sp.appendChild(s);
@@ -82,7 +82,7 @@ sections_viewer = {
 
 		h.appendChild(createElementWithTextNode("b", report.header.length + " sections"));
 
-		if (report.strings.length > 0) {
+		if (report.strings.strings.length > 0) {
 			var x = this._make_header_strings_block_button();
 			x.onclick = make_spoiler_onclick(sections["SB"]);
 			h.appendChild(x);
@@ -115,8 +115,7 @@ sections_viewer = {
 		sh.appendChild(clr);
 		sh.appendChild(createElementWithTextNode("span", "Strings block"));
 		s.appendChild(sh);
-		var c = createElementWithTextNode("pre", report.strings);
-		s.appendChild(c);
+		this.make_strings_block_content(s, report);
 		return s;
 	},
 
@@ -318,6 +317,122 @@ sections_viewer = {
 
 			t.appendChild(trw);
 		}
+	},
+
+	make_strings_block_content: function (container, report) {
+		var contents = document.createElement("div");
+
+		var t = document.createElement("table");
+		t.className = "strings_block";
+
+		// controls
+		var format_settings = {
+			prefix: false,
+			header: true,
+			base: 10,
+			pad: 0,
+			little_endian: false
+		};
+
+		var settings = controller.user;
+		if (settings.hasOwnProperty("__sb_overrides")) {
+			format_settings = settings["__sb_overrides"];
+		}
+
+		// TODO: controls
+		/*
+		var controls = document.createElement("div");
+		controls.className = "hex_view_controls";
+
+		var gr = document.createElement("span");
+		gr.className = "hex_view_absolute";
+		var cb_id = "hex_view_offset_absolute_" + tag +  "_" + Date.now();
+		var cb = document.createElement("input");
+		cb.type = "checkbox";
+		cb.id = cb_id;
+		cb.checked = (section_settings.absolute);
+
+		var lb = createElementWithTextNode("label", "Absolute offset");
+		lb.htmlFor = cb_id;
+		gr.appendChild(cb);
+		gr.appendChild(lb);
+		controls.appendChild(gr);
+
+		gr = document.createElement("span");
+		gr.className = "hex_view_width";
+		var nm_id = "hex_view_width_" + tag +  "_" + Date.now();
+		var nm = document.createElement("input");
+		nm.type = "number";
+		nm.id = nm_id;
+		nm.value = section_settings.width;
+
+		lb = createElementWithTextNode("label", "Base");
+		lb.htmlFor = nm_id;
+		gr.appendChild(lb);
+		gr.appendChild(nm);
+		controls.appendChild(gr);
+
+		var btn = createElementWithTextNode("button", "Apply");
+		btn.onclick = this.make_hexview_settings_onclick(tag, cb, nm, t, section);
+		controls.appendChild(btn);
+
+		gr = document.createElement("span");
+		gr.className = "separator";
+		controls.appendChild(gr);
+		
+		contents.appendChild(controls);
+		*/
+
+		function format_offset(offset, format_settings, report) {
+			if (format_settings.prefix) offset += report.strings.prefix;
+			if (format_settings.header) offset += report.strings.offset;
+
+			if (format_settings.little_endian) {
+				var s = offset.toString(16).toUpperCase();
+				if (s.length % 2 == 1) s = "0" + s;
+
+				var result = "";
+				for (var i=0; i<s.length; i += 2) {
+					result = s[i] + s[i+1] + " " + result;
+				}
+				return result;
+			}
+
+			var result = "" + offset;
+			if (format_settings.base != 10) {
+				result = offset.toString(format_settings.base).toUpperCase();
+			}
+
+			if (format_settings.pad > result.length) {
+				while (result.length < format_settings.pad) {
+					result = "0" + result;
+				}
+			}
+
+			return result;
+		}
+		
+		// strings
+		t.innerHTML = "";
+
+		var thd = document.createElement("tr");
+		var html = "<th>#</th><th>offset</th><th>value</th>";
+		thd.innerHTML = html;
+		t.appendChild(thd);
+
+		for (var i = 0; i < report.strings.strings.length; ++i) {
+			var s = report.strings.strings[i];
+			var offset = format_offset(s[0], format_settings, report);
+
+			var trw = document.createElement("tr");
+			trw.appendChild(createElementWithTextNode("td", i));
+			trw.appendChild(createElementWithTextNode("td", offset));
+			trw.appendChild(createElementWithTextNode("td", s[1]));
+			t.appendChild(trw);
+		}
+
+		contents.appendChild(t);
+		container.appendChild(contents);
 	}
 };
 
