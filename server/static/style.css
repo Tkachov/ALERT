@@ -291,6 +291,47 @@ html, body {
 	padding-right: 20pt;
 }
 
+#results > table th:hover {
+	cursor: pointer;
+	background: var(--highlight-color);
+}
+
+#results > table th.ascending,
+#results > table th.descending {
+}
+
+#results > table th.ascending:hover,
+#results > table th.descending:hover {
+	color: rgb(78, 208, 249);
+}
+
+#results > table th.ascending::after,
+#results > table th.descending::after {
+	content: '›';
+	display: inline-block;
+	transform: rotate(-90deg);
+	color: #CCC;
+	font-size: 14pt;
+	text-align: center;
+	vertical-align: middle;
+	margin: 0 10px;
+	line-height: 0;
+}
+
+#results > table th.ascending::after {
+	margin-top: -2pt;
+	margin-left: 7px;
+}
+
+#results > table th.descending::after {
+	transform: rotate(90deg);	
+}
+
+#results > table th.ascending:hover::after,
+#results > table th.descending:hover::after {
+	color: rgb(78, 208, 249);
+}
+
 .result_entry > td:nth-child(1) {
 	font-weight: bold;
 }

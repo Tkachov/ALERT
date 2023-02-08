@@ -9,7 +9,8 @@ assets_browser = {
 
 	search: {
 		error: null,
-		results: []
+		results: [],
+		sort: null // `null` is default, `["name", false]` is that "name" asc, `["name", true]` is that "name" desc
 	},
 
 	init: function () {
@@ -106,10 +107,10 @@ assets_browser = {
 			var t = document.createElement("table");
 
 			var tr = document.createElement("tr");
-			tr.appendChild(createElementWithTextNode("th", "Name"));
-			tr.appendChild(createElementWithTextNode("th", "Stage"));
-			tr.appendChild(createElementWithTextNode("th", "Span"));
-			tr.appendChild(createElementWithTextNode("th", "Size"));
+			tr.appendChild(this.make_search_column_header("Name", "name"));
+			tr.appendChild(this.make_search_column_header("Stage", "stage"));
+			tr.appendChild(this.make_search_column_header("Span", "span"));
+			tr.appendChild(this.make_search_column_header("Size", "size"));
 			t.appendChild(tr);
 
 			for (var r of this.search.results) {
@@ -118,6 +119,32 @@ assets_browser = {
 
 			e.appendChild(t);
 		}
+	},
+
+	make_search_column_header: function (title, column_name) {
+		var self = this;
+		var e = createElementWithTextNode("th", title);
+
+		if (this.search.sort != null && this.search.sort[0] == column_name) {
+			if (this.search.sort[1])
+				e.classList.add("descending");
+			else
+				e.classList.add("ascending");
+		}
+
+		e.onclick = function () {
+			if (self.search.sort == null || self.search.sort[0] != column_name) {
+				self.search.sort = [column_name, false];
+			} else if (self.search.sort[1] == false) {
+				self.search.sort = [column_name, true];
+			} else {
+				self.search.sort = null;
+			}
+
+			self.search_assets("");
+		};
+
+		return e;
 	},
 
 	make_search_result: function (container, r) {
@@ -972,6 +999,28 @@ assets_browser = {
 							add_results(this, this.search.results, k, info);
 					}
 				}
+			}
+
+			if (this.search.sort != null) {
+				var column_name = this.search.sort[0];
+				var reverse = this.search.sort[1];
+
+				var get_field = function (a) { return a[column_name]; }
+				var cmp = function (a, b) { return a - b; }
+
+				if (column_name == "stage") {
+					get_field = function (a) { return a.stage + ": " + a.archive; }
+				}
+
+				if (column_name == "name" || column_name == "stage" || column_name == "span") {
+					cmp = function (a, b) { return (a < b ? -1 : 1); }
+				}
+
+				this.search.results.sort(function(a, b) {
+					var r = cmp(get_field(a), get_field(b));
+					if (r == 0) r = (a.aid < b.aid ? -1 : 1);
+					return (reverse ? -r : r);
+				});
 			}
 		} catch (e) {
 			console.log(e);
