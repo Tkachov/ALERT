@@ -322,15 +322,12 @@ class AnimClipDataSection(dat1lib.types.sections.Section): # aka anim_clip_data
 		#
 		# examples: 90362EE3DA39CC6C (min size), 868F0E1B33099EDF (max size)
 		
-		self.inner_dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(data), self)
+		self.inner_dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(data), self, ignore_sections_exceptions=True)
 
 	def get_short_suffix(self):
 		return "Anim Clip Data -- inner dat1 ({} bytes, {} sections)".format(len(self._raw), len(self.inner_dat1.sections))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Clip Data    | {:6} bytes -- inner DAT1".format(self.TAG, len(self._raw)))
 

@@ -76,9 +76,6 @@ class x0CDE73EF_Section(dat1lib.types.sections.Section):
 		return "0CDE73EF ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 0CDE73EF     | {:6} entries".format(self.TAG, len(self.entries)))
 		if True:

@@ -2,6 +2,7 @@ import dat1lib.utils as utils
 import dat1lib.types.sections
 import io
 import struct
+import traceback
 
 RECALCULATE_PRESERVE_PADDING = 0
 RECALCULATE_ORIGINAL_ORDER = 1
@@ -41,7 +42,7 @@ class DAT1(object):
 	MAGIC = 0x44415431
 	EMPTY_DATA = struct.pack("<IIII", 0x44415431, 0, 16, 0)
 
-	def __init__(self, f, outer_obj=None):
+	def __init__(self, f, outer_obj=None, ignore_sections_exceptions=False):
 		self._outer = outer_obj
 
 		self.header = DAT1Header(f)
@@ -73,11 +74,19 @@ class DAT1(object):
 
 			#print(s.tag, s.offset, s.size, len(self._sections_data[-1]), repr(self._sections_data[-1][:100]))
 
+			built_section = None
 			KNOWN_SECTIONS = dat1lib.types.sections.KNOWN_SECTIONS
 			if s.tag in KNOWN_SECTIONS:
-				self.sections += [KNOWN_SECTIONS[s.tag](self._sections_data[-1], self)]
-			else:
-				self.sections += [None]
+				try:
+					built_section = KNOWN_SECTIONS[s.tag](self._sections_data[-1], self)
+				except:
+					if ignore_sections_exceptions:
+						print("DAT1 construction failure: failed building {:08X} section from {} bytes".format(s.tag, len(self._sections_data[-1])))
+						print(traceback.format_exc())
+					else:
+						raise
+			
+			self.sections += [built_section]
 
 	def _read_strings(self, data):
 		was_zero = False
