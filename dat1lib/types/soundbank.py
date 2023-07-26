@@ -6,7 +6,7 @@ import struct
 class Soundbank(object):
 	MAGIC = 0x7E4F1BB7
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 1345 occurrences
 		# size = 260..29288741 (avg = 773143.8)
@@ -20,6 +20,8 @@ class Soundbank(object):
 		# from 3 to 4 sections (avg = 3.9)
 		#
 		# examples: 8208A29C47736EAD (min size), 9B3473B5F2EF53D3 (max size), 800BAAC604A8B370 (4 sections)
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -47,3 +49,6 @@ class Soundbank(object):
 		print("")
 
 		self.dat1.print_info(config)
+
+class SoundbankRcra(Soundbank):
+	MAGIC = 0xC2841216

@@ -3,6 +3,7 @@ from server.api_utils import get_field, make_post_json_route
 
 import dat1lib
 import dat1lib.types.toc
+import dat1lib.types.toc2
 import dat1lib.types.autogen
 import io
 import os
@@ -109,7 +110,7 @@ class TocLoader(object):
 		if toc is None:
 			raise Exception("Couldn't comprehend '{}'".format(toc_fn))
 
-		if not isinstance(toc, dat1lib.types.toc.TOC):
+		if not isinstance(toc, dat1lib.types.toc.TOC) and not isinstance(toc, dat1lib.types.toc2.TOC2):
 			raise Exception("Not a toc")
 	
 		#
@@ -126,20 +127,34 @@ class TocLoader(object):
 
 		spans = spans_section.entries
 		ids = assets_section.ids
-		offsets = offsets_section.entries
 		sizes = sizes_section.entries
 
-		for span_index, span in enumerate(spans):
-			for i in range(span.asset_index, span.asset_index + span.count):
-				aid = "{:016X}".format(ids[i])
-				asset_info = [span_index, offsets[i].archive_index, sizes[i].value]
-				if aid in self._known_paths:
-					self._add_index_to_tree(aid, asset_info)
-				else:
-					if aid in self.hashes:
-						self.hashes[aid] += [asset_info]
+		if toc.version == dat1lib.VERSION_RCRA or sizes_section.version == dat1lib.VERSION_RCRA:
+			for span_index, span in enumerate(spans):
+				for i in range(span.asset_index, span.asset_index + span.count):
+					aid = "{:016X}".format(ids[i])
+					asset_info = [span_index, sizes[i].archive_index, sizes[i].value]
+					if aid in self._known_paths:
+						self._add_index_to_tree(aid, asset_info)
 					else:
-						self.hashes[aid] = [asset_info]
+						if aid in self.hashes:
+							self.hashes[aid] += [asset_info]
+						else:
+							self.hashes[aid] = [asset_info]
+		else:
+			offsets = offsets_section.entries
+
+			for span_index, span in enumerate(spans):
+				for i in range(span.asset_index, span.asset_index + span.count):
+					aid = "{:016X}".format(ids[i])
+					asset_info = [span_index, offsets[i].archive_index, sizes[i].value]
+					if aid in self._known_paths:
+						self._add_index_to_tree(aid, asset_info)
+					else:
+						if aid in self.hashes:
+							self.hashes[aid] += [asset_info]
+						else:
+							self.hashes[aid] = [asset_info]
 
 		def cleanup_tree(node):
 			keys_to_remove = []
@@ -180,9 +195,19 @@ class TocLoader(object):
 		cleanup_tree(self.tree)
 
 		#
+
+		def get_archive_name(a):
+			# "{}".format(a.filename.decode('ascii')).replace("\x00", "")
+			archive_fn = a.filename
+			zero = 0
+			for zero in range(len(archive_fn)):
+				if archive_fn[zero] == 0:
+					break
+			archive_fn = archive_fn[:zero]
+			return "{}".format(archive_fn.decode('ascii')).replace("\x00", "")
 
 		archives_section = self.toc.get_archives_section()
-		self.archives = ["{}".format(a.filename.decode('ascii')).replace("\x00", "") for a in archives_section.archives]
+		self.archives = [get_archive_name(a) for a in archives_section.archives]
 
 	def _get_node_by_aid(self, aid):
 		if aid not in self._known_paths:

@@ -62,9 +62,15 @@ class Thumbnails(object):
 		archives_section = toc.get_archives_section()
 		offsets_section = toc.get_offsets_section()
 		sizes_section = toc.get_sizes_section()
-		archive_index = offsets_section.entries[index].archive_index
-		checksum = zlib.crc32(archives_section.archives[archive_index].filename, 0)
-		checksum = zlib.crc32(struct.pack("<QII", assets_section.ids[index], offsets_section.entries[index].offset, sizes_section.entries[index].value), checksum)
+		if offsets_section is not None:
+			archive_index = offsets_section.entries[index].archive_index
+			checksum = zlib.crc32(archives_section.archives[archive_index].filename, 0)
+			checksum = zlib.crc32(struct.pack("<QII", assets_section.ids[index], offsets_section.entries[index].offset, sizes_section.entries[index].value), checksum)
+		else:
+			# RCRA
+			archive_index = sizes_section.entries[index].archive_index
+			checksum = zlib.crc32(archives_section.archives[archive_index].filename, 0)
+			checksum = zlib.crc32(struct.pack("<QII", assets_section.ids[index], sizes_section.entries[index].offset, sizes_section.entries[index].value), checksum)
 		return checksum
 
 	def _get_thumbnail_path(self, locator):

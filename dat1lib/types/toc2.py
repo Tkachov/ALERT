@@ -6,31 +6,35 @@ import dat1lib.types.sections.toc.asset_ids
 import dat1lib.types.sections.toc.offsets
 import dat1lib.types.sections.toc.sizes
 import dat1lib.types.sections.toc.spans
+import dat1lib.types.sections.toc.rcra
 import io
 import os.path
 import struct
 import zlib
 
 class AssetEntry(object):
-	def __init__(self, index, aid, archive, offset, size):
+	def __init__(self, index, aid, archive, offset, size, header):
 		self.index = index
 		self.asset_id = aid
 		self.archive = archive
 		self.offset = offset
 		self.size = size
+		self.header = header
 
-class TOC(object):
-	MAGIC = 0x77AF12AF
+class TOC2(object): # RCRA version
+	MAGIC = 0x34E89035
 
 	def __init__(self, f, version=None):
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.version = version
 
+		if version is None:
+			self.version = dat1lib.VERSION_RCRA
+
 		if self.magic != self.MAGIC:
 			print("[!] Bad 'toc' magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
 		
-		dec = zlib.decompressobj(0)
-		data = dec.decompress(f.read())
+		data = f.read()
 
 		if len(data) != self.size:
 			print("[!] Actual decompressed size {} isn't equal to one written in the file {}".format(len(data), self.size))
@@ -113,6 +117,9 @@ class TOC(object):
 	def get_offsets_section(self):
 		return self.dat1.get_section(dat1lib.types.sections.toc.offsets.OffsetsSection.TAG)
 
+	def get_asset_headers_section(self):
+		return self.dat1.get_section(dat1lib.types.sections.toc.rcra.AssetHeadersSection.TAG)
+
 	#
 
 	def get_asset_entries_by_path(self, path, stop_on_first=False):
@@ -132,8 +139,18 @@ class TOC(object):
 
 	def get_asset_entry_by_index(self, index):
 		try:
-			aid = self.get_assets_section().ids[index]
-			size = self.get_sizes_section().entries[index]
+			assets_section = self.get_assets_section()
+			sizes_section = self.get_sizes_section()
+
+			aid = assets_section.ids[index]
+			size = sizes_section.entries[index]
+
+			if self.version == dat1lib.VERSION_RCRA or sizes_section.version == VERSION_RCRA:
+				header = None
+				if size.header_offset != -1:
+					headers_section = self.get_asset_headers_section()
+					header = headers_section.headers[size.header_offset//36]
+				return AssetEntry(index, aid, size.archive_index, size.offset, size.value, header)
 
 			offset_index = index
 			if self.version == dat1lib.VERSION_SO:
@@ -141,7 +158,7 @@ class TOC(object):
 
 			off = self.get_offsets_section().entries[offset_index]
 
-			return AssetEntry(index, aid, off.archive_index, off.offset, size.value)
+			return AssetEntry(index, aid, off.archive_index, off.offset, size.value, None)
 		except:
 			return None
 
@@ -153,7 +170,13 @@ class TOC(object):
 		f, compressed = self._get_archive(entry.archive)
 		if not compressed:
 			f.seek(entry.offset)
-			return f.read(entry.size)
+
+			data = bytearray()
+			if entry.header is not None:
+				data += entry.header
+			data += f.read(entry.size)
+
+			return data
 
 		# TODO: read blocks map once per archive and reuse it
 		f.seek(12)
@@ -168,6 +191,8 @@ class TOC(object):
 		asset_end = asset_offset + entry.size
 
 		data = bytearray()
+		if entry.header is not None:
+			data += entry.header
 
 		# TODO: binary search starting block index and ending block index
 		# (because this code anyways assumes blocks are sorted by real_offset asc)

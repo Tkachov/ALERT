@@ -6,7 +6,7 @@ import struct
 class Model(object):
 	MAGIC = 0x98906B9F
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 38298 occurrences
 		# size = 2260..42645436 (avg = 108149.2)
@@ -15,6 +15,8 @@ class Model(object):
 		# examples: 895946D95299E18F (min size), 8FCA3A1C0CF13DD0 (max size), 81DC2CDB45872F11 (8 sections), 9347CDA478F55078 (31 sections)
 
 		# MM: none
+
+		self.version = version
 		
 		self.magic, self.offset_to_stream_sections, self.stream_sections_size = struct.unpack("<III", f.read(12))
 		self.unk = f.read(24)
@@ -73,3 +75,6 @@ class Model2(Model): # MM variation
 	# from 5 to 35 sections (avg = 11.0)
 	#
 	# examples: 895946D95299E18F (min size), A6E98A5F0D076856 (max size), 85BD78D439151B00 (5 sections), A1069ACB1E139D38 (35 sections)
+
+class ModelRcra(Model):
+	MAGIC = 0x9D2C0FA9

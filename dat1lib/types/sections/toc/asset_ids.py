@@ -9,14 +9,30 @@ class AssetIdsSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
-		ENTRY_SIZE = 8
-		count = len(data)//ENTRY_SIZE
-		self.ids = [struct.unpack("<Q", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+		self.version = self._dat1.version
+		if self.version is None:
+			if len(data) % 8 == 0:
+				self.version = dat1lib.VERSION_MSMR
+			elif len(data) % 4 == 0:
+				self.version = dat1lib.VERSION_SO
+
+		if self.version == dat1lib.VERSION_SO:
+			ENTRY_SIZE = 4
+			count = len(data)//ENTRY_SIZE
+			self.ids = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+		else:
+			ENTRY_SIZE = 8
+			count = len(data)//ENTRY_SIZE
+			self.ids = [struct.unpack("<Q", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
-		for aid in self.ids:
-			of.write(struct.pack("<Q", aid))
+		if self.version == dat1lib.VERSION_SO:
+			for aid in self.ids:
+				of.write(struct.pack("<I", aid))
+		else:
+			for aid in self.ids:
+				of.write(struct.pack("<Q", aid))
 		of.seek(0)
 		return bytearray(of.read())
 

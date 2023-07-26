@@ -1,3 +1,4 @@
+import dat1lib.decompression as decompression
 import dat1lib.utils as utils
 import dat1lib.types.sections
 import io
@@ -42,8 +43,34 @@ class DAT1(object):
 	MAGIC = 0x44415431
 	EMPTY_DATA = struct.pack("<IIII", 0x44415431, 0, 16, 0)
 
-	def __init__(self, f, outer_obj=None, ignore_sections_exceptions=False):
+	def __init__(self, f, outer_obj=None, ignore_sections_exceptions=False, version=None):
 		self._outer = outer_obj
+		self.version = version
+		if self.version is None and self._outer is not None:
+			self.version = self._outer.version
+
+		position = f.tell()
+		peek = f.read(6)
+		f.seek(position)
+
+		normal_magic = struct.unpack("<I", peek[0:4])[0]
+		compressed_magic = struct.unpack("<I", peek[2:6])[0]
+		if normal_magic == self.MAGIC:
+			# everything's fine
+			pass
+		else:
+			if compressed_magic == self.MAGIC:
+				# OK, let's decompress everything
+				_, magic, asset_magic, real_size = struct.unpack("<HIII", f.read(14))
+				f.seek(position)
+				## print("compressed: {:08X} {:08X} {}".format(magic, asset_magic, real_size))
+
+				f = decompression.decompress_file(f, real_size)
+			else:
+				# fail, doesn't seem to be DAT1
+				# let's try treating it as one
+				## print("WTF? {:08X} {:08X} != {:08X}".format(normal_magic, compressed_magic, self.MAGIC))
+				pass
 
 		self.header = DAT1Header(f)
 		self.sections = []
@@ -99,7 +126,7 @@ class DAT1(object):
 					start = i
 					continue
 
-				s = data[start:i].decode('ascii')
+				s = data[start:i].decode('utf-8')
 				self._strings_map[start] = s
 				self._strings_inverse_map[s] = start
 				start = i+1
@@ -120,7 +147,7 @@ class DAT1(object):
 		start = len(self._raw_strings_data)
 		self._strings_map[start] = s
 		self._strings_inverse_map[s] = start
-		self._raw_strings_data.extend(s.encode('ascii'))
+		self._raw_strings_data.extend(s.encode('utf-8'))
 		self._raw_strings_data.extend(b'\0')
 		return offset + start
 

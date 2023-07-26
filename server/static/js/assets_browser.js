@@ -471,7 +471,7 @@ assets_browser = {
 			}
 
 			// config
-			if (info.type == "Config" && controller.user.__configs_editor_enabled) {
+			if ((info.type == "Config" || info.type == "ConfigRcra") && controller.user.__configs_editor_enabled) {
 				var sep = document.createElement("span");
 				sep.className = "separator";
 				links.appendChild(sep);
@@ -498,7 +498,7 @@ assets_browser = {
 			}
 
 			// model
-			if (info.type == "Model" || info.type == "Model2") {
+			if (info.type == "Model" || info.type == "Model2" || info.type == "ModelRcra") {
 				var sep = document.createElement("span");
 				sep.className = "separator";
 				links.appendChild(sep);
@@ -513,7 +513,7 @@ assets_browser = {
 			}
 
 			// texture
-			if (info.type == "Texture") {
+			if (info.type == "Texture" || info.type == "TextureRcra") {
 				var sep = document.createElement("span");
 				sep.className = "separator";
 				links.appendChild(sep);

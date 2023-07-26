@@ -38,6 +38,8 @@ class x212BD372_Section(dat1lib.types.sections.Section):
 
 		self.unk1, self.unk2 = struct.unpack("<HH", data[off:off+4])
 		off += 4
+
+		# TODO: see 9B7700EBBC24E3AF, this part is 4 bytes off there
 		
 		count = self.count2
 		self.hashes = []
@@ -97,7 +99,7 @@ class AnimSetBuiltSection(dat1lib.types.sections.Section):
 	def save(self):
 		of = io.BytesIO(bytes())
 		for e in self.entries:
-			of.write(struct.pack("<I", e))
+			of.write(struct.pack("<h", e))
 		of.seek(0)
 		return of.read()
 
@@ -105,9 +107,6 @@ class AnimSetBuiltSection(dat1lib.types.sections.Section):
 		return "Anim Set Built ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Set Built    | {:6} values".format(self.TAG, len(self.entries)))
 		print(self.entries)
@@ -158,12 +157,13 @@ class AnimDriverClassBuiltSection(dat1lib.types.sections.Section):
 			# (3449407077, 5, 4, 96, 0, 1, 0, 0, 0, 0, 0, 0, 0, 60, 1048576000, 1048576000, 1048576000, 1048576000, 195, 0)
 			# sorted by tag
 			tag,     a, b, always96, c, d, _, _, _, _, _, _, _, pos, float_r, float_g, float_b, float_a, e, f = x
-			print("  - {:<3}  {:08X} {:4} | {:2} {:3} {:4} {:4} {:3} {:4} {:1} | {} {} {} {}".format(i, tag, pos, a, b, always96, c, d, e, f, float_r, float_g, float_b, float_a))
-		print("")
+			print("  - {:<3}  {:08X} {}".format(i, tag, self._dat1.get_string(pos + self._dat1.header.get_offset())))
+			print("         {:<2} {:<3} {:<4} {:<4} {:<3} {:<4} {:<1} | {} {} {} {}".format(a, b, always96, c, d, e, f, float_r, float_g, float_b, float_a))
+			print()
 
 #
 
-class AnimClipLookupSection(dat1lib.types.sections.Section): # aka anim_clip_lookup
+class AnimClipLookupSection(dat1lib.types.sections.Section):
 	TAG = 0xB79CF1D7 # Anim Clip Lookup
 	TYPE = 'AnimSet/PerformanceSet/Cinematic2'
 
@@ -302,7 +302,7 @@ class AnimDriverClassLookupSection(dat1lib.types.sections.Section):
 
 #
 
-class AnimClipDataSection(dat1lib.types.sections.Section): # aka anim_clip_data
+class AnimClipDataSection(dat1lib.types.sections.Section):
 	TAG = 0x9FD19C20 # Anim Clip Data
 	TYPE = 'AnimSet/PerformanceSet/Cinematic2'
 
@@ -322,6 +322,7 @@ class AnimClipDataSection(dat1lib.types.sections.Section): # aka anim_clip_data
 		#
 		# examples: 90362EE3DA39CC6C (min size), 868F0E1B33099EDF (max size)
 		
+		self.version = self._dat1.version
 		self.inner_dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(data), self, ignore_sections_exceptions=True)
 
 	def get_short_suffix(self):

@@ -21,7 +21,7 @@ DEBUG_RANGE = range(10, 20)
 DEBUG_RANGE = None
 
 class AssetTypeSection(dat1lib.types.sections.Section):
-	TAG = 0x7A0266BC
+	TAG = 0x7A0266BC # Asset Types
 	TYPE = 'dag'
 
 	KNOWN_TYPES = {
@@ -57,7 +57,7 @@ class AssetTypeSection(dat1lib.types.sections.Section):
 #
 
 class x933C0D32_Section(dat1lib.types.sections.Section): # 8 bytes per entry
-	TAG = 0x933C0D32
+	TAG = 0x933C0D32 # Asset Ids
 	TYPE = 'dag'
 
 	def __init__(self, data, container):
@@ -86,8 +86,8 @@ class x933C0D32_Section(dat1lib.types.sections.Section): # 8 bytes per entry
 
 #
 
-class AssetNamesSection(dat1lib.types.sections.Section): # 4 bytes per entry
-	TAG = 0xD101A6CC
+class AssetNamesSection(dat1lib.types.sections.Section): # TODO: dat1lib.types.sections.StringsReferencingSection
+	TAG = 0xD101A6CC # Asset Names
 	TYPE = 'dag'
 
 	def __init__(self, data, container):
@@ -98,11 +98,11 @@ class AssetNamesSection(dat1lib.types.sections.Section): # 4 bytes per entry
 		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 
 	def get_short_suffix(self):
-		return "names ({})".format(len(self.entries))
+		return "Asset Names ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Names        | {:6} values".format(self.TAG, len(self.entries)))
+		print("{:08X} | Asset Names  | {:6} values".format(self.TAG, len(self.entries)))
 
 		if DEBUG_RANGE is not None:
 			print("")

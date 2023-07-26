@@ -4,8 +4,8 @@ import struct
 import sys
 import zlib
 
-class DAG(object):
-	MAGIC = 0x891F77AF
+class DAG2(object): # RCRA version
+	MAGIC = 0xB8EF3955
 
 	def __init__(self, f, version=None):
 		self.version = version
@@ -13,9 +13,8 @@ class DAG(object):
 
 		if self.magic != self.MAGIC:
 			print("[!] Bad 'dag' magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
-		
-		dec = zlib.decompressobj(0)
-		data = dec.decompress(f.read())
+				
+		data = f.read()
 
 		if len(data) != self.size:
 			print("[!] Actual decompressed size {} isn't equal to one written in the file {}".format(len(data), self.size))
@@ -24,7 +23,7 @@ class DAG(object):
 
 	def print_info(self, config):
 		print("-------")
-		print("DAG {:08X}".format(self.magic))
+		print("DAG2 {:08X}".format(self.magic))
 		if self.magic != self.MAGIC:
 			print("[!] Unknown magic, should be {}".format(self.MAGIC))
 		print("-------")

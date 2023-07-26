@@ -6,7 +6,7 @@ import struct
 class Material(object):
 	MAGIC = 0x1C04EF8C
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 13178 occurrences
 		# size = 260..1092164 (avg = 149987.8)
@@ -15,6 +15,8 @@ class Material(object):
 		# examples: 8B5BEC7D10F0F5D6 (min size), 8E1F4B600684B170 (max size), 8000B10F551366C6 (2 sections), 80558F950ED7ADEE (12 sections)
 
 		# MM: none
+		
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -54,3 +56,6 @@ class Material2(Material):
 	# from 2 to 12 sections (avg = 4.3)
 	#
 	# examples: 820B8E05982851D5 (min size), 9C59C707EF49E793 (max size), 8000B10F551366C6 (2 sections), 8061D72FD2A04308 (12 sections)
+
+class MaterialRcra(Material):
+	MAGIC = 0x7C7BD7D6

@@ -7,7 +7,9 @@ import struct
 # .zonelightbin = strange 1TAD/asset, 38 bytes asset header instead of 36
 
 class UnknownAsset(object):
-	def __init__(self, f):
+	def __init__(self, f, version=None):
+		self.version = version
+
 		self.magic, self.likely_is_dat1_size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
 		self._raw_dat1 = f.read()

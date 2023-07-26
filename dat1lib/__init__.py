@@ -3,6 +3,14 @@ import inspect
 import os
 import os.path
 
+VERSION_OVERRIDE = None
+
+VERSION_SO = 201800
+VERSION_MSMR = 202200
+VERSION_RCRA = 202300
+
+#
+
 def __inspect_module(module):
 	module_name = module.__name__
 	module_dir = os.path.dirname(inspect.getfile(module))
@@ -81,16 +89,19 @@ for md in __import_submodules(types):
 import struct
 import dat1lib.types.unknown
 
-def read(f, try_unknown=True):
+def read(f, try_unknown=True, version=None):
 	magic, = struct.unpack("<I", f.read(4))
 	f.seek(0)
 
+	if version is None and VERSION_OVERRIDE is not None:
+		version = VERSION_OVERRIDE
+
 	if magic in types.KNOWN_TYPES:
-		return types.KNOWN_TYPES[magic](f)
+		return types.KNOWN_TYPES[magic](f, version=version)
 
 	if try_unknown:
 		try:
-			obj = types.unknown.UnknownAsset(f)
+			obj = types.unknown.UnknownAsset(f, version=version)
 			return obj
 		except:
 			pass

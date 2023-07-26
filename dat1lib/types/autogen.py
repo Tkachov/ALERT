@@ -6,7 +6,7 @@ from dat1lib.types.sections.nodegraph.generic import NodeGraphSection
 class Actor(object):
 	MAGIC = 0x7C207220
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 5167 occurrences
 		# size = 292..58644 (avg = 2782.3)
@@ -20,6 +20,8 @@ class Actor(object):
 		# from 2 to 5 sections (avg = 4.3)
 		#
 		# examples: 815ECA36897F2155 (min size), BAAE788E4A9CE960 (max size), 80045C4EB4D036F7 (5 sections)
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -48,12 +50,15 @@ class Actor(object):
 
 		self.dat1.print_info(config)
 
+class ActorRcra(Actor):
+	MAGIC = 0x944BD3AD
+
 #
 
 class AnimClip(object): # animclip/performanceclip
 	MAGIC = 0xC96F58F3
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 101563 occurrences
 		# size = 68..16687476 (avg = 11246.1)
@@ -67,6 +72,8 @@ class AnimClip(object): # animclip/performanceclip
 		# from 0 to 13 sections (avg = 5.5)
 		#
 		# examples: 803E59F5447F9A88 (min size), 9F2D52FB01A4D401 (max size), 80114FA50C1ED5A7 (13 sections)
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -95,12 +102,17 @@ class AnimClip(object): # animclip/performanceclip
 
 		self.dat1.print_info(config)
 
+class AnimClipRcra(AnimClip): # animclip/performanceclip
+	MAGIC = 0x0F64FFE8
+
+
+
 #
 
 class AnimSet(object): # animset/performanceset
 	MAGIC = 0xF777E4A8
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 1683 occurrences
 		# size = 108..493940 (avg = 9808.5)
@@ -114,6 +126,8 @@ class AnimSet(object): # animset/performanceset
 		# from 1 to 10 sections (avg = 5.4)
 		#
 		# examples: A8F458FA46F0B8C8 (min size), 829740303741E942 (max size), 80CC4C76B08BAFE9 (10 sections)
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -142,12 +156,15 @@ class AnimSet(object): # animset/performanceset
 
 		self.dat1.print_info(config)
 
+class AnimSetRcra(AnimSet): # animset/performanceset
+	MAGIC = 0x704B7EC4
+
 #
 
 class Cinematic2(object):
 	MAGIC = 0xC4999B32
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 724 occurrences
 		# size = 2572..32168692 (avg = 1028002.4)
@@ -161,6 +178,8 @@ class Cinematic2(object):
 		# from 18 to 28 sections (avg = 22.2)
 		#
 		# examples: A6FE6EDA00BDC0CF (min size), 868F0E1B33099EDF (max size), 80186B0F3760E0B8 (18 sections), 840883A8DF616BE9 (28 sections)
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -189,12 +208,15 @@ class Cinematic2(object):
 
 		self.dat1.print_info(config)
 
+class Cinematic2Rcra(Cinematic2):
+	MAGIC = 0x87521543
+
 #
 
 class Conduit(object):
 	MAGIC = 0x23A93984
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 1234 occurrences
 		# size = 204..613540 (avg = 16019.3)
@@ -208,6 +230,8 @@ class Conduit(object):
 		# from 1 to 2 sections (avg = 1.5)
 		#
 		# examples: 80372B922DE76D8F (min size), AF207C743E768578 (max size), 8004EB3B6A850706 (1 sections), 80010AD8DE1789A4 (2 sections)
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -236,12 +260,15 @@ class Conduit(object):
 
 		self.dat1.print_info(config)
 
+class ConduitRcra(Conduit):
+	MAGIC = 0x44C1AA50
+
 #
 
 class Level(object):
 	MAGIC = 0x2AFE7495
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 1 occurrences
 		# size = 17945492
@@ -255,6 +282,8 @@ class Level(object):
 		# always 15 sections
 		#
 		# examples: 93243FC0D3FE0498
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -283,12 +312,15 @@ class Level(object):
 
 		self.dat1.print_info(config)
 
+class LevelRcra(Level):
+	MAGIC = 0x587B60A6
+
 #
 
 class LevelLight(object):
 	MAGIC = 0x567CC2F0
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 5 occurrences
 		# size = 164
@@ -302,6 +334,8 @@ class LevelLight(object):
 		# always 2 sections
 		#
 		# examples: 83F4B7E7E9672F27
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -329,12 +363,13 @@ class LevelLight(object):
 		print("")
 
 		self.dat1.print_info(config)
+
 #
 
 class Localization(object):
 	MAGIC = 0x122BB0AB
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 23 occurrences
 		# size = 5650545..7514348 (avg = 6015692.5)
@@ -348,6 +383,8 @@ class Localization(object):
 		# always 9 sections
 		#
 		# examples: BE55D94F171BF8DE (min size), BE55D94F171BF8DE (max size)
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -381,7 +418,7 @@ class Localization(object):
 class MaterialGraph(object):
 	MAGIC = 0x07DC03E3
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 1049 occurrences
 		# size = 181300..1038404 (avg = 463254.6)
@@ -390,6 +427,8 @@ class MaterialGraph(object):
 		# examples: A8FE8763415A6F99 (min size), BEFDDF40CBCC9FC4 (max size), 835E7C81247705C0 (3 sections), 94437BF7006F34BB (9 sections)
 
 		# MM: none
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -430,12 +469,15 @@ class MaterialGraph2(MaterialGraph):
 	#
 	# examples: 98E9BDEDDD2E0E39 (min size), 90EDE8261645D3FC (max size), 85ABB22196FFE129 (3 sections), 94437BF7006F34BB (9 sections)
 
+class MaterialGraphRcra(MaterialGraph):
+	MAGIC = 0xB742D85D
+
 #
 
 class NodeGraph(object):
 	MAGIC = 0x9E4E9BA4
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR: none
 		
 		# MM
@@ -444,6 +486,8 @@ class NodeGraph(object):
 		# from 7 to 5686 sections (avg = 170.0)
 		#
 		# examples: 91957ED40A4813B3 (min size), BF53FB9507F5A7B0 (max size)
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -484,7 +528,7 @@ class NodeGraph(object):
 class Texture(object):
 	MAGIC = 0x5C4580B9
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 25602 occurrences
 		# size = 132..57372800 (avg = 266886.3)
@@ -498,6 +542,8 @@ class Texture(object):
 		# always 1 sections
 		#
 		# examples: 9894EC8A3A6A89FC (min size), B37E3F0781D14BAE (max size), 800035F1EBDCBCEC
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -530,12 +576,15 @@ class Texture(object):
 
 		self.dat1.print_info(config)
 
+class TextureRcra(Texture):
+	MAGIC = 0x8F53A199
+
 #
 
 class VisualEffect(object):
 	MAGIC = 0xF05EF819
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 4957 occurrences
 		# size = 356..53212 (avg = 7198.9)
@@ -549,6 +598,8 @@ class VisualEffect(object):
 		# from 4 to 10 sections (avg = 7.1)
 		#
 		# examples: 80C19AB25B853A3D (min size), BBA6299F7845D15A (max size), 807C65DB74F19326 (4 sections), 85570C67E0242FC3 (10 sections)
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -577,12 +628,15 @@ class VisualEffect(object):
 
 		self.dat1.print_info(config)
 
+class VisualEffectRcra(VisualEffect):
+	MAGIC = 0x21400EE4
+
 #
 
 class WwiseLookup(object):
 	MAGIC = 0x35C9D886
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 1 occurrences
 		# size = 3502836
@@ -596,6 +650,8 @@ class WwiseLookup(object):
 		# always 3 sections
 		#
 		# examples: A81AB0A616889CC2
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -624,12 +680,15 @@ class WwiseLookup(object):
 
 		self.dat1.print_info(config)
 
+class WwiseLookupRcra(WwiseLookup):
+	MAGIC = 0xFA1D5989
+
 #
 
 class Zone(object):
 	MAGIC = 0x8A0B1487
 
-	def __init__(self, f):
+	def __init__(self, f, version=None):
 		# MSMR
 		# 12274 occurrences
 		# size = 136..25607920 (avg = 563298.3)
@@ -643,6 +702,8 @@ class Zone(object):
 		# from 1 to 38 sections (avg = 9.3)
 		#
 		# examples: 801D9410B83924DD (min size), 833B331992AB0DCE (max size), 869F7D047B334435 (38 sections)
+
+		self.version = version
 		
 		self.magic, self.size = struct.unpack("<II", f.read(8))
 		self.unk = f.read(28)
@@ -672,3 +733,51 @@ class Zone(object):
 		print("")
 
 		self.dat1.print_info(config)
+
+class ZoneRcra(Zone):
+	MAGIC = 0x1F390AA0
+
+#
+
+class ZoneLightBin(object):
+	MAGIC = 0xBAC796DB
+
+	def __init__(self, f, version=None):
+		self.version = version
+
+		# MSMR
+		# 3496 occurrences
+		# size = 802..6690400 (avg = 1270566.0)
+		# always 2 sections
+		#
+		# examples: 8E1C121ECC4EBBCF (min size), A9CE0B80547F0C61 (max size), 80033BFC093E747C
+		
+		self.magic, self.size = struct.unpack("<II", f.read(8))
+		self.unk = f.read(28)
+		self._raw_dat1 = f.read()
+
+		if self.magic != self.MAGIC:
+			print("[!] Bad ZoneLightBin magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
+
+		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
+
+	def save(self, f):
+		self.size = self.dat1.header.size
+
+		f.write(struct.pack("<II", self.magic, self.size))
+		f.write(self.unk)
+		self.dat1.save(f)
+
+	def print_info(self, config):
+		print("-------")
+		print("ZoneLightBin {:08X}".format(self.magic))
+		if self.magic != self.MAGIC:
+			print("[!] Unknown magic, should be {}".format(self.MAGIC))
+		print("size: {}".format(self.size))
+		print("-------")
+		print("")
+
+		self.dat1.print_info(config)
+
+class ZoneLightBinRcra(ZoneLightBin):
+	MAGIC = 0xFA8D90B3
