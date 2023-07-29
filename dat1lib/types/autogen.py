@@ -828,13 +828,10 @@ class ZoneRcra(Zone):
 
 	# RCRA
 	# 9045 occurrences
-	# size = 100..58976784 (avg = 383049.8)
+	# size = 100..116678316 (avg = 395905.8)
 	# from 1 to 35 sections (avg = 4.9)
 	#
-	# examples: 8000BBDA09A7A62C (min size), B3EA20D0568D3A12 (max size), A1CC707540F0E1E4 (35 sections)
-
-	# TODO: fix stats
-	# 961B06FC2C552478,levels/i29/instance/sargasso/containernavdata.zone
+	# examples: 8000BBDA09A7A62C (min size), 961B06FC2C552478 (max size), A1CC707540F0E1E4 (35 sections)
 
 #
 

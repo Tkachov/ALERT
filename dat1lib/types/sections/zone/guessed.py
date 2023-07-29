@@ -22,6 +22,12 @@ class InnerAssetsContainerSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8035E8D12E1FE889 (min size), 9419A66DCDCE388E (max size)
 
+		# RCRA
+		# 65 occurrences in 9046 files
+		# size = 60..421320 (avg = 27864.3)
+		#
+		# examples: 8539C9C98977EE46 (min size), 8683FD7F7ABDC494 (max size)
+
 		self.entries = []
 
 		i = 0
@@ -64,6 +70,12 @@ class ZoneReferencesSection(dat1lib.types.sections.ReferencesSection):
 		#
 		# examples: 8060F01DB1EFC3AB (min size), 974EB47F6B2CA8E3 (max size)
 
+		# RCRA
+		# 335 occurrences in 9046 files
+		# size = 16..11680 (avg = 782.6)
+		#
+		# examples: 85D841EBD01D04FC (min size), B234D5DB373273D5 (max size)
+
 	def get_short_suffix(self):
 		return "Zone References ({})".format(len(self.entries))
 
@@ -94,6 +106,12 @@ class ZoneMaterialOverridesSection(dat1lib.types.sections.Section):
 		# size = 16..13216 (avg = 1258.9)
 		#
 		# examples: 8007054377A3EA0F (min size), 869F7D047B334435 (max size)
+
+		# RCRA
+		# 882 occurrences in 9046 files
+		# size = 16..10192 (avg = 286.1)
+		#
+		# examples: 805224F2BED38913 (min size), BB7D7B266225CF80 (max size)
 		
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE

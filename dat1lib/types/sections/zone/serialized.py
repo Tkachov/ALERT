@@ -23,6 +23,12 @@ class x81999057_Section(dat1lib.types.sections.SerializedSection):
 		#
 		# examples: 9F4641AD3DDF206F (min size), 819B7068967A6DB9 (max size)
 
+		# RCRA
+		# 1049 occurrences in 9046 files
+		# size = 16..673756 (avg = 5163.4)
+		#
+		# examples: A7DDA1F4F70B94B0 (min size), AD39075D88CAAE49 (max size)
+
 	def get_short_suffix(self):
 		return "81999057"
 
@@ -56,6 +62,12 @@ class x2300D240_Section(dat1lib.types.sections.SerializedSection):
 		# size = 16..96168 (avg = 2614.8)
 		#
 		# examples: 87B81FEDAAFF3E8A (min size), BE5CA03295D3CE1E (max size)
+
+		# RCRA
+		# 889 occurrences in 9046 files
+		# size = 32..116524 (avg = 3908.9)
+		#
+		# examples: 815B39D257061497 (min size), 84DF7012D9A6A9A7 (max size)
 
 	def get_short_suffix(self):
 		return "2300D240"
