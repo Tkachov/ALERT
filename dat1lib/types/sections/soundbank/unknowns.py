@@ -28,6 +28,12 @@ class EventsSection(dat1lib.types.sections.Section):
 		#
 		# examples: 805A011970FE88E3 (min size), AA47C17532AF52AC (max size)
 
+		# RCRA
+		# 1168 occurrences in 1218 files
+		# size = 16..45792 (avg = 563.5)
+		#
+		# examples: 8019125F734A3957 (min size), 8E7F2FAFC675D9EF (max size)
+
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
 		self.events = [Event(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
@@ -68,6 +74,12 @@ class StringsSection(dat1lib.types.sections.StringsSection):
 		#
 		# examples: 8FA8E5C5DDC315C1 (min size), AA47C17532AF52AC (max size)
 
+		# RCRA
+		# 1218 occurrences in 1218 files (always present)
+		# size = 26..83460 (avg = 1096.5)
+		#
+		# examples: 9257F71232118757 (min size), 8E7F2FAFC675D9EF (max size)
+
 	def get_short_suffix(self):
 		return "strings ({})".format(len(self._strings))
 
@@ -100,6 +112,13 @@ class HeaderSection(dat1lib.types.sections.Section):
 		# always first
 		#
 		# examples: 800BAAC604A8B370
+
+		# RCRA
+		# 1218 occurrences in 1218 files (always present)
+		# size = 64
+		# always first
+		#
+		# examples: 800582AB4AE61DB1
 
 		self.a, self.b, self.bnk_section_size = struct.unpack("<HHI", data[:8])
 		rest = data[8:]

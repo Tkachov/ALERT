@@ -54,11 +54,8 @@ class SoundbankRcra(Soundbank):
 	MAGIC = 0xC2841216
 
 	# RCRA
-	# 1217 occurrences
-	# size = 208..32346426 (avg = 836029.8)
+	# 1218 occurrences
+	# size = 208..115413669 (avg = 930100.1)
 	# from 3 to 4 sections (avg = 3.9)
 	#
-	# examples: 80401892FB7E19F8 (min size), 8A195B36077C8BE3 (max size), 800582AB4AE61DB1 (4 sections)
-
-	# TODO: fix stats
-	# 80E6D1589338AECF,sound/banks/music.soundbank,1
+	# examples: 80401892FB7E19F8 (min size), 80E6D1589338AECF (max size), 800582AB4AE61DB1 (4 sections)

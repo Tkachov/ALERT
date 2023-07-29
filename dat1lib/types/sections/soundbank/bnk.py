@@ -23,6 +23,13 @@ class WwiseBankSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8208A29C47736EAD (min size), 9B3473B5F2EF53D3 (max size)
 
+		# MSMR
+		# 1218 occurrences in 1218 files (always present)
+		# size = 32..115410001 (avg = 928296.2)
+		# always last
+		#
+		# examples: 800F0CCD0AAC251C (min size), 80E6D1589338AECF (max size)
+
 	def replace_data(self, data):
 		self._raw = data
 
