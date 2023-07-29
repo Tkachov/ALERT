@@ -59,3 +59,10 @@ class Material2(Material):
 
 class MaterialRcra(Material):
 	MAGIC = 0x7C7BD7D6
+
+	# RCRA
+	# 5721 occurrences
+	# size = 204..1083472 (avg = 86452.2)
+	# from 2 to 11 sections (avg = 3.5)
+	#
+	# examples: A6D6F52A42745073 (min size), 86C3AF142CFEE07A (max size), 8005441D2C016BE3 (2 sections), 809DFDB0DCB29FD0 (11 sections)

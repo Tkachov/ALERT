@@ -26,6 +26,13 @@ class HeaderSection(dat1lib.types.sections.Section):
 		#
 		# examples: 805D8409A8286E3F
 
+		# RCRA
+		# 95 occurrences in 95 files (always present)
+		# size = 1800
+		# always first
+		#
+		# examples: 803DF93468026616
+
 		self.unk1 = data[:32]
 		self.z1, self.time_of_day, self.z2, self.z3 = struct.unpack("<IfII", data[32:48])
 		self.unk2 = data[48:64]
@@ -74,6 +81,12 @@ class StringsSection(dat1lib.types.sections.StringsSection):
 		#
 		# examples: 93D0C8E529805B2C (min size), 80BA05E01E62AE5B (max size)
 
+		# RCRA
+		# 92 occurrences in 95 files
+		# size = 33..85 (avg = 55.0)
+		#
+		# examples: 9C31C1274367139B (min size), B125D81B2F3D3024 (max size)
+
 	def get_short_suffix(self):
 		return "strings ({})".format(len(self._strings))
 
@@ -106,6 +119,12 @@ class TextureSection(dat1lib.types.sections.Section):
 		#
 		# examples: 805D8409A8286E3F (min size), 970D43801CB614DC (max size)
 
+		# RCRA
+		# 92 occurrences in 95 files
+		# size = 108
+		#
+		# examples: 803DF93468026616
+
 	def get_short_suffix(self):
 		return "texture DAT1"
 
@@ -133,6 +152,12 @@ class xE7997256_Section(dat1lib.types.sections.Section):
 		# size = 2244624
 		#
 		# examples: 80BA05E01E62AE5B
+
+		# RCRA
+		# 13 occurrences in 95 files
+		# size = 2244624
+		#
+		# examples: 8230BE9511D6C9EB
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

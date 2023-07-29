@@ -23,6 +23,13 @@ class ActorModelNameSection(dat1lib.types.sections.Section):
 		# always first
 		#
 		# examples: 80027411351D35BA
+
+		# RCRA
+		# 2696 occurrences in 2696 files (always present)
+		# size = 4
+		# always first
+		#
+		# examples: 80081F701B415E30
 		
 		self.value = struct.unpack("<I", data)[0]
 
@@ -57,6 +64,12 @@ class ActorAssetRefsSection(dat1lib.types.sections.ReferencesSection):
 		#
 		# examples: 80027411351D35BA (min size), BAAE788E4A9CE960 (max size)
 
+		# RCRA
+		# 2329 occurrences in 2696 files
+		# size = 16..1728 (avg = 72.6)
+		#
+		# examples: 80081F701B415E30 (min size), ACFDE0920CD4F684 (max size)
+
 	def get_short_suffix(self):
 		return "Actor Asset Refs ({})".format(len(self.entries))
 
@@ -85,6 +98,12 @@ class ComponentDefinitionsSection(dat1lib.types.sections.Section):
 		# size = 32..800 (avg = 109.9)
 		#
 		# examples: 8014A0707A32D982 (min size), B62EBBE477CDF302 (max size)
+
+		# RCRA
+		# 2409 occurrences in 2696 files
+		# size = 32..672 (avg = 103.7)
+		#
+		# examples: 80081F701B415E30 (min size), 8CF8DB0F42BCB136 (max size)
 		
 		ENTRY_SIZE = 32
 		count = len(data)//ENTRY_SIZE
@@ -132,6 +151,12 @@ class ComponentsDataSection(dat1lib.types.sections.Section):
 		# size = 32..26240 (avg = 1795.5)
 		#
 		# examples: 81C1F02C8DB374A9 (min size), BAAE788E4A9CE960 (max size)
+
+		# RCRA
+		# 1968 occurrences in 2696 files
+		# size = 32..22928 (avg = 943.9)
+		#
+		# examples: 81F6E8B3538B4E52 (min size), ACFDE0920CD4F684 (max size)
 
 		# has strings in it
 

@@ -23,6 +23,13 @@ class EntriesCountSection(dat1lib.types.sections.Section):
 		#
 		# examples: BE55D94F171BF8DE
 
+		# RCRA
+		# 32 occurrences in 32 files (always present)
+		# size = 4
+		# always first
+		#
+		# examples: BE55D94F171BF8DE
+
 		self.count = struct.unpack("<I", data)[0]
 
 	def save(self):
@@ -56,6 +63,12 @@ class KeyNamesSection(dat1lib.types.sections.StringsSection):
 		#
 		# examples: BE55D94F171BF8DE
 
+		# RCRA
+		# 32 occurrences in 32 files (always present)
+		# size = 637458
+		#
+		# examples: BE55D94F171BF8DE
+
 	def get_short_suffix(self):
 		return "key names ({})".format(len(self._strings))
 
@@ -86,6 +99,13 @@ class ValuesSection(dat1lib.types.sections.StringsSection):
 		# MM
 		# 32 occurrences in 32 files (always present)
 		# size = 1..2669233 (avg = 1419615.8)
+		# always last
+		#
+		# examples: BE55D94F171BF8DE (min size), BE55D94F171BF8DE (max size)
+
+		# RCRA
+		# 32 occurrences in 32 files (always present)
+		# size = 1..1710447 (avg = 990200.2)
 		# always last
 		#
 		# examples: BE55D94F171BF8DE (min size), BE55D94F171BF8DE (max size)

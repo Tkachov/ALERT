@@ -22,6 +22,12 @@ class ConduitAssetRefsSection(dat1lib.types.sections.Section):
 		# size = 16..2448 (avg = 91.3)
 		#
 		# examples: 8085D81AFD659637 (min size), AF207C743E768578 (max size)
+
+		# RCRA
+		# 1046 occurrences in 1070 files
+		# size = 16..3088 (avg = 93.4)
+		#
+		# examples: 800ECA8DB20906EF (min size), 9C2BA85165B721C3 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -66,6 +72,13 @@ class xCEB30E68_Section(dat1lib.types.sections.Section):
 		# always first
 		#
 		# examples: 80372B922DE76D8F (min size), AF207C743E768578 (max size)
+
+		# RCRA
+		# 1070 occurrences in 1070 files (always present)
+		# size = 72..299316 (avg = 13008.0)
+		# always first
+		#
+		# examples: 821C237559C4B811 (min size), 872E298A3A2D59FD (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

@@ -25,6 +25,13 @@ class ConfigTypeSection(dat1lib.types.sections.SerializedSection):
 		#
 		# examples: 804C47786C04D879 (min size), 826CCE238253182B (max size)
 
+		# RCRA
+		# 1847 occurrences in 1847 files (always present)
+		# size = 56..84 (avg = 64.9)
+		# always first
+		#
+		# examples: 819BFE537D2E0858 (min size), 90E14CDA8DD9D960 (max size)
+
 	def get_short_suffix(self):
 		return "type"
 
@@ -58,6 +65,12 @@ class ConfigContentSection(dat1lib.types.sections.SerializedSection):
 		# always last
 		#
 		# examples: 813381135A2CC078 (min size), 97425517EBC3BB3F (max size)
+
+		# RCRA
+		# 1847 occurrences in 1847 files (always present)
+		# size = 16..3322020 (avg = 4698.9)
+		#
+		# examples: 94982925AD887B35 (min size), BB876CAC4C37B181 (max size)
 
 	def get_short_suffix(self):
 		return "content"

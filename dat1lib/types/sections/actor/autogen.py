@@ -22,6 +22,12 @@ class x364A6C7C_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 8090DFC5CFCD7795 (min size), 80027411351D35BA (max size)
 
+		# RCRA
+		# 2696 occurrences in 2696 files (always present)
+		# size = 176..320 (avg = 294.3)
+		#
+		# examples: 8019B5E20240AA66 (min size), 80081F701B415E30 (max size)
+
 		# floats; starts with 4x4 matrix (identity in actors_3d_poi_distant_fx_marker_quest_vertical_camfacer.actor)
 		
 		ENTRY_SIZE = 4

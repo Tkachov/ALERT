@@ -22,6 +22,12 @@ class x06A58050_Section(dat1lib.types.sections.Section):
 		# size = 140480
 		#
 		# examples: BE55D94F171BF8DE
+
+		# RCRA
+		# 32 occurrences in 32 files (always present)
+		# size = 98300
+		#
+		# examples: BE55D94F171BF8DE
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -62,6 +68,12 @@ class x0CD2CFE9_Section(dat1lib.types.sections.Section):
 		# MM
 		# 32 occurrences in 32 files (always present)
 		# size = 70240
+		#
+		# examples: BE55D94F171BF8DE
+
+		# RCRA
+		# 32 occurrences in 32 files (always present)
+		# size = 49150
 		#
 		# examples: BE55D94F171BF8DE
 		
@@ -106,6 +118,12 @@ class xA4EA55B2_Section(dat1lib.types.sections.Section):
 		# size = 140480
 		#
 		# examples: BE55D94F171BF8DE
+
+		# RCRA
+		# 32 occurrences in 32 files (always present)
+		# size = 98300
+		#
+		# examples: BE55D94F171BF8DE
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -146,6 +164,12 @@ class xB0653243_Section(dat1lib.types.sections.Section):
 		# MM
 		# 32 occurrences in 32 files (always present)
 		# size = 140480
+		#
+		# examples: BE55D94F171BF8DE
+
+		# RCRA
+		# 32 occurrences in 32 files (always present)
+		# size = 98300
 		#
 		# examples: BE55D94F171BF8DE
 		
@@ -190,6 +214,12 @@ class xC43731B5_Section(dat1lib.types.sections.Section):
 		# size = 140480
 		#
 		# examples: BE55D94F171BF8DE
+
+		# RCRA
+		# 32 occurrences in 32 files (always present)
+		# size = 98300
+		#
+		# examples: BE55D94F171BF8DE
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -230,6 +260,12 @@ class xF80DEEB4_Section(dat1lib.types.sections.Section):
 		# MM
 		# 32 occurrences in 32 files (always present)
 		# size = 140480
+		#
+		# examples: BE55D94F171BF8DE
+
+		# RCRA
+		# 32 occurrences in 32 files (always present)
+		# size = 98300
 		#
 		# examples: BE55D94F171BF8DE
 		

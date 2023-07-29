@@ -2,7 +2,9 @@ import dat1lib.types.sections
 import io
 import struct
 
-# there's only 1 Level: 93243FC0D3FE0498 (levels/i20_city/i20_city.level)
+# there's only 1 Level:
+# - MSMR/MM -- 93243FC0D3FE0498 (levels/i20_city/i20_city.level)
+# - RCRA    -- 95A02E80D5D79CF7 (levels/i29/i29.level)
 
 #
 
@@ -15,6 +17,7 @@ class x07C75341_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 15008184
 		# MM: size = 13217072
+		# RCRA: size = 3827392
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -48,6 +51,7 @@ class x2236C47A_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 8920
 		# MM: size = 8420
+		# RCRA: size = 3440
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -81,6 +85,7 @@ class x2BA33702_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 49212
 		# MM: size = 42124
+		# RCRA: size = 36704
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -114,6 +119,7 @@ class x3395AEC1_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 107040
 		# MM: size = 101040
+		# RCRA: size = 41280
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -147,6 +153,7 @@ class x339C970E_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 996932
 		# MM: size = 266284
+		# RCRA: size = 148492
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -180,6 +187,7 @@ class x396F9418_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 66348
 		# MM: size = 50724
+		# RCRA: size = 43776
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -213,6 +221,7 @@ class x4130D903_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 7372
 		# MM: size = 5636
+		# RCRA: size = 4864
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -246,6 +255,7 @@ class x41887FB3_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 12560
 		# MM: size = 8384
+		# RCRA: size = 4992
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -279,6 +289,7 @@ class x4E023760_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 147636
 		# MM: size = 126372
+		# RCRA: size = 110112
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -312,6 +323,7 @@ class x611F490D_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 9680
 		# MM: size = 8760
+		# RCRA: size = 4904
 		# always last
 		
 		ENTRY_SIZE = 4
@@ -346,6 +358,7 @@ class x6251A0BF_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 132
 		# MM: size = 128
+		# RCRA: none
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -379,6 +392,7 @@ class x7077E5F5_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 2244
 		# MM: size = 1452
+		# RCRA: size = 1412
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -412,6 +426,7 @@ class x7CA7267D_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 36
 		# MM: size = 36
+		# RCRA: size = 36
 		# always first
 		
 		ENTRY_SIZE = 4
@@ -446,6 +461,7 @@ class x95F91E24_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 41632
 		# MM: size = 31346
+		# RCRA: size = 20270
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -479,6 +495,7 @@ class xC30D92B6_Section(dat1lib.types.sections.Section):
 
 		# MSMR: size = 17712
 		# MM: size = 17904
+		# RCRA: size = 22032
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

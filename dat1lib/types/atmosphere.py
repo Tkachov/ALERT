@@ -52,3 +52,10 @@ class Atmosphere(object):
 
 class AtmosphereRcra(Atmosphere):
 	MAGIC = 0x21D5E72C
+
+	# RCRA
+	# 95 occurrences
+	# size = 1864..2771292 (avg = 816909.9)
+	# from 1 to 4 sections (avg = 3.0)
+	#
+	# examples: A7F253C95A0A0098 (min size), B431B895EFE8E17D (max size), 837E5685BA7DF0F1 (4 sections)

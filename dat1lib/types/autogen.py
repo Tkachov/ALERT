@@ -53,6 +53,13 @@ class Actor(object):
 class ActorRcra(Actor):
 	MAGIC = 0x944BD3AD
 
+	# RCRA
+	# 2696 occurrences
+	# size = 256..46288 (avg = 1909.6)
+	# from 2 to 5 sections (avg = 4.4)
+	#
+	# examples: 8B8FEE5EB9F28855 (min size), ACFDE0920CD4F684 (max size), 815ECA36897F2155 (2 sections), 800E8B251E3B597E (5 sections)
+
 #
 
 class AnimClip(object): # animclip/performanceclip
@@ -105,7 +112,12 @@ class AnimClip(object): # animclip/performanceclip
 class AnimClipRcra(AnimClip): # animclip/performanceclip
 	MAGIC = 0x0F64FFE8
 
-
+	# RCRA
+	# 37725 occurrences
+	# size = 32..11594576 (avg = 12355.9)
+	# from 0 to 12 sections (avg = 4.8)
+	#
+	# examples: 8272777BE3A34847 (min size), B582E825EF5E4B7C (max size), 88C87C171B873977 (12 sections)
 
 #
 
@@ -159,6 +171,13 @@ class AnimSet(object): # animset/performanceset
 class AnimSetRcra(AnimSet): # animset/performanceset
 	MAGIC = 0x704B7EC4
 
+	# RCRA
+	# 787 occurrences
+	# size = 84..411136 (avg = 8822.2)
+	# from 1 to 10 sections (avg = 5.4)
+	#
+	# examples: A3E979A667C95A6D (min size), 8867CE5CFD9543DE (max size), 81E6BC350A34B426 (10 sections)
+
 #
 
 class Cinematic2(object):
@@ -210,6 +229,13 @@ class Cinematic2(object):
 
 class Cinematic2Rcra(Cinematic2):
 	MAGIC = 0x87521543
+
+	# RCRA
+	# 419 occurrences
+	# size = 708..3997256 (avg = 141861.7)
+	# from 6 to 28 sections (avg = 21.9)
+	#
+	# examples: B1630BAB8922BD62 (min size), 9A185216FAE8BCE9 (max size), 83EBA48314B2BACF (28 sections)
 
 #
 
@@ -263,6 +289,13 @@ class Conduit(object):
 class ConduitRcra(Conduit):
 	MAGIC = 0x44C1AA50
 
+	# RCRA
+	# 1070 occurrences
+	# size = 168..354608 (avg = 15602.2)
+	# from 1 to 2 sections (avg = 1.9)
+	#
+	# examples: 821C237559C4B811 (min size), 872E298A3A2D59FD (max size), 816A20924D208E9E (1 sections), 8003903027FF9742 (2 sections)
+
 #
 
 class Level(object):
@@ -315,6 +348,13 @@ class Level(object):
 class LevelRcra(Level):
 	MAGIC = 0x587B60A6
 
+	# RCRA
+	# 1 occurrences
+	# size = 5040344
+	# always 14 sections
+	#
+	# examples: 95A02E80D5D79CF7
+
 #
 
 class LevelLight(object):
@@ -334,6 +374,13 @@ class LevelLight(object):
 		# always 2 sections
 		#
 		# examples: 83F4B7E7E9672F27
+
+		# RCRA
+		# 7 occurrences
+		# size = 128
+		# always 2 sections
+		#
+		# examples: 85B1DAB1D5515C8C
 
 		self.version = version
 		
@@ -380,6 +427,13 @@ class Localization(object):
 		# MM
 		# 32 occurrences
 		# size = 1704117..4373349 (avg = 3123731.8)
+		# always 9 sections
+		#
+		# examples: BE55D94F171BF8DE (min size), BE55D94F171BF8DE (max size)
+
+		# RCRA
+		# 32 occurrences
+		# size = 1178321..2888767 (avg = 2168520.2)
 		# always 9 sections
 		#
 		# examples: BE55D94F171BF8DE (min size), BE55D94F171BF8DE (max size)
@@ -472,6 +526,13 @@ class MaterialGraph2(MaterialGraph):
 class MaterialGraphRcra(MaterialGraph):
 	MAGIC = 0xB742D85D
 
+	# RCRA
+	# 1474 occurrences
+	# size = 96416..1115360 (avg = 378968.0)
+	# from 3 to 9 sections (avg = 6.0)
+	#
+	# examples: A8A61DE9B77F351F (min size), 809D690CEE3F6048 (max size), 80161ACCDF88AB80 (3 sections), 82E6E9B90EA944BF (9 sections)
+
 #
 
 class NodeGraph(object):
@@ -486,6 +547,13 @@ class NodeGraph(object):
 		# from 7 to 5686 sections (avg = 170.0)
 		#
 		# examples: 91957ED40A4813B3 (min size), BF53FB9507F5A7B0 (max size)
+
+		# RCRA
+		# 60 occurrences
+		# size = 3232..228992 (avg = 32691.7)
+		# from 7 to 91 sections (avg = 19.1)
+		#
+		# examples: BBA961A9CCA2C932 (min size), 996CE3334BA854BE (max size), 80B51B678F9F241B (7 sections)
 
 		self.version = version
 		
@@ -579,6 +647,17 @@ class Texture(object):
 class TextureRcra(Texture):
 	MAGIC = 0x8F53A199
 
+	# RCRA
+	# 12500 occurrences
+	# size = 96..67108956 (avg = 513426.6)
+	# always 1 sections
+	#
+	# examples: 84BB3722E22F90FC (min size), 8EBF7B99BAD1FFB7 (max size), 8001D626C025EAA0
+
+	# TODO: fix stats
+	# A6D7A1FC9477A361,textures/sky/blizar_prime/blizarprime_skyintact_007.texture,1
+	# B1E3516C4503E194,textures/hdr/sargasso/sargasso_skybox_sunset_002_nick.texture,1
+
 #
 
 class VisualEffect(object):
@@ -631,6 +710,13 @@ class VisualEffect(object):
 class VisualEffectRcra(VisualEffect):
 	MAGIC = 0x21400EE4
 
+	# RCRA
+	# 2985 occurrences
+	# size = 320..791080 (avg = 24977.5)
+	# from 4 to 11 sections (avg = 7.2)
+	#
+	# examples: 85790733BB01318A (min size), 81A3452B88E1C1CB (max size), 853B8C882DD88E6F (4 sections), 8D38880D6C9DD205 (11 sections)
+
 #
 
 class WwiseLookup(object):
@@ -682,6 +768,13 @@ class WwiseLookup(object):
 
 class WwiseLookupRcra(WwiseLookup):
 	MAGIC = 0xFA1D5989
+
+	# RCRA
+	# 1 occurrences
+	# size = 1653744
+	# always 3 sections
+	#
+	# examples: A81AB0A616889CC2
 
 #
 
@@ -737,6 +830,16 @@ class Zone(object):
 class ZoneRcra(Zone):
 	MAGIC = 0x1F390AA0
 
+	# RCRA
+	# 9045 occurrences
+	# size = 100..58976784 (avg = 383049.8)
+	# from 1 to 35 sections (avg = 4.9)
+	#
+	# examples: 8000BBDA09A7A62C (min size), B3EA20D0568D3A12 (max size), A1CC707540F0E1E4 (35 sections)
+
+	# TODO: fix stats
+	# 961B06FC2C552478,levels/i29/instance/sargasso/containernavdata.zone
+
 #
 
 class ZoneLightBin(object):
@@ -781,3 +884,10 @@ class ZoneLightBin(object):
 
 class ZoneLightBinRcra(ZoneLightBin):
 	MAGIC = 0xFA8D90B3
+
+	# RCRA
+	# 648 occurrences
+	# size = 120..34139979 (avg = 1817633.2)
+	# from 2 to 3 sections (avg = 2.0)
+	#
+	# examples: A453C793F7C9E21F (min size), A5E2156DA05F14ED (max size), 800A915A9A32E630 (2 sections), 8009BEE1DCEA1DEE (3 sections)

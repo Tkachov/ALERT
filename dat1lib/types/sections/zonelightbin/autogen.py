@@ -4,30 +4,25 @@ import struct
 
 #
 
-class x52B343E8_Section(dat1lib.types.sections.Section):
-	TAG = 0x52B343E8
-	TYPE = 'WwiseLookup'
+class x101A2196_Section(dat1lib.types.sections.Section):
+	TAG = 0x101A2196
+	TYPE = 'ZoneLightBin'
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		# MSMR
-		# size = 15828
-		# always first
+		# 3496 occurrences in 3496 files (always present)
+		# size = 8
+		# always last
 		#
-		# examples: A81AB0A616889CC2
-
-		# MM
-		# size = 13020
-		# always first
-		#
-		# examples: A81AB0A616889CC2
+		# examples: 80033BFC093E747C
 
 		# RCRA
-		# size = 12552
-		# always first
+		# 648 occurrences in 648 files (always present)
+		# size = 8
 		#
-		# examples: A81AB0A616889CC2
+		# examples: 8009BEE1DCEA1DEE
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -41,41 +36,37 @@ class x52B343E8_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "52B343E8 ({})".format(len(self.entries))
+		return "101A2196 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 52B343E8     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | 101A2196     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
-class x739B21E0_Section(dat1lib.types.sections.Section):
-	TAG = 0x739B21E0
-	TYPE = 'WwiseLookup'
+class x27204B67_Section(dat1lib.types.sections.Section):
+	TAG = 0x27204B67
+	TYPE = 'ZoneLightBin'
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
 		# MSMR
-		# size = 1767744
-		# always last
+		# 3496 occurrences in 3496 files (always present)
+		# size = 12..11952 (avg = 3461.2)
+		# always first
 		#
-		# examples: A81AB0A616889CC2
-
-		# MM
-		# size = 1155648
-		# always last
-		#
-		# examples: A81AB0A616889CC2
+		# examples: 850FB496E7E729A7 (min size), 86541177E5784288 (max size)
 
 		# RCRA
-		# size = 775872
-		# always last
+		# 648 occurrences in 648 files (always present)
+		# size = 12..124944 (avg = 6128.5)
+		# always first
 		#
-		# examples: A81AB0A616889CC2
+		# examples: 807DAB2AE0537D30 (min size), 943164D491D45E13 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -89,38 +80,31 @@ class x739B21E0_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "739B21E0 ({})".format(len(self.entries))
+		return "27204B67 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 739B21E0     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | 27204B67     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
-class x7F9A96AA_Section(dat1lib.types.sections.Section):
-	TAG = 0x7F9A96AA
-	TYPE = 'WwiseLookup'
+class xC72A514C_Section(dat1lib.types.sections.Section):
+	TAG = 0xC72A514C
+	TYPE = 'ZoneLightBinRcra'
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
-		# MSMR
-		# size = 220968
-		#
-		# examples: A81AB0A616889CC2
-
-		# MM
-		# size = 144456
-		#
-		# examples: A81AB0A616889CC2
+		# MSMR: none
 
 		# RCRA
-		# size = 96984
+		# 35 occurrences in 648 files
+		# size = 8..41652 (avg = 5527.3)
 		#
-		# examples: A81AB0A616889CC2
+		# examples: A453C793F7C9E21F (min size), 943164D491D45E13 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -134,12 +118,11 @@ class x7F9A96AA_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "7F9A96AA ({})".format(len(self.entries))
+		return "C72A514C ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 7F9A96AA     | {:6} entries".format(self.TAG, len(self.entries)))
-
+		print("{:08X} | C72A514C     | {:6} entries".format(self.TAG, len(self.entries)))

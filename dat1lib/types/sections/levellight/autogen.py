@@ -24,6 +24,13 @@ class x1F6A31A6_Section(dat1lib.types.sections.Section):
 		# always first
 		#
 		# examples: 83F4B7E7E9672F27
+
+		# RCRA
+		# 7 occurrences in 7 files (always present)
+		# size = 36
+		# always first
+		#
+		# examples: 85B1DAB1D5515C8C
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -68,6 +75,13 @@ class x46EFD07A_Section(dat1lib.types.sections.Section):
 		# always last
 		#
 		# examples: 83F4B7E7E9672F27
+
+		# RCRA
+		# 7 occurrences in 7 files (always present)
+		# size = 16
+		# always last
+		#
+		# examples: 85B1DAB1D5515C8C
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

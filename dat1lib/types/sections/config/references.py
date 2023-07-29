@@ -22,6 +22,12 @@ class ReferencesSection(dat1lib.types.sections.ReferencesSection):
 		#
 		# examples: 804666DEE5E1774A (min size), AED6101948AAFA54 (max size)
 
+		# RCRA
+		# 717 occurrences in 1847 files
+		# size = 16..7184 (avg = 101.4)
+		#
+		# examples: 8027BEC8CB618B30 (min size), AED6101948AAFA54 (max size)
+
 	def get_short_suffix(self):
 		return "Config Asset Refs ({})".format(len(self.entries))
 
