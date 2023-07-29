@@ -11,11 +11,19 @@ class HeaderSection(dat1lib.types.sections.SerializedSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
 
+		# MM
 		# 101 occurrences in 101 files (always present)
 		# size = 48
 		# always first
 		#
 		# examples: 8018B80E97DF19E1
+
+		# RCRA
+		# 60 occurrences in 60 files (always present)
+		# size = 48
+		# always first
+		#
+		# examples: 80B51B678F9F241B
 
 	def get_short_suffix(self):
 		return "header"
@@ -39,10 +47,17 @@ class NodesListSection(dat1lib.types.sections.SerializedSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
 
+		# MM
 		# 101 occurrences in 101 files (always present)
 		# size = 172..272716 (avg = 7976.0)
 		#
 		# examples: 8AC1B8D23B05FC2E (min size), BF53FB9507F5A7B0 (max size)
+
+		# RCRA
+		# 60 occurrences in 60 files (always present)
+		# size = 124..4156 (avg = 710.4)
+		#
+		# examples: 80B51B678F9F241B (min size), 996CE3334BA854BE (max size)
 
 	def get_short_suffix(self):
 		return "nodes list"
@@ -66,10 +81,17 @@ class ConnectionsSection(dat1lib.types.sections.SerializedSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
 
+		# MM
 		# 101 occurrences in 101 files (always present)
 		# size = 380..1518908 (avg = 42962.3)
 		#
 		# examples: 8AC1B8D23B05FC2E (min size), BF53FB9507F5A7B0 (max size)
+
+		# RCRA
+		# 60 occurrences in 60 files (always present)
+		# size = 204..16748 (avg = 2380.5)
+		#
+		# examples: 80B51B678F9F241B (min size), 996CE3334BA854BE (max size)
 
 	def get_short_suffix(self):
 		return "connections"
@@ -93,11 +115,18 @@ class MappingsSection(dat1lib.types.sections.SerializedSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
 
+		# MM
 		# 101 occurrences in 101 files (always present)
 		# size = 1008..2413192 (avg = 75653.3)
 		# always last
 		#
 		# examples: 8AC1B8D23B05FC2E (min size), BF53FB9507F5A7B0 (max size)
+
+		# RCRA
+		# 60 occurrences in 60 files (always present)
+		# size = 720..50544 (avg = 6689.6)
+		#
+		# examples: 80B51B678F9F241B (min size), 996CE3334BA854BE (max size)
 
 	def get_short_suffix(self):
 		return "mappings"
@@ -121,10 +150,17 @@ class ReferencesSection(dat1lib.types.sections.ReferencesSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.ReferencesSection.__init__(self, data, container)
 
+		# MM
 		# 49 occurrences in 101 files
 		# size = 16..1360 (avg = 75.4)
 		#
 		# examples: 81ABBBF35AF930BC (min size), 80E88F9D2623201D (max size)
+
+		# RCRA
+		# 55 occurrences in 60 files
+		# size = 16..1184 (avg = 54.6)
+		#
+		# examples: 96563DCFEFDB8201 (min size), 996CE3334BA854BE (max size)
 
 	def get_short_suffix(self):
 		return "references ({})".format(len(self.entries))
