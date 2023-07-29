@@ -648,15 +648,11 @@ class TextureRcra(Texture):
 	MAGIC = 0x8F53A199
 
 	# RCRA
-	# 12500 occurrences
-	# size = 96..67108956 (avg = 513426.6)
+	# 12502 occurrences
+	# size = 96..134217856 (avg = 534815.9)
 	# always 1 sections
 	#
-	# examples: 84BB3722E22F90FC (min size), 8EBF7B99BAD1FFB7 (max size), 8001D626C025EAA0
-
-	# TODO: fix stats
-	# A6D7A1FC9477A361,textures/sky/blizar_prime/blizarprime_skyintact_007.texture,1
-	# B1E3516C4503E194,textures/hdr/sargasso/sargasso_skybox_sunset_002_nick.texture,1
+	# examples: 84BB3722E22F90FC (min size), A6D7A1FC9477A361 (max size), 8001D626C025EAA0
 
 #
 

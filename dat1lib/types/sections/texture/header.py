@@ -27,6 +27,14 @@ class TextureHeaderSection(dat1lib.types.sections.Section):
 		#
 		# examples: 800035F1EBDCBCEC
 
+		# RCRA
+		# 12502 occurrences in 12502 files (always present)
+		# size = 44
+		# always first
+		# always last
+		#
+		# examples: 8001D626C025EAA0
+
 		# named according to https://github.com/monax3/SpiderTex/blob/main/src/texture_file.rs
 
 		self.sd_len, self.hd_len = struct.unpack("<II", data[:8])
