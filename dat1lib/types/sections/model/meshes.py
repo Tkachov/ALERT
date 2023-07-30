@@ -14,8 +14,8 @@ class MeshDefinition(object):
 	def get_material(self):
 		return self.unknowns2[1]
 
-class MeshesSection(dat1lib.types.sections.Section): # aka model_subset
-	TAG = 0x78D9CBDE
+class MeshesSection(dat1lib.types.sections.Section):
+	TAG = 0x78D9CBDE # Model Subset
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -32,6 +32,12 @@ class MeshesSection(dat1lib.types.sections.Section): # aka model_subset
 		# size = 64..66944 (avg = 296.8)
 		#
 		# examples: 800058C35E144B3F (min size), 8C7796FC7478109D (max size)
+
+		# RCRA
+		# 11363 occurrences in 11387 files
+		# size = 64..111744 (avg = 600.3)
+		#
+		# examples: 800653F4B380A1B1 (min size), 90A86BB170C341AA (max size)
 
 		ENTRY_SIZE = 64
 		count = len(data)//ENTRY_SIZE

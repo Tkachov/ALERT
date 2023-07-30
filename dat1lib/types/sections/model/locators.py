@@ -22,6 +22,12 @@ class LocatorsMapSection(dat1lib.types.sections.UintUintMapSection):
 		#
 		# examples: 8008B62FF6E72FDE (min size), B742D90D7B153BDF (max size)
 
+		# RCRA
+		# 580 occurrences in 11387 files
+		# size = 8..2816 (avg = 139.6)
+		#
+		# examples: 8046DF89E57B13AA (min size), AAD40A235F0953CE (max size)
+
 	def get_short_suffix(self):
 		return "locators map ({})".format(len(self._map))
 
@@ -72,6 +78,12 @@ class LocatorsSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8008B62FF6E72FDE (min size), B742D90D7B153BDF (max size)
 
+		# RCRA
+		# 580 occurrences in 11387 files
+		# size = 64..22528 (avg = 1117.2)
+		#
+		# examples: 8046DF89E57B13AA (min size), AAD40A235F0953CE (max size)
+
 		ENTRY_SIZE = 64
 		count = len(data)//ENTRY_SIZE
 		self.locators = [LocatorDefinition(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
@@ -118,6 +130,12 @@ class LocatorRelatedSection(dat1lib.types.sections.Section):
 		# size = 608..1152 (avg = 716.8)
 		#
 		# examples: 80C52396F2470510 (min size), 81CDD58B0A93CCE2 (max size)
+
+		# RCRA
+		# 7 occurrences in 11387 files
+		# size = 608..1648 (avg = 1085.7)
+		#
+		# examples: A278EE4BEE9C6507 (min size), 9BA94D1544DB197D (max size)
 
 		# TODO: only 39 models, and I've met one of these! maybe hero-related?
 

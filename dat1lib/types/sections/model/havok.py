@@ -52,6 +52,12 @@ class HavokSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8020C5A0E811B1F7 (min size), 8C7796FC7478109D (max size)
 
+		# RCRA
+		# 4907 occurrences in 11387 files
+		# size = 1976..611976 (avg = 20599)
+		#
+		# examples: 80028A780883AD15 (min size), B5EE7D94C1E5BC7B (max size)
+
 		self.data = HavokData(io.BytesIO(data))
 
 	def get_short_suffix(self):

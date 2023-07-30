@@ -3,8 +3,8 @@ import dat1lib.utils as utils
 import io
 import struct
 
-class IndexesSection(dat1lib.types.sections.Section): # aka model_index
-	TAG = 0x0859863D
+class IndexesSection(dat1lib.types.sections.Section):
+	TAG = 0x0859863D # Model Index
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -21,6 +21,12 @@ class IndexesSection(dat1lib.types.sections.Section): # aka model_index
 		# size = 6..4706040 (avg = 15410.0)
 		#
 		# examples: 83C4C8562CDC453B (min size), 90B61AD0494B91C9 (max size)
+
+		# RCRA
+		# 11363 occurrences in 11387 files
+		# size = 6..20930436 (avg = 120896.1)
+		#
+		# examples: 8FE2973E7E447C52 (min size), 8D14D85B15DFB268 (max size)
 
 		self._delta_encoded = utils.read_struct_N_array_data(data, len(data)//2, "<h")
 		self.values = []
@@ -66,8 +72,8 @@ class Vertex(object):
 		self.u = self.u/16384.0
 		self.v = self.v/16384.0
 
-class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
-	TAG = 0xA98BE69B
+class VertexesSection(dat1lib.types.sections.Section):
+	TAG = 0xA98BE69B # Model Std Vert
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -85,6 +91,12 @@ class VertexesSection(dat1lib.types.sections.Section): # aka model_std_vert
 		# size = 48..12826640 (avg = 38259.5)
 		#
 		# examples: 83C4C8562CDC453B (min size), 90B61AD0494B91C9 (max size)
+
+		# RCRA
+		# 11363 occurrences in 11387 files
+		# size = 48..42789840 (avg = 295514.4)
+		#
+		# examples: 8FE2973E7E447C52 (min size), AE2DF2353798682F (max size)
 
 		"""
 		ENTRY_SIZE = 16
@@ -172,6 +184,12 @@ class x6B855EED_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 9D70551B3BB56B53 (min size), 90B61AD0494B91C9 (max size)
 
+		# RCRA
+		# 7112 occurrences in 11387 files
+		# size = 16..10697472 (avg = 89783.0)
+		#
+		# examples: 855A86B217E053FB (min size), AE2DF2353798682F (max size)
+
 		# same amount as vertexes
 		# looks like a bunch of uints
 		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<I")
@@ -209,6 +227,12 @@ class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 		# size = 16..3206660 (avg = 14074.3)
 		#
 		# examples: 9322A1EA95E1B12C (min size), 90B61AD0494B91C9 (max size)
+
+		# RCRA
+		# 1807 occurrences in 11387 files
+		# size = 16..10697472 (avg = 206608.6)
+		#
+		# examples: 836851DCBEA9E885 (min size), AE2DF2353798682F (max size)
 		
 		# same amount as vertexes
 		# has a lot of 0s

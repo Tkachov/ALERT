@@ -24,6 +24,12 @@ class JointsMapSection(dat1lib.types.sections.UintUintMapSection):
 		#
 		# examples: 800B08BE9B0E1249 (min size), B699EAFFCD4834D0 (max size)
 
+		# RCRA
+		# 1123 occurrences in 11387 files
+		# size = 16..19480 (avg = 256.6)
+		#
+		# examples: 80116594638FB4B9 (min size), 80F95D8660F364D7 (max size)
+
 	def get_short_suffix(self):
 		return "joints map ({})".format(len(self._map))
 
@@ -62,6 +68,12 @@ class JointsSection(dat1lib.types.sections.Section):
 		# size = 16..50128 (avg = 753.9)
 		#
 		# examples: 800B08BE9B0E1249 (min size), B699EAFFCD4834D0 (max size)
+
+		# RCRA
+		# 1123 occurrences in 11387 files
+		# size = 16..38944 (avg = 497.3)
+		#
+		# examples: 80116594638FB4B9 (min size), 80F95D8660F364D7 (max size)
 
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -110,6 +122,12 @@ class xDCC88A19_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 800B08BE9B0E1249 (min size), B699EAFFCD4834D0 (max size)
 
+		# RCRA
+		# 1123 occurrences in 11387 files
+		# size = 128..272640 (avg = 3501.9)
+		#
+		# examples: 80116594638FB4B9 (min size), 80F95D8660F364D7 (max size)
+
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
 		self.vectors = [struct.unpack("<ffff", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
@@ -146,6 +164,12 @@ class xB7380E8C_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 8008B62FF6E72FDE (min size), B699EAFFCD4834D0 (max size)
 
+		# RCRA
+		# 1123 occurrences in 11387 files
+		# size = 2..4866 (avg = 31.7)
+		#
+		# examples: 80116594638FB4B9 (min size), 80F95D8660F364D7 (max size)
+
 		# some unique numbers from 0, but with some gaps
 		# for example, 146 numbers from 0 up to 220
 		self.indexes = utils.read_struct_N_array_data(data, len(data)//2, "<H")
@@ -162,7 +186,7 @@ class xB7380E8C_Section(dat1lib.types.sections.Section):
 
 ###
 
-class xC5354B60_Section(dat1lib.types.sections.Section): # aka model_mirror_ids
+class xC5354B60_Section(dat1lib.types.sections.Section):
 	TAG = 0xC5354B60 # Model Mirror Ids
 	TYPE = 'model'
 
@@ -180,6 +204,12 @@ class xC5354B60_Section(dat1lib.types.sections.Section): # aka model_mirror_ids
 		# size = 4..12532 (avg = 153.3)
 		#
 		# examples: 800B08BE9B0E1249 (min size), B699EAFFCD4834D0 (max size)
+
+		# RCRA
+		# 1123 occurrences in 11387 files
+		# size = 4..9736 (avg = 93.7)
+		#
+		# examples: 80116594638FB4B9 (min size), 80F95D8660F364D7 (max size)
 
 		# some offset-like numbers in "mostly" increasing order
 		# (sometimes value returns back to a smaller number and continues to increase)
@@ -215,6 +245,12 @@ class x90CDB60C_Section(dat1lib.types.sections.Section):
 		# size = 80
 		#
 		# examples: 8008B62FF6E72FDE
+
+		# RCRA
+		# 1123 occurrences in 11387 files
+		# size = 80
+		#
+		# examples: 80028A780883AD15
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

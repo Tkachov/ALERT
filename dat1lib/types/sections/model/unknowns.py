@@ -28,6 +28,12 @@ class AmbientShadowPrimsSection(dat1lib.types.sections.Section):
 		#
 		# examples: 808190A5B20A8431 (min size), 819AC4507BA62889 (max size)
 
+		# RCRA
+		# 11 occurrences in 11387 files
+		# size = 48
+		#
+		# examples: 903B31C97B5AE37B
+
 		ENTRY_SIZE = 48
 		count = len(data)//ENTRY_SIZE
 		self.entries = [x7CA37DA0_Entry(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
@@ -62,6 +68,12 @@ class ModelBuiltSection(dat1lib.types.sections.Section):
 		# size = 120
 		#
 		# examples: 800058C35E144B3F
+
+		# RCRA
+		# 11387 occurrences in 11387 files (always present)
+		# size = 120
+		#
+		# examples: 800102AC251CF360
 
 		# 0x283D0383 seems to be some model info that has things like bounding box and global model scaling?
 		# (global scaling is that number that is likely 0.00024. Int vertex positions are converted to floats and multiplied by this.
@@ -99,6 +111,12 @@ class ModelMaterialSection(dat1lib.types.sections.Section):
 		# size = 32..3200 (avg = 94.0)
 		#
 		# examples: 800058C35E144B3F (min size), 8C7796FC7478109D (max size)
+
+		# RCRA
+		# 11363 occurrences in 11387 files
+		# size = 32..2976 (avg = 93.8)
+		#
+		# examples: 80018BF9BEE4995C (min size), 852FDCBEB5359992 (max size)
 
 		ENTRY_SIZE = 16
 		count = len(data) // 2 // ENTRY_SIZE
@@ -167,6 +185,12 @@ class x0AD3A708_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 8008B62FF6E72FDE (min size), B699EAFFCD4834D0 (max size)
 
+		# RCRA
+		# 958 occurrences in 11387 files
+		# size = 36..48676 (avg = 392.7)
+		#
+		# examples: 80116594638FB4B9 (min size), 80F95D8660F364D7 (max size)
+
 		self.count, self.a, self.b, self.c = struct.unpack("<IIII", data[:16])
 
 		rest = data[16:]
@@ -192,7 +216,7 @@ class x0AD3A708_Section(dat1lib.types.sections.Section):
 
 ###
 
-class xC61B1FF5_Section(dat1lib.types.sections.Section): # aka model_skin_batch
+class xC61B1FF5_Section(dat1lib.types.sections.Section):
 	TAG = 0xC61B1FF5 # Model Skin Batch
 	TYPE = 'model'
 
@@ -210,6 +234,12 @@ class xC61B1FF5_Section(dat1lib.types.sections.Section): # aka model_skin_batch
 		# size = 16..10656 (avg = 408.0)
 		#
 		# examples: 800C84622E8A0075 (min size), AD7386F5F9A76C43 (max size)
+
+		# RCRA
+		# 959 occurrences in 11387 files
+		# size = 16..24432 (avg = 1069.2)
+		#
+		# examples: 80E4E1B6E9D6B81A (min size), A428F4A59DA18D74 (max size)
 
 		self.a, self.b, self.c, self.data_len = struct.unpack("<IIII", data[:16])
 
@@ -256,6 +286,12 @@ class x707F1B58_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 897307303895908C (min size), 98E8A23CBCC4635F (max size)
 
+		# RCRA
+		# 9216 occurrences in 11387 files
+		# size = 160..27458 (avg = 347.2)
+		#
+		# examples: 800102AC251CF360 (min size), 8D14D85B15DFB268 (max size)
+
 		self.unknown, self.data_len, self.count0, self.count1, self.count2 = struct.unpack("<IIHHI", data[:16])
 		self.floats = utils.read_struct_N_array_data(data[16:], (self.data_len - 20)//4, "<f")
 		self.count3, = struct.unpack("<I", data[self.data_len-4:self.data_len])
@@ -297,6 +333,12 @@ class x380A5744_Section(dat1lib.types.sections.Section):
 		# size = 172..286160 (avg = 27620.9)
 		#
 		# examples: 91ECBF742BD80C48 (min size), 97A26AEB21F75DC8 (max size)
+
+		# RCRA
+		# 19 occurrences in 11387 files
+		# size = 292..79112 (avg = 53322.9)
+		#
+		# examples: 8455ADEAEACE6204 (min size), 93E189C6F48429E9 (max size)
 
 		self.unknowns = struct.unpack("<" + "I"*16, data[:4*16])
 		offset = 4*16
@@ -377,6 +419,12 @@ class x4CCEA4AD_Section(dat1lib.types.sections.Section):
 		# size = 27..745 (avg = 27.5)
 		#
 		# examples: 800058C35E144B3F (min size), AD7386F5F9A76C43 (max size)
+
+		# RCRA
+		# 11387 occurrences in 11387 files (always present)
+		# size = 27..3875 (avg = 28.3)
+		#
+		# examples: 800102AC251CF360 (min size), 852FDCBEB5359992 (max size)
 
 		self.values = [c for c in data] # usually an odd amount of bytes, WEIRD!
 

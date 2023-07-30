@@ -80,14 +80,8 @@ class ModelRcra(Model):
 	MAGIC = 0x9D2C0FA9
 
 	# RCRA
-	# 11383 occurrences
-	# size = 2090..86636560 (avg = 581517.7)
+	# 11387 occurrences
+	# size = 2090..107925756 (avg = 618725.7)
 	# from 5 to 35 sections (avg = 12.0)
 	#
-	# examples: 811265E7146EA7C8 (min size), BC31CAF792646FE6 (max size), ADE5909F821E9DDE (35 sections)
-
-	# TODO: fix stats
-	# 895993B0B39416FD,characters/enemy/enm_sargasso_centipede/enm_sargasso_centipede_combat.model,1
-	# 8D14D85B15DFB268,characters/enemy/enm_emperor_mech/enm_emperor_mech.model,1
-	# AE2DF2353798682F,characters/enemy/enm_emperor_mech/enm_emperor_mech_topiary.model,1
-	# B6F67AE3FA73D5B0,characters/enemy/enm_sargasso_centipede/enm_sargasso_centipede.model,1
+	# examples: 811265E7146EA7C8 (min size), AE2DF2353798682F (max size), ADE5909F821E9DDE (35 sections)

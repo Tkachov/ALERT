@@ -30,6 +30,12 @@ class ModelLookSection(dat1lib.types.sections.Section):
 		#
 		# examples: 800058C35E144B3F (min size), AC32788DFEFA4405 (max size)
 
+		# RCRA
+		# 11387 occurrences in 11387 files (always present)
+		# size = 32..4096 (avg = 41.6)
+		#
+		# examples: 800102AC251CF360 (min size), 9453965A305B5750 (max size)
+
 		self.looks = utils.read_class_array_data(data, 4*8, Look)
 
 	def get_short_suffix(self):
@@ -81,6 +87,12 @@ class ModelLookBuiltSection(dat1lib.types.sections.Section):
 		# size = 1624..102562 (avg = 1743.3)
 		#
 		# examples: 80038A947A2C3B00 (min size), AC32788DFEFA4405 (max size)
+
+		# RCRA
+		# 11387 occurrences in 11387 files (always present)
+		# size = 1624..210514 (avg = 2123.3)
+		#
+		# examples: 8001C5178A52131F (min size), B5EE7D94C1E5BC7B (max size)
 
 		size1, = struct.unpack("<I", data[:4])
 		looks = data[:size1]
@@ -135,6 +147,12 @@ class xDF9FDF12_Section(dat1lib.types.sections.Section):
 		# size = 16..1008 (avg = 16.9)
 		#
 		# examples: 800058C35E144B3F (min size), AC32788DFEFA4405 (max size)
+
+		# RCRA
+		# 11104 occurrences in 11387 files
+		# size = 16..1936 (avg = 20.0)
+		#
+		# examples: 800102AC251CF360 (min size), B5EE7D94C1E5BC7B (max size)
 
 		self.entries = utils.read_struct_array_data(data, "<4I")
 		# (0, 70, 0, 2)
