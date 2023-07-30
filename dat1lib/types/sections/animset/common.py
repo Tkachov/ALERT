@@ -28,6 +28,13 @@ class x212BD372_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 8066767AB8665577 (min size), BA773355A0CA1F3E (max size)
 
+		# RCRA
+		# 1157 occurrences in 419 files
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 24..15572 (avg = 537.7)
+		#
+		# examples: 802FF1404940D6AA (min size), 87F154B9C9682F90 (max size)
+
 		self.count1, self.count2 = struct.unpack("<HH", data[:4])
 
 		off = 4
@@ -91,6 +98,13 @@ class AnimSetBuiltSection(dat1lib.types.sections.Section):
 		# size = 24
 		#
 		# examples: 80186B0F3760E0B8
+
+		# RCRA
+		# 1204 occurrences in 419 files
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 36
+		#
+		# examples: 8007CE32D2CB8DF4
 		
 		ENTRY_SIZE = 2
 		count = len(data)//ENTRY_SIZE
@@ -133,6 +147,13 @@ class AnimDriverClassBuiltSection(dat1lib.types.sections.Section):
 		# size = 80..156400 (avg = 3937.9)
 		#
 		# examples: 8019E233758A1721 (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 735 occurrences in 419 files
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 80..112720 (avg = 2435.5)
+		#
+		# examples: 80717C3E515D0378 (min size), 87F154B9C9682F90 (max size)
 		
 		ENTRY_SIZE = 80
 		count = len(data)//ENTRY_SIZE
@@ -182,6 +203,13 @@ class AnimClipLookupSection(dat1lib.types.sections.Section):
 		# size = 24..50064 (avg = 1783.3)
 		#
 		# examples: 8019E233758A1721 (min size), BA773355A0CA1F3E (max size)
+
+		# RCRA
+		# 1157 occurrences in 419 files
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 24..34080 (avg = 914.2)
+		#
+		# examples: 802FF1404940D6AA (min size), 87F154B9C9682F90 (max size)
 		
 		ENTRY_SIZE = 24
 		count = len(data)//ENTRY_SIZE
@@ -231,6 +259,13 @@ class AnimDriverClassDataSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8019E233758A1721 (min size), 829740303741E942 (max size)
 
+		# RCRA
+		# 735 occurrences in 419 files
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 96..135264 (avg = 3877.0)
+		#
+		# examples: 80717C3E515D0378 (min size), 87F154B9C9682F90 (max size)
+
 		# seems to be related to 0xA40B51D2
 		
 		ENTRY_SIZE = 96
@@ -254,6 +289,7 @@ class AnimDriverClassDataSection(dat1lib.types.sections.Section):
 			print("  - {:<3}  {:08X}  {:3} {:3}  {:08X}".format(i, x[0], x[1], x[2], x[12]))
 			# print("         {}".format(x))
 		print("")
+
 #
 
 class AnimDriverClassLookupSection(dat1lib.types.sections.Section):
@@ -275,6 +311,13 @@ class AnimDriverClassLookupSection(dat1lib.types.sections.Section):
 		# size = 16..31280 (avg = 787.5)
 		#
 		# examples: 8019E233758A1721 (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 735 occurrences in 419 files
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 16..22544 (avg = 487.1)
+		#
+		# examples: 80717C3E515D0378 (min size), 87F154B9C9682F90 (max size)
 
 		# seems to be related to 0x73CEE17F (0xA40B51D2's entry[0] == offset of entry in 0x73CEE17F -- which isn't hard tho since it's 96*index)
 		# but, based on occurrences amount, they are not necessarily going together
@@ -321,6 +364,13 @@ class AnimClipDataSection(dat1lib.types.sections.Section):
 		# size = 80..19315664 (avg = 633274.9)
 		#
 		# examples: 90362EE3DA39CC6C (min size), 868F0E1B33099EDF (max size)
+
+		# RCRA
+		# 379 occurrences in 419 files
+		# met in AnimSet/PerformanceSet, Cinematic2
+		# size = 80..3029664 (avg = 85411.1)
+		#
+		# examples: B2F2DA08063911B7 (min size), 8E2CD2D2A1B97A40 (max size)
 		
 		self.version = self._dat1.version
 		self.inner_dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(data), self, ignore_sections_exceptions=True)

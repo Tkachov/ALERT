@@ -24,6 +24,12 @@ class MaterialSerializedDataSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8010653ABB4F13F1 (min size), AAE9D798DC4426DB (max size)
 
+		# RCRA
+		# 5701 occurrences in 5721 files
+		# size = 48..1456 (avg = 429.3)
+		#
+		# examples: 80926D33F576E9E6 (min size), A035F5555C866FD2 (max size)
+
 		self.data_size, self.params_count, self.unk2, self.unk3, self.params_batch_end = struct.unpack("<IIIII", data[:20])
 		self.textures_count, self.textures_batch_start, self.textures_batch_end, self.unk7, self.unk8 = struct.unpack("<IIIII", data[20:40])
 
@@ -151,6 +157,12 @@ class xD9B12454_Section(dat1lib.types.sections.Section):
 		# size = 52
 		#
 		# examples: 82D70D47FF52BF2F
+
+		# RCRA
+		# 19 occurrences in 5721 files
+		# size = 52
+		#
+		# examples: 822D6D3FB17A82FE
 				
 		self.count, self.a, self.b, self.c, self.d, self.e, self.f, self.g, self.h, self.texture_c, self.texture_n, self.texture_g, self.texture_c2 = struct.unpack("<I8f4I", data)
 
@@ -189,6 +201,12 @@ class x3E45AA13_Section(dat1lib.types.sections.Section):
 		# size = 520
 		#
 		# examples: 8000E61F841EBC5F
+
+		# RCRA
+		# 1165 occurrences in 5721 files
+		# size = 520
+		#
+		# examples: 8002A246A1293FB6
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -233,6 +251,12 @@ class xE1275683_Section(dat1lib.types.sections.Section):
 		# always first
 		#
 		# examples: 8000B10F551366C6
+
+		# RCRA
+		# 5721 occurrences in 5721 files (always present)
+		# size = 40
+		#
+		# examples: 8002A246A1293FB6
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -254,3 +278,42 @@ class xE1275683_Section(dat1lib.types.sections.Section):
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | E1275683     | {:6} entries".format(self.TAG, len(self.entries)))
+
+#
+
+class x958F7B33_Section(dat1lib.types.sections.Section):
+	TAG = 0x958F7B33
+	TYPE = 'MaterialRcra'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# MSMR: none
+		# MM: none
+
+		# RCRA
+		# 1 occurrence in 5721 files
+		# size = 76
+		#
+		# examples: A6D6F52A42745073
+		
+		ENTRY_SIZE = 4
+		count = len(data)//ENTRY_SIZE
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for e in self.entries:
+			of.write(struct.pack("<I", e))
+		of.seek(0)
+		return of.read()
+
+	def get_short_suffix(self):
+		return "958F7B33 ({})".format(len(self.entries))
+
+	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
+		##### "{:08X} | ............ | {:6} ..."
+		print("{:08X} | 958F7B33     | {:6} entries".format(self.TAG, len(self.entries)))

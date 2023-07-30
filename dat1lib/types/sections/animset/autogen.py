@@ -22,6 +22,12 @@ class xD614B18B_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 8019E233758A1721 (min size), 8066767AB8665577 (max size)
 
+		# RCRA
+		# 380 occurrences in 787 files
+		# size = 48
+		#
+		# examples: 802FF1404940D6AA
+
 		self.bones_count, self.unk1, self.unk2, self.unk3, self.modelname_hash = struct.unpack("<IIIIQ", data[:24])
 
 		rest = data[24:]
@@ -70,6 +76,12 @@ class AnimDriverVarInfoSection(dat1lib.types.sections.Section):
 		# size = 12..9576 (avg = 306.4)
 		#
 		# examples: 83C59A32997D7F02 (min size), 829740303741E942 (max size)
+
+		# RCRA
+		# 84 occurrences in 787 files
+		# size = 12..2160 (avg = 236.2)
+		#
+		# examples: 8B39F6A9A4A8C23A (min size), 8867CE5CFD9543DE (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

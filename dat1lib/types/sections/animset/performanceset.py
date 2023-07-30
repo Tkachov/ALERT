@@ -21,6 +21,12 @@ class ClipsListSection(dat1lib.types.sections.Section):
 		# size = 24..139560 (avg = 5060.2)
 		#
 		# examples: A5A17E16E08C3011 (min size), 924A892B91713303 (max size)
+
+		# RCRA
+		# 107 occurrences in 787 files
+		# size = 24..39816 (avg = 3225.8)
+		#
+		# examples: 808FDC29C34278A6 (min size), A701A4EED5E40B44 (max size)
 		
 		ENTRY_SIZE = 24
 		count = len(data)//ENTRY_SIZE

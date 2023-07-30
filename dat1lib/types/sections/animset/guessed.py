@@ -22,6 +22,12 @@ class SomeBonesInfoSection(dat1lib.types.sections.Section):
 		#
 		# examples: 96AD98C8AC61B09A (min size), AC4A301352BCC79B (max size)
 
+		# RCRA
+		# 380 occurrences in 787 files
+		# size = 96..14592 (avg = 4217.6)
+		#
+		# examples: 8A7DB48B384467EF (min size), 802FF1404940D6AA (max size)
+
 		s = container.get_section(0xD614B18B)
 		
 		ENTRY_SIZE = 12

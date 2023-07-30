@@ -17,6 +17,11 @@ class x09DC30AB_Section(dat1lib.types.sections.Section):
 		# examples: 846B8D250F1A33D2
 
 		# MM: none
+
+		# RCRA
+		# size = 240
+		#
+		# examples: 846B8D250F1A33D2
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -59,6 +64,12 @@ class x1722FAEF_Section(dat1lib.types.sections.Section):
 		# size = 728..12936 (avg = 4690.2)
 		#
 		# examples: A2ED2F2FD3906DFB (min size), ADFE38EE70377E0D (max size)
+
+		# RCRA
+		# 7 occurrences in 37725 files
+		# size = 1904..6720 (avg = 3568.0)
+		#
+		# examples: AEE3D0DF5CC8FED8 (min size), 9077925BD48F8496 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -101,6 +112,12 @@ class x116EB684_Section(dat1lib.types.sections.Section):
 		# size = 4..117844 (avg = 2108.9)
 		#
 		# examples: 800E090BA1F2F337 (min size), 8B038DAAABCCA192 (max size)
+
+		# RCRA
+		# 2826 occurrences in 37725 files
+		# size = 4..17664 (avg = 328.1)
+		#
+		# examples: 80072AF3C3605363 (min size), A72EC37700131823 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -143,6 +160,12 @@ class x2BB5BC8F_Section(dat1lib.types.sections.Section):
 		# size = 4..50128 (avg = 2329.9)
 		#
 		# examples: 80D58BB1AA4B6368 (min size), 8EE1B61ADADF360C (max size)
+
+		# RCRA
+		# 21377 occurrences in 37725 files
+		# size = 16..7920 (avg = 2109.8)
+		#
+		# examples: 800CB253D80046C5 (min size), B816421C1D9E1D71 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -185,6 +208,12 @@ class x14014CB6_Section(dat1lib.types.sections.Section):
 		# size = 40..1560 (avg = 240.0)
 		#
 		# examples: 800E090BA1F2F337 (min size), 815B25AB2285CEA5 (max size)
+
+		# RCRA
+		# 2826 occurrences in 37725 files
+		# size = 40..640 (avg = 74.9)
+		#
+		# examples: 80072AF3C3605363 (min size), 86B7FF162ACB9CE1 (max size)
 		
 		ENTRY_SIZE = 40
 		count = len(data)//ENTRY_SIZE
@@ -239,6 +268,12 @@ class x1D4BD9FA_Section(dat1lib.types.sections.Section):
 		# size = 80
 		#
 		# examples: 822F805090E0E20C
+
+		# RCRA
+		# 22 occurrences in 37725 files
+		# size = 80
+		#
+		# examples: 802E2F66998AF7A7
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -281,6 +316,12 @@ class x3A7B4855_Section(dat1lib.types.sections.Section):
 		# size = 8..5656800 (avg = 15564.9)
 		#
 		# examples: 86A064510C89C158 (min size), 8EE1B61ADADF360C (max size)
+
+		# RCRA
+		# 27189 occurrences in 37725 files
+		# size = 8..964200 (avg = 10988.4)
+		#
+		# examples: 91A3191CF63F6E80 (min size), 95FFCDC9FC52BAEE (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -323,6 +364,12 @@ class x3976E44C_Section(dat1lib.types.sections.Section):
 		# size = 128
 		#
 		# examples: 80006FCEB83F81B3
+
+		# RCRA
+		# 23295 occurrences in 37725 files
+		# size = 128
+		#
+		# examples: 80000DCC5F02623C
 
 		# two matrixes 4x4 (like I + translation vector)
 		
@@ -367,6 +414,12 @@ class x277563F5_Section(dat1lib.types.sections.Section):
 		# size = 28..9896 (avg = 384.7)
 		#
 		# examples: 84AF739FC0612DEE (min size), 8F179913F5F49D19 (max size)
+
+		# RCRA
+		# 2821 occurrences in 37725 files
+		# size = 28..3488 (avg = 610.1)
+		#
+		# examples: 9235F21D749D5544 (min size), A1B51C94AE45572C (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -404,6 +457,11 @@ class x4FC98D7E_Section(dat1lib.types.sections.Section):
 		# examples: 846B8D250F1A33D2
 
 		# MM: none
+
+		# RCRA
+		# size = 93604
+		#
+		# examples: 846B8D250F1A33D2
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -446,6 +504,12 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 		# size = 96
 		#
 		# examples: 800032F7B1757E90
+
+		# RCRA
+		# 37697 occurrences in 37725 files
+		# size = 96
+		#
+		# examples: 80000DCC5F02623C
 		
 		"""
 		ENTRY_SIZE = 4
@@ -505,6 +569,12 @@ class x411852D5_Section(dat1lib.types.sections.Section):
 		# size = 18179..11296493 (avg = 887222.6)
 		#
 		# examples: 9CDE17E2684A7AFE (min size), 9F2D52FB01A4D401 (max size)
+
+		# RCRA
+		# 7 occurrences in 37725 files
+		# size = 812312..11588125 (avg = 4461274.7)
+		#
+		# examples: 9077925BD48F8496 (min size), B582E825EF5E4B7C (max size)
 		pass
 
 	def get_short_suffix(self):
@@ -537,6 +607,12 @@ class xA3B26640_Section(dat1lib.types.sections.Section):
 		# size = 8..12536 (avg = 577.4)
 		#
 		# examples: 80008A8237FD3B4C (min size), 8EE1B61ADADF360C (max size)
+
+		# RCRA
+		# 21377 occurrences in 37725 files
+		# size = 8..1824 (avg = 510.9)
+		#
+		# examples: 800CB253D80046C5 (min size), 801F365EC4F8F471 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -594,6 +670,12 @@ class AnimClipTriggerDataSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8016138A3C568830 (min size), 85AA1DDD57D6B350 (max size)
 
+		# RCRA
+		# 4674 occurrences in 37725 files
+		# size = 32..9976 (avg = 630.8)
+		#
+		# examples: 800CF2F9CDB8A233 (min size), BA15E7BF3250F92A (max size)
+
 	def get_short_suffix(self):
 		return "Anim Clip Trigger Data"
 
@@ -628,6 +710,12 @@ class x495BA079_Section(dat1lib.types.sections.Section):
 		# size = 128..272 (avg = 240.0)
 		#
 		# examples: 9AF5A87238CA90E7 (min size), 8252C34748BB26FD (max size)
+
+		# RCRA
+		# 22 occurrences in 37725 files
+		# size = 104..192 (avg = 111.6)
+		#
+		# examples: 8282B743F97BAAB1 (min size), B5974BED8417ABEB (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -670,6 +758,12 @@ class xE08AA35F_Section(dat1lib.types.sections.Section):
 		# size = 128..49888 (avg = 1103.6)
 		#
 		# examples: 80008A737EDB7027 (min size), 8BC7BE16E30D9D0E (max size)
+
+		# RCRA
+		# 23317 occurrences in 37725 files
+		# size = 128..43232 (avg = 1136.7)
+		#
+		# examples: 80000DCC5F02623C (min size), A9B916311A794FB0 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -712,6 +806,12 @@ class x69F64588_Section(dat1lib.types.sections.Section):
 		# size = 8..393112 (avg = 2857.3)
 		#
 		# examples: 8342F7F41131BB7F (min size), 8B038DAAABCCA192 (max size)
+
+		# RCRA
+		# 2821 occurrences in 37725 files
+		# size = 4..123876 (avg = 5690.2)
+		#
+		# examples: B16E73902A8C1B94 (min size), A1B51C94AE45572C (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -754,6 +854,12 @@ class x74FC0175_Section(dat1lib.types.sections.Section):
 		# size = 4..16 (avg = 4.4)
 		#
 		# examples: 80114FA50C1ED5A7 (min size), 801292E8481D4ADD (max size)
+
+		# RCRA
+		# 76 occurrences in 37725 files
+		# size = 4..8 (avg = 7.2)
+		#
+		# examples: 89816BEB1EB099C3 (min size), 8051793D7FCAD3CA (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -796,6 +902,12 @@ class xD070D358_Section(dat1lib.types.sections.Section):
 		# size = 8..76736 (avg = 1634.5)
 		#
 		# examples: 800E6D4C6EE30DC5 (min size), 8EE1B61ADADF360C (max size)
+
+		# RCRA
+		# 12809 occurrences in 37725 files
+		# size = 8..7292 (avg = 1245.8)
+		#
+		# examples: 80222B516C5D83E8 (min size), B816421C1D9E1D71 (max size)
 		
 		ENTRY_SIZE = 5
 		count = len(data)//ENTRY_SIZE

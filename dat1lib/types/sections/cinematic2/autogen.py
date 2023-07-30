@@ -21,6 +21,12 @@ class x0A231B40_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 80186B0F3760E0B8 (min size), B6C2891A5C7B1E0E (max size)
 
+		# RCRA
+		# 417 occurrences in 419 files
+		# size = 16..928 (avg = 79.1)
+		#
+		# examples: 8007CE32D2CB8DF4 (min size), 8C7E81C33E39AC69 (max size)
+
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
 		self.entries = [struct.unpack("<QII", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
@@ -67,6 +73,12 @@ class x0CDE73EF_Section(dat1lib.types.sections.Section):
 		# size = 8..968 (avg = 141.3)
 		#
 		# examples: 87030407A78E7872 (min size), BD10FD78F1AB7C98 (max size)
+
+		# RCRA
+		# 418 occurrences in 419 files
+		# size = 8..1072 (avg = 109.7)
+		#
+		# examples: 865E3F197153E789 (min size), 8C7E81C33E39AC69 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -103,6 +115,12 @@ class x13AAEFE2_Section(dat1lib.types.sections.Section):
 		# size = 24..1536 (avg = 114.8)
 		#
 		# examples: 80186B0F3760E0B8 (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 418 occurrences in 419 files
+		# size = 24..1392 (avg = 118.5)
+		#
+		# examples: 8007CE32D2CB8DF4 (min size), 8C7E81C33E39AC69 (max size)
 		
 		ENTRY_SIZE = 24
 		count = len(data)//ENTRY_SIZE
@@ -148,6 +166,12 @@ class x15C2983A_Section(dat1lib.types.sections.Section):
 		# size = 44..120326 (avg = 9162.8)
 		#
 		# examples: A02131FD2C64CAE9 (min size), BD10FD78F1AB7C98 (max size)
+
+		# RCRA
+		# 221 occurrences in 419 files
+		# size = 40..119213 (avg = 13542.7)
+		#
+		# examples: A181E7925F04D6C6 (min size), BDF10EFFB2517E54 (max size)
 
 		self.cnt1, self.cnt2, self.cnt3, self.cnt4 = struct.unpack("<HHHH", data[:8])
 
@@ -204,6 +228,12 @@ class x2029471C_Section(dat1lib.types.sections.Section):
 		# size = 12..10704 (avg = 909.2)
 		#
 		# examples: 821271066DB28C0B (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 44 occurrences in 419 files
+		# size = 12..3576 (avg = 776.7)
+		#
+		# examples: 9D42011BB6E15411 (min size), 9A185216FAE8BCE9 (max size)
 		
 		ENTRY_SIZE = 12
 		count = len(data)//ENTRY_SIZE
@@ -242,6 +272,12 @@ class x26AB8388_Section(dat1lib.types.sections.Section):
 		# size = 24..138800 (avg = 2177.2)
 		#
 		# examples: 81FFA9755903B96E (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 418 occurrences in 419 files
+		# size = 8..76128 (avg = 2271.5)
+		#
+		# examples: 9C3677C935969E61 (min size), 9A185216FAE8BCE9 (max size)
 
 		self.headers = []
 		self.values = []
@@ -299,6 +335,12 @@ class x2D9B0A30_Section(dat1lib.types.sections.Section):
 		# size = 30..249260 (avg = 6627.4)
 		#
 		# examples: 801BE25A9F682257 (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 259 occurrences in 419 files
+		# size = 24..93840 (avg = 5232.3)
+		#
+		# examples: AC9177DD4E9BD75D (min size), 9A185216FAE8BCE9 (max size)
 		pass
 
 	def get_short_suffix(self):
@@ -332,6 +374,12 @@ class x2F161636_Section(dat1lib.types.sections.Section):
 		# size = 8..512 (avg = 38.2)
 		#
 		# examples: 80186B0F3760E0B8 (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 418 occurrences in 419 files
+		# size = 8..464 (avg = 39.5)
+		#
+		# examples: 8007CE32D2CB8DF4 (min size), 8C7E81C33E39AC69 (max size)
 		
 		ENTRY_SIZE = 8
 		count = len(data)//ENTRY_SIZE
@@ -393,6 +441,12 @@ class x2EF690BD_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 821271066DB28C0B (min size), B6C2891A5C7B1E0E (max size)
 
+		# RCRA
+		# 44 occurrences in 419 files
+		# size = 2..108 (avg = 24.4)
+		#
+		# examples: 8CB167BD3241CA7B (min size), 9A185216FAE8BCE9 (max size)
+
 		ENTRY_SIZE = 2
 		count = len(data)//ENTRY_SIZE
 		self.entries = [struct.unpack("<H", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
@@ -429,6 +483,12 @@ class x34E97238_Section(dat1lib.types.sections.Section):
 		# size = 144..3392 (avg = 302.6)
 		#
 		# examples: B5C8D37E0B74315C (min size), BD10FD78F1AB7C98 (max size)
+
+		# RCRA
+		# 419 occurrences in 419 files (always present)
+		# size = 148..2828 (avg = 332.9)
+		#
+		# examples: B1630BAB8922BD62 (min size), BDF10EFFB2517E54 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -478,6 +538,12 @@ class x5BE2A972_Section(dat1lib.types.sections.Section):
 		# size = 32..10272 (avg = 508.1)
 		#
 		# examples: B5C8D37E0B74315C (min size), BD10FD78F1AB7C98 (max size)
+
+		# RCRA
+		# 419 occurrences in 419 files (always present)
+		# size = 16..8432 (avg = 585.3)
+		#
+		# examples: B1630BAB8922BD62 (min size), 92344F0A56AF5217 (max size)
 		
 		ENTRY_SIZE = 16
 		count = len(data)//ENTRY_SIZE
@@ -517,6 +583,12 @@ class x85272DB0_Section(dat1lib.types.sections.Section):
 		# size = 531..359695 (avg = 16363.4)
 		#
 		# examples: A0CA72CE7CCFC982 (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 419 occurrences in 419 files (always present)
+		# size = 80..184659 (avg = 10503.1)
+		#
+		# examples: B1630BAB8922BD62 (min size), 87F154B9C9682F90 (max size)
 		
 		# take offsets from 0xADCF5096 and read
 
@@ -563,6 +635,12 @@ class x7EF72163_Section(dat1lib.types.sections.Section):
 		# size = 24..144 (avg = 28.0)
 		#
 		# examples: 805B360A3F36DD20 (min size), 9AC363DDC4BAF6FB (max size)
+
+		# RCRA
+		# 44 occurrences in 419 files
+		# size = 24..72 (avg = 25.3)
+		#
+		# examples: 823211B9EF953639 (min size), 8CE81BD5FA368433 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -608,6 +686,12 @@ class x802A0575_Section(dat1lib.types.sections.Section):
 		# size = 344..47344 (avg = 9682.2)
 		#
 		# examples: A1848AB060416DA7 (min size), BD10FD78F1AB7C98 (max size)
+
+		# RCRA
+		# 44 occurrences in 419 files
+		# size = 496..40984 (avg = 11035.0)
+		#
+		# examples: 9D42011BB6E15411 (min size), 9A185216FAE8BCE9 (max size)
 		
 		ENTRY_SIZE = 8
 		count = len(data)//ENTRY_SIZE
@@ -654,6 +738,12 @@ class xA20AD331_Section(dat1lib.types.sections.Section):
 		# size = 64..7744 (avg = 1186.8)
 		#
 		# examples: 87030407A78E7872 (min size), BD10FD78F1AB7C98 (max size)
+
+		# RCRA
+		# 281 occurrences in 419 files
+		# size = 64..8576 (avg = 1112.4)
+		#
+		# examples: AC9177DD4E9BD75D (min size), 8C7E81C33E39AC69 (max size)
 		
 		ENTRY_SIZE = 32
 		count = len(data)//ENTRY_SIZE
@@ -692,6 +782,12 @@ class xADCF5096_Section(dat1lib.types.sections.Section):
 		# size = 72..62520 (avg = 2831.4)
 		#
 		# examples: B5C8D37E0B74315C (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 419 occurrences in 419 files (always present)
+		# size = 48..42120 (avg = 2254.8)
+		#
+		# examples: B1630BAB8922BD62 (min size), 87F154B9C9682F90 (max size)
 		
 		ENTRY_SIZE = 24
 		count = len(data)//ENTRY_SIZE
@@ -716,6 +812,45 @@ class xADCF5096_Section(dat1lib.types.sections.Section):
 
 #
 
+class xCCAAB631_Section(dat1lib.types.sections.Section):
+	TAG = 0xCCAAB631
+	TYPE = 'Cinematic2Rcra'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# MSMR: none
+		# MM: none
+
+		# RCRA
+		# 419 occurrences in 419 files (always present)
+		# size = 20
+		#
+		# examples: 8007CE32D2CB8DF4
+		
+		ENTRY_SIZE = 4
+		count = len(data)//ENTRY_SIZE
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for e in self.entries:
+			of.write(struct.pack("<I", e))
+		of.seek(0)
+		return of.read()
+
+	def get_short_suffix(self):
+		return "CCAAB631 ({})".format(len(self.entries))
+
+	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
+		##### "{:08X} | ............ | {:6} ..."
+		print("{:08X} | CCAAB631     | {:6} entries".format(self.TAG, len(self.entries)))
+
+#
+
 class xD3E83200_Section(dat1lib.types.sections.Section):
 	TAG = 0xD3E83200
 	TYPE = 'Cinematic2'
@@ -734,6 +869,12 @@ class xD3E83200_Section(dat1lib.types.sections.Section):
 		# size = 176..300176 (avg = 4931.2)
 		#
 		# examples: 81FFA9755903B96E (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 418 occurrences in 419 files
+		# size = 160..151592 (avg = 5060.7)
+		#
+		# examples: 9C3677C935969E61 (min size), 9A185216FAE8BCE9 (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -780,6 +921,12 @@ class xA7D217DE_Section(dat1lib.types.sections.Section):
 		# size = 1360..927488 (avg = 91563.6)
 		#
 		# examples: 985F7072101087F7 (min size), 8F2AC1558A16890D (max size)
+
+		# RCRA
+		# 44 occurrences in 419 files
+		# size = 2176..94928 (avg = 21878.9)
+		#
+		# examples: 87F154B9C9682F90 (min size), 9FBFE92BB1F41A0A (max size)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -829,6 +976,12 @@ class xF2A2B07B_Section(dat1lib.types.sections.Section):
 		#
 		# examples: B5C8D37E0B74315C (min size), BD10FD78F1AB7C98 (max size)
 
+		# RCRA
+		# 419 occurrences in 419 files (always present)
+		# size = 184..88560 (avg = 6336.9)
+		#
+		# examples: B1630BAB8922BD62 (min size), 92344F0A56AF5217 (max size)
+
 		# 0x34E97238 contains offsets to something in this section (of different size, ~168 bytes per entry)
 		
 		ENTRY_SIZE = 4
@@ -876,6 +1029,12 @@ class xF59A5B54_Section(dat1lib.types.sections.Section):
 		# size = 48..3584 (avg = 262.8)
 		#
 		# examples: 80186B0F3760E0B8 (min size), B6C2891A5C7B1E0E (max size)
+
+		# RCRA
+		# 417 occurrences in 419 files
+		# size = 48..3248 (avg = 273.8)
+		#
+		# examples: 8007CE32D2CB8DF4 (min size), 8C7E81C33E39AC69 (max size)
 		
 		ENTRY_SIZE = 4*14
 		count = len(data)//ENTRY_SIZE
@@ -916,6 +1075,8 @@ class xEA8685CD_Section(dat1lib.types.sections.Section):
 		# size = 1120..31888 (avg = 11732.6)
 		#
 		# examples: ADF5957D894AD259 (min size), 868F0E1B33099EDF (max size)
+
+		# RCRA: none
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
