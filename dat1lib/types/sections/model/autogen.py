@@ -112,6 +112,8 @@ class x27CA5246_Section(dat1lib.types.sections.Section):
 		# size = 11580..144132 (avg = 39973.5)
 		#
 		# examples: B058D14A4867F1DC (min size), ADE5909F821E9DDE (max size)
+
+		# occurs with 3C9DABDF, B25B3163 and BB7303D5 (hero-related?)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -160,6 +162,8 @@ class ModelSplineSubsetsSection(dat1lib.types.sections.Section):
 		# size = 1256..10048 (avg = 4121.2)
 		#
 		# examples: B058D14A4867F1DC (min size), 93E189C6F48429E9 (max size)
+
+		# occurs with 27CA5246, B25B3163 and BB7303D5 (hero-related?)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -284,6 +288,8 @@ class x5E709570_Section(dat1lib.types.sections.Section):
 		# size = 102192..12314252 (avg = 7375643.5)
 		#
 		# examples: 99F087989A2594FB (min size), B1C377CA094E4902 (max size)
+
+		# occurs with 380A5744 and A600C108 (hero-related?)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -506,6 +512,8 @@ class xA600C108_Section(dat1lib.types.sections.Section):
 		# size = 2380..658056 (avg = 344779.1)
 		#
 		# examples: BF6DD7D3DE8A301B (min size), 96D2CE8B17C5471D (max size)
+
+		# occurs with 380A5744 and 5E709570 (hero-related?)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -554,6 +562,8 @@ class ModelSkinDataSection(dat1lib.types.sections.Section): # vertex weights
 		# size = 5..7348561 (avg = 249085.2)
 		#
 		# examples: 8B4C8E19832AE134 (min size), 988A53437037246E (max size)
+
+		# related to C61B1FF5
 		pass
 
 	def get_short_suffix(self):
@@ -643,6 +653,8 @@ class xB25B3163_Section(dat1lib.types.sections.Section):
 		# size = 41280..821080 (avg = 181088.5)
 		#
 		# examples: 82B59DE522052F6E (min size), ADE5909F821E9DDE (max size)
+
+		# occurs with 27CA5246, 3C9DABDF and BB7303D5 (hero-related?)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -664,45 +676,6 @@ class xB25B3163_Section(dat1lib.types.sections.Section):
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | B25B3163     | {:6} entries".format(self.TAG, len(self.entries)))
-
-#
-
-class xCCBAFF15_Section(dat1lib.types.sections.Section):
-	TAG = 0xCCBAFF15
-	TYPE = 'ModelRcra'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR: none
-		# MM: none
-
-		# RCRA
-		# 954 occurrences in 11387 files
-		# size = 32..21394920 (avg = 789337.3)
-		#
-		# examples: 8B4C8E19832AE134 (min size), AE2DF2353798682F (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
-
-	def get_short_suffix(self):
-		return "CCBAFF15 ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | CCBAFF15     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
@@ -768,6 +741,8 @@ class xBB7303D5_Section(dat1lib.types.sections.Section):
 		# size = 7720..96088 (avg = 26649.0)
 		#
 		# examples: B058D14A4867F1DC (min size), ADE5909F821E9DDE (max size)
+
+		# occurs with 27CA5246, 3C9DABDF and B25B3163 (hero-related?)
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

@@ -241,6 +241,8 @@ class xC61B1FF5_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 80E4E1B6E9D6B81A (min size), A428F4A59DA18D74 (max size)
 
+		# related to DCA379A2
+
 		self.a, self.b, self.c, self.data_len = struct.unpack("<IIII", data[:16])
 
 		rest = data[16:]
@@ -339,6 +341,8 @@ class x380A5744_Section(dat1lib.types.sections.Section):
 		# size = 292..79112 (avg = 53322.9)
 		#
 		# examples: 8455ADEAEACE6204 (min size), 93E189C6F48429E9 (max size)
+
+		# occurs with 5E709570 and A600C108 (hero-related?)
 
 		self.unknowns = struct.unpack("<" + "I"*16, data[:4*16])
 		offset = 4*16

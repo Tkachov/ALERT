@@ -255,3 +255,45 @@ class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 	def web_repr(self):
 		return {"name": "Vertex-related 2", "type": "text", "readonly": True, "content": "{} uints".format(len(self.values))}
 
+#
+
+class xCCBAFF15_Section(dat1lib.types.sections.Section):
+	TAG = 0xCCBAFF15
+	TYPE = 'ModelRcra'
+
+	def __init__(self, data, container):
+		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# MSMR: none
+		# MM: none
+
+		# RCRA
+		# 954 occurrences in 11387 files
+		# size = 32..21394920 (avg = 789337.3)
+		#
+		# examples: 8B4C8E19832AE134 (min size), AE2DF2353798682F (max size)
+
+		# typically, the size of this section is ~x2 of 6B855EED and 5CBA9DE9
+		# so, same amount as vertexes?
+		
+		ENTRY_SIZE = 4
+		count = len(data)//ENTRY_SIZE
+		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for e in self.entries:
+			of.write(struct.pack("<I", e))
+		of.seek(0)
+		return of.read()
+
+	def get_short_suffix(self):
+		return "CCBAFF15 ({})".format(len(self.entries))
+
+	def print_verbose(self, config):
+		if config.get("web", False):
+			return
+		
+		##### "{:08X} | ............ | {:6} ..."
+		print("{:08X} | CCBAFF15     | {:6} entries".format(self.TAG, len(self.entries)))
+
