@@ -1,5 +1,6 @@
-import dat1lib.decompression as decompression
 import dat1lib.crc64 as crc64
+import dat1lib.decompression as decompression
+import dat1lib.gdeflate as gdeflate
 import dat1lib.types.dat1
 import dat1lib.types.sections.toc.archives
 import dat1lib.types.sections.toc.asset_ids
@@ -184,8 +185,8 @@ class TOC2(object): # RCRA version
 		f.seek(32)
 		blocks = []
 		while f.tell() < blocks_header_end:
-			real_offset, _, comp_offset, _, real_size, comp_size, _, _ = struct.unpack("<IIIIIIII", f.read(32))
-			blocks += [(real_offset, comp_offset, real_size, comp_size)]
+			real_offset, _, comp_offset, _, real_size, comp_size, comp_type, _, _, _ = struct.unpack("<IIIIIIBBHI", f.read(32))
+			blocks += [(real_offset, comp_offset, real_size, comp_size, comp_type)]
 
 		asset_offset = entry.offset
 		asset_end = asset_offset + entry.size
@@ -199,7 +200,7 @@ class TOC2(object): # RCRA version
 
 		started_reading = False
 		for block in blocks:
-			real_offset, comp_offset, real_size, comp_size = block
+			real_offset, comp_offset, real_size, comp_size, comp_type = block
 
 			real_end = real_offset + real_size
 			is_first_block = real_offset <= asset_offset and asset_offset < real_end
@@ -211,7 +212,15 @@ class TOC2(object): # RCRA version
 			if started_reading:
 				f.seek(comp_offset)
 				compressed_data = f.read(comp_size)
-				decompressed_data = decompression.decompress(compressed_data, real_size)
+
+				decompressed_data = None
+				if comp_type == 2:
+					decompressed_data = gdeflate.decompress(compressed_data, real_size)				
+				elif comp_type == 3:
+					decompressed_data = decompression.decompress(compressed_data, real_size)
+				else:
+					decompressed_data = bytearray(real_size)
+
 				block_start = max(real_offset, asset_offset) - real_offset
 				block_end   = min(asset_end, real_end) - real_offset
 				data += decompressed_data[block_start:block_end]

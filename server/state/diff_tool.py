@@ -26,6 +26,7 @@ class DiffTool(object):
 		# dat1lib.types.sections.toc.key_assets.Entry,
 		dat1lib.types.sections.toc.offsets.OffsetEntry,
 		dat1lib.types.sections.toc.sizes.SizeEntry,
+		dat1lib.types.sections.toc.sizes.RcraSizeEntry,
 		dat1lib.types.sections.toc.spans.SpanEntry
 	}
 
