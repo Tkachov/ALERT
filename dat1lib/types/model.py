@@ -85,3 +85,9 @@ class ModelRcra(Model):
 	# from 5 to 35 sections (avg = 12.0)
 	#
 	# examples: 811265E7146EA7C8 (min size), AE2DF2353798682F (max size), ADE5909F821E9DDE (35 sections)
+
+	def __init__(self, f, version=None):
+		if version is None:
+			version = dat1lib.VERSION_RCRA
+
+		Model.__init__(self, f, version)

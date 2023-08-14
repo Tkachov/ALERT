@@ -28,17 +28,26 @@ class IndexesSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8FE2973E7E447C52 (min size), 8D14D85B15DFB268 (max size)
 
-		self._delta_encoded = utils.read_struct_N_array_data(data, len(data)//2, "<h")
+		self.version = self._dat1.version
+		if self.version is None:
+			self.version = dat1lib.VERSION_MSMR
+
 		self.values = []
 
-		if len(self._delta_encoded) > 0:
-			self.values += [self._delta_encoded[0]]
+		if self.version == dat1lib.VERSION_MSMR:
+			self._delta_encoded = utils.read_struct_N_array_data(data, len(data)//2, "<h")
 
-		for i in range(1, len(self._delta_encoded)):
-			self.values += [self.values[i-1] + self._delta_encoded[i]]
+			if len(self._delta_encoded) > 0:
+				self.values += [self._delta_encoded[0]]
 
-		for i in range(len(self.values)):
-			self.values[i] %= 2**16
+			for i in range(1, len(self._delta_encoded)):
+				self.values += [self.values[i-1] + self._delta_encoded[i]]
+
+			for i in range(len(self.values)):
+				self.values[i] %= 2**16
+
+		elif self.version == dat1lib.VERSION_RCRA:
+			self.values = utils.read_struct_N_array_data(data, len(data)//2, "<h")
 
 	def get_short_suffix(self):
 		return "model_index ({})".format(len(self.values))
@@ -52,7 +61,7 @@ class IndexesSection(dat1lib.types.sections.Section):
 
 ###
 
-class Vertex(object):
+class Vertex_I20(object):
 	def __init__(self, xyz, nxyz, uv):
 		self.x, self.y, self.z = xyz
 		self.nx, self.ny, self.nz = nxyz
@@ -71,6 +80,12 @@ class Vertex(object):
 
 		self.u = self.u/16384.0
 		self.v = self.v/16384.0
+
+class Vertex_I29(object):
+	def __init__(self, xyz, nxyz, uv):
+		self.x, self.y, self.z = xyz
+		self.nx, self.ny, self.nz = nxyz
+		self.u, self.v = uv
 
 class VertexesSection(dat1lib.types.sections.Section):
 	TAG = 0xA98BE69B # Model Std Vert
@@ -109,38 +124,53 @@ class VertexesSection(dat1lib.types.sections.Section):
 		buffers = [struct.unpack("<" + "h" * (BUF_SIZE//2), data[i*BUF_SIZE:(i+1)*BUF_SIZE]) for i in range(8)]
 		"""
 
+		self.version = self._dat1.version
+		if self.version is None:
+			self.version = dat1lib.VERSION_MSMR
+
 		self.vertexes = []
-		BUFS = 8
-		MAX_BUF_SIZE = 0x10000
 
-		for offset in range(0, len(data), BUFS*MAX_BUF_SIZE):
-			end = min(offset + BUFS*MAX_BUF_SIZE, len(data))
-			batch = data[offset:end]
-			buf_size = (end - offset)//BUFS
+		if self.version == dat1lib.VERSION_MSMR:
+			BUFS = 8
+			MAX_BUF_SIZE = 0x10000
 
-			buffers = []
-			for i in range(BUFS):
-				buffers += [[]]
+			for offset in range(0, len(data), BUFS*MAX_BUF_SIZE):
+				end = min(offset + BUFS*MAX_BUF_SIZE, len(data))
+				batch = data[offset:end]
+				buf_size = (end - offset)//BUFS
 
-			for i in range(BUFS):
-				buffers[i] += list(struct.unpack("<{}h".format(buf_size//2), batch[i*buf_size:(i+1)*buf_size]))
+				buffers = []
+				for i in range(BUFS):
+					buffers += [[]]
 
-			X, Y, Z = 0, 0, 0
-			NX, NY, NZ = 0, 0, 0
-			U, V = 0, 0
-			for i in range(len(buffers[0])):
-				x, y, z = buffers[2][i], buffers[3][i], buffers[4][i]
-				nx, ny, nz = buffers[0][i], buffers[1][i], buffers[5][i]
-				u, v = buffers[6][i], buffers[7][i]
-				X ^= x
-				Y ^= y
-				Z ^= z
-				NX ^= nx
-				NY ^= ny
-				NZ ^= nz
-				U ^= u
-				V ^= v
-				self.vertexes += [Vertex((X, Y, Z), (NX, NY, NZ), (U, V))]
+				for i in range(BUFS):
+					buffers[i] += list(struct.unpack("<{}h".format(buf_size//2), batch[i*buf_size:(i+1)*buf_size]))
+
+				X, Y, Z = 0, 0, 0
+				NX, NY, NZ = 0, 0, 0
+				U, V = 0, 0
+				for i in range(len(buffers[0])):
+					x, y, z = buffers[2][i], buffers[3][i], buffers[4][i]
+					nx, ny, nz = buffers[0][i], buffers[1][i], buffers[5][i]
+					u, v = buffers[6][i], buffers[7][i]
+					X ^= x
+					Y ^= y
+					Z ^= z
+					NX ^= nx
+					NY ^= ny
+					NZ ^= nz
+					U ^= u
+					V ^= v
+					self.vertexes += [Vertex_I20((X, Y, Z), (NX, NY, NZ), (U, V))]
+
+		elif self.version == dat1lib.VERSION_RCRA:
+			scale = 1/4096.0
+			for i in range(0, len(data), 16):
+				X, Y, Z, NX, NY, NZ, U, V = struct.unpack("<8h", data[i:i+16])
+				X *= scale
+				Y *= scale
+				Z *= scale
+				self.vertexes += [Vertex_I29((X, Y, Z), (NX, NY, NZ), (U, V))]
 
 	def get_short_suffix(self):
 		return "vertexes ({})".format(len(self.vertexes))
