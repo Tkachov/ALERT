@@ -1,42 +1,34 @@
 import sys
 
 import info
-import repack
-import inject
-import install
+import extract_assets
+import extract_section
+import change_soundbank
 
 def main(argv):
-	if len(argv) < 2:
+	scripts = {
+		"info": info.main,
+		"extract_assets": extract_assets.main,
+		"extract_section": extract_section.main,
+		"change_soundbank": change_soundbank.main
+	}
+
+	if len(argv) < 2 or argv[1] not in scripts:
 		print("Usage:")
 		print("$ {} [script] [args]".format(argv[0]))
 		print("")
 		print("Scripts:")
-		print("  info    \t Print as much info about a file as possible")
-		print("  repack  \t Read the .model and save it as .model.repacked")
-		print("  inject  \t Save the .model as hero.mod and add it to 'toc'")
-		print("  install \t Install all MOD0 mods on top of 'toc.orig'")
-		print("")
-		print("Default script is 'info'")
+		print("  info                Print as much info about a file as possible")
+		print("  extract_assets      Interactive assets extractor")
+		print("  extract_section     Save a single section as file")
+		print("  change_soundbank    Inject .bnk into .soundbank")
 		return
 
 	#
 
-	scripts = {
-		"info": info.main,
-		"repack": repack.main,
-		"inject": inject.main,
-		"install": install.main
-	}
-
-	if argv[1] in scripts:
-		name = argv[1]
-		entry_point = scripts[name]
-		entry_point([name] + argv[2:])
-		return
-
-	#
-
-	info.main(argv)
+	name = argv[1]
+	entry_point = scripts[name]
+	entry_point([name] + argv[2:])
 
 if __name__ == "__main__":
 	main(sys.argv)

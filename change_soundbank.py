@@ -34,7 +34,7 @@ def main(argv):
 		print("[!] Couldn't comprehend '{}'".format(fn))
 		return
 
-	if not isinstance(sb, dat1lib.types.soundbank.Soundbank):
+	if not isinstance(sb, dat1lib.types.soundbank.Soundbank) and not isinstance(sb, dat1lib.types.soundbank.SoundbankRcra):
 		print("[!] Not a soundbank")
 		return
 

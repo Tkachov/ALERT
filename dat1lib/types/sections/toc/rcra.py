@@ -27,7 +27,7 @@ class AssetHeadersSection(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Asset Hdrs   | {:6} entries".format(self.TAG, len(self.entries)))
 
-class HDTexturesSection(dat1lib.types.sections.Section):
+class TexturesSection(dat1lib.types.sections.Section):
 	TAG = 0x36A6C8CC
 	TYPE = 'toc'
 
@@ -46,11 +46,11 @@ class HDTexturesSection(dat1lib.types.sections.Section):
 		return bytearray(of.read())
 
 	def get_short_suffix(self):
-		return "hd textures ({})".format(len(self.ids))
+		return "textures ({})".format(len(self.ids))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | HD Textures  | {:6} entries".format(self.TAG, len(self.ids)))
+		print("{:08X} | Textures     | {:6} entries".format(self.TAG, len(self.ids)))
 
 		for aid in self.ids:
 			print("    - {:016X}".format(aid))
