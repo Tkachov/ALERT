@@ -5,14 +5,20 @@ import struct
 class MeshDefinition(object):
 	def __init__(self, data):
 		self.unknowns = struct.unpack("<IQHHHH", data[:20])
+		# ?, mesh_id, ?, ?, ?, ?
 		self.vertexStart, self.indexStart, self.indexCount, self.vertexCount = struct.unpack("<IIII", data[20:36])
-		self.unknowns2 = struct.unpack("<HHHHHHffff", data[36:])
+		self.flags, self.material_index, self.first_skin_batch, self.skin_batches_count = struct.unpack("<HHHH", data[36:44])
+		self.unknowns2 = struct.unpack("<HHff", data[44:56]) # ?, ? | ?, ?
+		self.first_weight_index, self.unknown3 = struct.unpack("<II", data[56:]) # first weight index in CCBAFF15 (at least in RCRA) -- basically equal to vertexStart, ?
 
 	def get_id(self):
 		return self.unknowns[1]
 
+	def get_flags(self):
+		return self.flags[0] # 0x10 -- indexes are relative to mesh or not (maybe also means they are delta-encoded?)
+
 	def get_material(self):
-		return self.unknowns2[1]
+		return self.material_index
 
 class MeshesSection(dat1lib.types.sections.Section):
 	TAG = 0x78D9CBDE # Model Subset
@@ -46,9 +52,11 @@ class MeshesSection(dat1lib.types.sections.Section):
 	def save(self):
 		of = io.BytesIO(bytes())
 		for m in self.meshes:
-			of.write(struct.pack("<IQHHHH", m.unknowns))
+			of.write(struct.pack("<IQHHHH", *m.unknowns))
 			of.write(struct.pack("<IIII", m.vertexStart, m.indexStart, m.indexCount, m.vertexCount))
-			of.write(struct.pack("<HHHHHHffff", m.unknowns2))
+			of.write(struct.pack("<HHHH", m.flags, m.material_index, m.first_skin_batch, m.skin_batches_count))
+			of.write(struct.pack("<HHff", *m.unknowns2))
+			of.write(struct.pack("<II", m.first_weight_index, m.unknown3))
 		of.seek(0)
 		return of.read()
 
@@ -64,12 +72,16 @@ class MeshesSection(dat1lib.types.sections.Section):
 		print("")
 		#######........ | 123  1234567812345678  12345678  12345678  12345678  12345678  12345678
 		print("           #             mesh_id  vert_off  vertexes  indx_off   indexes  material")
+		print("                                         ?         ?         ?         ?         ?")
+		print("                                     flags  sknb_off  sknb_cnt         ?         ?")
+		print("                                                   ?         ?  rcra_wgt         ?")
 		print("         -------------------------------------------------------------------------")
 
 		for i, l in enumerate(self.meshes):
 			u1, mid, u2, u3, u4, u5 = l.unknowns
-			u6, mat, u7, u8, u9, u10, u11, u12, u13, u14 = l.unknowns2
+			u9, u10, u11, u12 = l.unknowns2
 
+			mat = l.material_index
 			material_formatted = "#{}".format(mat)
 			try:
 				matname = self._dat1.get_string(materials_section.string_offsets[mat][1])
@@ -81,6 +93,6 @@ class MeshesSection(dat1lib.types.sections.Section):
 			print("         - {:<3}  {:016X}  {:8}  {:8}  {:8}  {:8}  {}".format(i, mid, l.vertexStart, l.vertexCount, l.indexStart, l.indexCount, material_formatted))
 			prefix = " "*8
 			print("                {}{:08X}  {:8}  {:8}  {:8}  {:8}".format(prefix, u1, u2, u3, u4, u5))
-			print("                {}{:8}  {:8}  {:8}  {:8}  {:8}".format(prefix, u6, u7, u8, u9, u10))
-			print("                {}          {:8.3}  {:8.3}  {:8.3}  {:8.3}".format(prefix, u11, u12, u13, u14))
+			print("                {}{:8X}  {:8}  {:8}  {:8}  {:8}".format(prefix, l.flags, l.first_skin_batch, l.skin_batches_count, u9, u10))
+			print("                {}          {:8.3}  {:8.3}  {:8}  {:8}".format(prefix, u11, u12, l.first_weight_index, l.unknown3))
 			print("")

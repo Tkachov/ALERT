@@ -8,7 +8,7 @@ class DiffTool(object):
 		dat1lib.types.sections.model.geo.IndexesSection,
 		dat1lib.types.sections.model.geo.VertexesSection,
 		dat1lib.types.sections.model.geo.x6B855EED_Section,
-		dat1lib.types.sections.model.geo.x5CBA9DE9_Section
+		dat1lib.types.sections.model.geo.ColorsSection
 	}
 	DIFFABLE_CLASSES = {
 		# model
@@ -18,6 +18,7 @@ class DiffTool(object):
 		dat1lib.types.sections.model.look.Look,
 		dat1lib.types.sections.model.look.LookBuilt,
 		dat1lib.types.sections.model.meshes.MeshDefinition,
+		dat1lib.types.sections.model.skin.SkinBatch,
 		dat1lib.types.sections.model.unknowns.x7CA37DA0_Entry,
 
 		# toc

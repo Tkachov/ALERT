@@ -216,59 +216,6 @@ class x0AD3A708_Section(dat1lib.types.sections.Section):
 
 ###
 
-class xC61B1FF5_Section(dat1lib.types.sections.Section):
-	TAG = 0xC61B1FF5 # Model Skin Batch
-	TYPE = 'model'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 2121 occurrences in 38298 files
-		# size = 16..16256 (avg = 453.0)
-		#
-		# examples: 800C84622E8A0075 (min size), 8FCA3A1C0CF13DD0 (max size)
-
-		# MM
-		# 1688 occurrences in 37147 files
-		# size = 16..10656 (avg = 408.0)
-		#
-		# examples: 800C84622E8A0075 (min size), AD7386F5F9A76C43 (max size)
-
-		# RCRA
-		# 959 occurrences in 11387 files
-		# size = 16..24432 (avg = 1069.2)
-		#
-		# examples: 80E4E1B6E9D6B81A (min size), A428F4A59DA18D74 (max size)
-
-		# related to DCA379A2
-
-		self.a, self.b, self.c, self.data_len = struct.unpack("<IIII", data[:16])
-
-		rest = data[16:]
-		ENTRY_SIZE = 16
-		count = len(rest) // ENTRY_SIZE
-		self.entries = [struct.unpack("<IIHHHH", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
-		# offset-like/hash, 0, 0, uncompressedSizeLike, compressedSizeLike, compressedOffsetLike
-
-	def get_short_suffix(self):
-		return "model_skin_batch? ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | skin_batch?  | {:6} structs".format(self.TAG, len(self.entries)))
-
-		print("           {} {} {}".format(self.a, self.b, self.c))
-		print("")
-		#######........ | 123  12345678  1234  1234  12345678  12345678  12345678
-		print("           #     offset?     ?     ?       sz1       sz2       off")
-		print("         -----------------------------------------------------------------")
-		for i, l in enumerate(self.entries):
-			print("         - {:<3}  {:8}  {:4}  {:4}  {:8}  {:8}  {:8}".format(i, l[0], l[1], l[2], l[3], l[4], l[5]))
-		print("")
-
-###
-
 class x707F1B58_Section(dat1lib.types.sections.Section):
 	TAG = 0x707F1B58
 	TYPE = 'model'

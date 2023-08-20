@@ -2,6 +2,7 @@ import dat1lib.types.sections
 import dat1lib.utils as utils
 import io
 import struct
+import math
 
 class IndexesSection(dat1lib.types.sections.Section):
 	TAG = 0x0859863D # Model Index
@@ -47,7 +48,17 @@ class IndexesSection(dat1lib.types.sections.Section):
 				self.values[i] %= 2**16
 
 		elif self.version == dat1lib.VERSION_RCRA:
-			self.values = utils.read_struct_N_array_data(data, len(data)//2, "<h")
+			self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
+
+	def save(self):
+		if self.version != dat1lib.VERSION_RCRA:
+			return None # TODO
+
+		of = io.BytesIO(bytes())
+		for v in self.values:
+			of.write(struct.pack("<H", v))
+		of.seek(0)
+		return of.read()
 
 	def get_short_suffix(self):
 		return "model_index ({})".format(len(self.values))
@@ -84,8 +95,62 @@ class Vertex_I20(object):
 class Vertex_I29(object):
 	def __init__(self, xyz, nxyz, uv):
 		self.x, self.y, self.z = xyz
-		self.nx, self.ny, self.nz = nxyz
+		self.nx, self.ny, self.nz = 1, 0, 0
 		self.u, self.v = uv
+
+		#
+
+		scale = 1/4096.0
+
+		self.x *= scale
+		self.y *= scale
+		self.z *= scale
+
+		#
+
+		bits = format(nxyz, 'b').zfill(32)
+		nZ = int(bits[0:12], 2)  # 12 bits
+		nY = int(bits[12:22], 2) # 10 bits
+		nX = int(bits[22:32], 2) # 10 bits
+
+		nX = nX/511.0 - 1.0
+		nY = nY/511.0 - 1.0
+		zz = 1 - nX*nX - nY*nY
+		if zz < 0:
+			zz *= -1
+		nZ = math.sqrt(zz)
+		self.nx, self.ny, self.nz = nX, nY, nZ
+
+		#
+
+		self.u = self.u/16384.0
+		self.v = self.v/16384.0
+
+	@classmethod
+	def empty(cls):
+		return cls((0,0,0), 0, (0,0))
+
+	def save(self):
+		scale = 1/4096.0
+		X, Y, Z, W = self.x / scale, self.y / scale, self.z / scale, 0
+		X, Y, Z = int(X), int(Y), int(Z)
+
+		nX = (self.nx + 1.0)*511.0
+		nY = (self.ny + 1.0)*511.0
+		nZ = (self.ny + 1.0)*2047.0
+		nX = int(nX)
+		nY = int(nY)
+		nZ = int(nZ)
+		nX = struct.unpack("<H", struct.pack("<h", nX))[0]
+		nY = struct.unpack("<H", struct.pack("<h", nY))[0]
+		nZ = struct.unpack("<H", struct.pack("<h", nZ))[0]	
+		NXYZ = (nX & 0b1111111111) | ((nY & 0b1111111111) << 10) | ((nZ & 0b111111111111) << 20)
+
+		U = self.u * 16384.0
+		V = self.v * 16384.0
+		U, V = int(U), int(V)
+
+		return struct.pack("<4hI2h", X, Y, Z, W, NXYZ, U, V)
 
 class VertexesSection(dat1lib.types.sections.Section):
 	TAG = 0xA98BE69B # Model Std Vert
@@ -164,13 +229,19 @@ class VertexesSection(dat1lib.types.sections.Section):
 					self.vertexes += [Vertex_I20((X, Y, Z), (NX, NY, NZ), (U, V))]
 
 		elif self.version == dat1lib.VERSION_RCRA:
-			scale = 1/4096.0
 			for i in range(0, len(data), 16):
-				X, Y, Z, NX, NY, NZ, U, V = struct.unpack("<8h", data[i:i+16])
-				X *= scale
-				Y *= scale
-				Z *= scale
-				self.vertexes += [Vertex_I29((X, Y, Z), (NX, NY, NZ), (U, V))]
+				X, Y, Z, W, NXYZ, U, V = struct.unpack("<4hI2h", data[i:i+16])
+				self.vertexes += [Vertex_I29((X, Y, Z), NXYZ, (U, V))]
+
+	def save(self):
+		if self.version != dat1lib.VERSION_RCRA:
+			return None # TODO
+
+		of = io.BytesIO(bytes())
+		for e in self.vertexes:
+			of.write(e.save())
+		of.seek(0)
+		return of.read()
 
 	def get_short_suffix(self):
 		return "vertexes ({})".format(len(self.vertexes))
@@ -239,8 +310,8 @@ class x6B855EED_Section(dat1lib.types.sections.Section):
 	def web_repr(self):
 		return {"name": "Vertex-related 1", "type": "text", "readonly": True, "content": "{} uints".format(len(self.values))}
 
-class x5CBA9DE9_Section(dat1lib.types.sections.Section):
-	TAG = 0x5CBA9DE9
+class ColorsSection(dat1lib.types.sections.Section):
+	TAG = 0x5CBA9DE9 # Model Col Vert
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -264,9 +335,14 @@ class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 836851DCBEA9E885 (min size), AE2DF2353798682F (max size)
 		
-		# same amount as vertexes
-		# has a lot of 0s
-		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<I")
+		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<I") # "<4B"
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for v in self.values:
+			of.write(struct.pack("<I", v))
+		of.seek(0)
+		return of.read()
 
 	def get_short_suffix(self):
 		return "? ({})".format(len(self.values))
@@ -276,54 +352,8 @@ class x5CBA9DE9_Section(dat1lib.types.sections.Section):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values)))
-		print(self.values[:32], "...", self.values[-32:])
-		#s = set(self.values)
-		#print(len(s), min(s), max(s))
+		print("{:08X} | Vertex Color | {:6} colors".format(self.TAG, len(self.values)))
 		print("")
 
 	def web_repr(self):
-		return {"name": "Vertex-related 2", "type": "text", "readonly": True, "content": "{} uints".format(len(self.values))}
-
-#
-
-class xCCBAFF15_Section(dat1lib.types.sections.Section):
-	TAG = 0xCCBAFF15
-	TYPE = 'ModelRcra'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR: none
-		# MM: none
-
-		# RCRA
-		# 954 occurrences in 11387 files
-		# size = 32..21394920 (avg = 789337.3)
-		#
-		# examples: 8B4C8E19832AE134 (min size), AE2DF2353798682F (max size)
-
-		# typically, the size of this section is ~x2 of 6B855EED and 5CBA9DE9
-		# so, same amount as vertexes?
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
-
-	def get_short_suffix(self):
-		return "CCBAFF15 ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | CCBAFF15     | {:6} entries".format(self.TAG, len(self.entries)))
-
+		return {"name": "Vertex Colors", "type": "text", "readonly": True, "content": "{} colors".format(len(self.values))}

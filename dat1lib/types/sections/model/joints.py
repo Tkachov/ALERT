@@ -88,7 +88,7 @@ class JointsSection(dat1lib.types.sections.Section):
 
 		print("")
 		#######........ | 123  12345678  12345678901234567890123456789012  1234  1234  1234  1234
-		print("           #        hash  name                            parent   ndx     ?     ?")
+		print("           #        hash  name                            parent   ndx  chld     ?")
 		print("         -------------------------------------------------------------------------")
 		for i, l in enumerate(self.joints):
 			name = self._dat1.get_string(l.string_offset)
@@ -128,20 +128,58 @@ class xDCC88A19_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 80116594638FB4B9 (min size), 80F95D8660F364D7 (max size)
 
-		ENTRY_SIZE = 16
-		count = len(data)//ENTRY_SIZE
-		self.vectors = [struct.unpack("<ffff", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
+		ENTRY1_SIZE = 12*4
+		ENTRY2_SIZE = 16*4
+		count = len(data)//(ENTRY1_SIZE + ENTRY2_SIZE)
+
+		self.matrixes34 = [struct.unpack("<12f", data[i*ENTRY1_SIZE:(i+1)*ENTRY1_SIZE]) for i in range(count)]
+
+		offset = ENTRY1_SIZE * count
+		align = offset % ENTRY2_SIZE
+		if align != 0:
+			offset += ENTRY2_SIZE - align
+		self.matrixes44 = [struct.unpack("<16f", data[offset + i*ENTRY2_SIZE:offset + (i+1)*ENTRY2_SIZE]) for i in range(count)]
 
 	def get_short_suffix(self):
-		return "vectors? ({})".format(len(self.vectors))
+		return "joints matrixes? ({})".format(len(self.matrixes34))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Vectors?     | {:6} vectors".format(self.TAG, len(self.vectors)))
-		# TODO: print(vec4f)
+		print("{:08X} | Joints Tnsfm | {:6} entries".format(self.TAG, len(self.matrixes34)))
+
+		print()
+		print("\t- #     | scale?                          |  | transform                       |")
+		print("\t        | rotation = rotm2quat(tranform)  |  |                                 |")
+		print("\t        | local? position                 |  |                                 |")
+		print("\t                                             |                                 |")
+		print()
+		
+		for i, (m1, m2) in enumerate(zip(self.matrixes34, self.matrixes44)):
+			a, b, c, d = m1[:4]
+			e, f, g, h = m2[:4]
+			print(f"\t- {i:<4}  | {a:7.4f} {b:7.4f} {c:7.4f} {d:7.4f} |  | {e:7.4f} {f:7.4f} {g:7.4f} {h:7.4f} |")
+
+			a, b, c, d = m1[4:8]
+			e, f, g, h = m2[4:8]
+			print(f"\t        | {a:7.4f} {b:7.4f} {c:7.4f} {d:7.4f} |  | {e:7.4f} {f:7.4f} {g:7.4f} {h:7.4f} |")
+
+			a, b, c, d = m1[8:12]
+			e, f, g, h = m2[8:12]
+			print(f"\t        | {a:7.4f} {b:7.4f} {c:7.4f} {d:7.4f} |  | {e:7.4f} {f:7.4f} {g:7.4f} {h:7.4f} |")
+
+			a = b = c = d = " "*7
+			e, f, g, h = m2[12:]
+			print(f"\t          {a} {b} {c} {d}    | {e:7.4f} {f:7.4f} {g:7.4f} {h:7.4f} |")
+			print()
+
+	def get_joint_scale(self, index):
+		return self.matrixes34[index][:3]
+
+	def get_joint_quaternion(self, index):
+		return self.matrixes34[index][4:8]
+
+	def get_joint_position(self, index):
+		return self.matrixes34[index][8:11]
 
 ###
 
@@ -213,17 +251,22 @@ class xC5354B60_Section(dat1lib.types.sections.Section):
 
 		# some offset-like numbers in "mostly" increasing order
 		# (sometimes value returns back to a smaller number and continues to increase)
-		self.offsets = utils.read_struct_N_array_data(data, len(data)//4, "<I")
+
+		ENTRY_SIZE = 2
+		count = len(data)//ENTRY_SIZE
+		self.ids = [struct.unpack("<BB", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def get_short_suffix(self):
-		return "offsets? ({})".format(len(self.offsets))
+		return "Model Mirror Ids ({})".format(len(self.ids))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Some Offsets | {:6} offsets".format(self.TAG, len(self.offsets)))
+		print("{:08X} | Mirror Ids   | {:6} ids".format(self.TAG, len(self.ids)))
+
+		print()
+		for i, (a, b) in enumerate(self.ids):
+			print(f"\t- {i:<3}  {a:4}  {b:4}")
+		print()
 
 #
 

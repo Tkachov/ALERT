@@ -538,49 +538,6 @@ class xA600C108_Section(dat1lib.types.sections.Section):
 
 #
 
-class ModelSkinDataSection(dat1lib.types.sections.Section): # vertex weights
-	TAG = 0xDCA379A2 # Model Skin Data
-	TYPE = 'Model'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 2121 occurrences in 38298 files
-		# size = 5..5642457 (avg = 157231.4)
-		#
-		# examples: 8D8CB10A938FE720 (min size), 8FCA3A1C0CF13DD0 (max size)
-
-		# MM
-		# 1688 occurrences in 37147 files
-		# size = 5..4446860 (avg = 122931.2)
-		#
-		# examples: A83AC87DC5553DBC (min size), 8DDE07945B10DDB3 (max size)
-
-		# RCRA
-		# 959 occurrences in 11387 files
-		# size = 5..7348561 (avg = 249085.2)
-		#
-		# examples: 8B4C8E19832AE134 (min size), 988A53437037246E (max size)
-
-		# related to C61B1FF5
-		pass
-
-	def get_short_suffix(self):
-		return "Model Skin Data ({} bytes)".format(len(self._raw))
-
-	def print_verbose(self, config):
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Skin Data    | {:6} bytes".format(self.TAG, len(self._raw)))
-
-		if config.get("web", False):
-			return
-
-	def web_repr(self):
-		return {"name": "Model Skin Data", "type": "text", "readonly": True, "content": "{} bytes".format(len(self._raw))}
-
-#
-
 class xADD1CBD3_Section(dat1lib.types.sections.Section):
 	TAG = 0xADD1CBD3
 	TYPE = 'Model'

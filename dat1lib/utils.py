@@ -86,3 +86,8 @@ def normalize_path(path):
 	result = replaced
 
 	return result
+
+###
+
+def clamp(v, mn, mx):
+	return mn if v < mn else mx if v > mx else v

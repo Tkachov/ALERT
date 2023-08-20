@@ -7,9 +7,19 @@ class LOD(object):
 	def __init__(self, data):
 		self.start, self.count = struct.unpack("<HH", data)
 
+	def save(self):
+		return struct.pack("<HH", self.start, self.count)
+
 class Look(object):
 	def __init__(self, data):
 		self.lods = utils.read_class_array_data(data, 4, LOD)
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for l in self.lods:
+			of.write(l.save())
+		of.seek(0)
+		return of.read()
 
 class ModelLookSection(dat1lib.types.sections.Section):
 	TAG = 0x06EB7EFC # Model Look
@@ -37,6 +47,13 @@ class ModelLookSection(dat1lib.types.sections.Section):
 		# examples: 800102AC251CF360 (min size), 9453965A305B5750 (max size)
 
 		self.looks = utils.read_class_array_data(data, 4*8, Look)
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for l in self.looks:
+			of.write(l.save())
+		of.seek(0)
+		return of.read()
 
 	def get_short_suffix(self):
 		return "Model Look ({})".format(len(self.looks))
