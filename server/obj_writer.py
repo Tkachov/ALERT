@@ -109,10 +109,19 @@ class ObjHelper(object):
 
 			#
 
+			relative_indexes = ((mesh.get_flags() & 0x10) == 0)
+
 			faces_count = mesh.indexCount // 3
 			for j in range(faces_count):
 				index_index = mesh.indexStart + j*3
-				self.write_poly([indexes[index_index+2], indexes[index_index+1], indexes[index_index]])
+				
+				a, b, c = indexes[index_index+2], indexes[index_index+1], indexes[index_index]
+				if relative_indexes:
+					a -= mesh.vertexStart
+					b -= mesh.vertexStart
+					c -= mesh.vertexStart
+
+				self.write_poly([a, b, c])
 
 			self.end_mesh()
 

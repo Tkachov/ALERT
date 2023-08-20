@@ -15,7 +15,7 @@ class MeshDefinition(object):
 		return self.unknowns[1]
 
 	def get_flags(self):
-		return self.flags[0] # 0x10 -- indexes are relative to mesh or not (maybe also means they are delta-encoded?)
+		return self.flags # 0x10 -- indexes are relative to mesh or not (maybe also means they are delta-encoded?)
 
 	def get_material(self):
 		return self.material_index
