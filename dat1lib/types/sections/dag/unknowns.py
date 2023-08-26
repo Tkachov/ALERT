@@ -126,7 +126,7 @@ class AssetNamesSection(dat1lib.types.sections.Section): # TODO: dat1lib.types.s
 #
 
 class DependenciesSection(dat1lib.types.sections.Section): # 4 bytes index to what this asset is dependent to
-	TAG = 0xF958372E
+	TAG = 0xF958372E # Dependency Links Heads
 	TYPE = 'dag'
 
 	def __init__(self, data, container):
@@ -155,7 +155,7 @@ class DependenciesSection(dat1lib.types.sections.Section): # 4 bytes index to wh
 #
 
 class xBC91D1CC_Section(dat1lib.types.sections.Section): # longest section, looks like string offsets
-	TAG = 0xBC91D1CC
+	TAG = 0xBC91D1CC # Dependency Links
 	TYPE = 'dag'
 
 	def __init__(self, data, container):

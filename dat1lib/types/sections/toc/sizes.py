@@ -14,7 +14,7 @@ class RcraSizeEntry(object):
 		# header_offset can be -1 (probably if asset doesn't have one); offset to 36-byte header stored in the 654BDED9 (headers section)
 
 class SizesSection(dat1lib.types.sections.Section):
-	TAG = 0x65BCF461
+	TAG = 0x65BCF461 # Archive TOC Asset Metadata
 	TYPE = 'toc'
 
 	def __init__(self, data, container):

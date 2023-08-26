@@ -30,7 +30,7 @@ class ArchiveFileEntry(object):
 		return cls(f.read())
 
 class ArchivesSection(dat1lib.types.sections.Section):
-	TAG = 0x398ABFF0
+	TAG = 0x398ABFF0 # Archive TOC File Metadata
 	TYPE = 'toc'
 
 	def __init__(self, data, container):

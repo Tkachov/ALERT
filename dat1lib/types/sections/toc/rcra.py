@@ -3,7 +3,7 @@ import io
 import struct
 
 class AssetHeadersSection(dat1lib.types.sections.Section):
-	TAG = 0x654BDED9
+	TAG = 0x654BDED9 # Archive TOC Asset Header Data
 	TYPE = 'toc'
 
 	def __init__(self, data, container):
@@ -28,7 +28,7 @@ class AssetHeadersSection(dat1lib.types.sections.Section):
 		print("{:08X} | Asset Hdrs   | {:6} entries".format(self.TAG, len(self.entries)))
 
 class TexturesSection(dat1lib.types.sections.Section):
-	TAG = 0x36A6C8CC
+	TAG = 0x36A6C8CC # Archive TOC Texture Asset Ids
 	TYPE = 'toc'
 
 	def __init__(self, data, container):

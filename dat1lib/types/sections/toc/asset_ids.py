@@ -3,7 +3,7 @@ import io
 import struct
 
 class AssetIdsSection(dat1lib.types.sections.Section):
-	TAG = 0x506D7B8A
+	TAG = 0x506D7B8A # Archive TOC Asset IDs
 	TYPE = 'toc'
 
 	def __init__(self, data, container):

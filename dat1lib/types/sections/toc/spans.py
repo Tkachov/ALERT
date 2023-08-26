@@ -6,7 +6,7 @@ class SpanEntry(object):
 		self.asset_index, self.count = struct.unpack("<II", data)
 
 class SpansSection(dat1lib.types.sections.Section):
-	TAG = 0xEDE8ADA9
+	TAG = 0xEDE8ADA9 # Archive TOC Header
 	TYPE = 'toc'
 
 	def __init__(self, data, container):
