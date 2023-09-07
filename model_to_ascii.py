@@ -103,10 +103,10 @@ class AsciiWriter(object):
 		self.init(f, model)
 
 		meshes_indexes = self.get_meshes_indexes_by_looks_and_lod(looks, lod)
-		skin = self.get_skin()
+		skin, rcra_skin = self.get_skin()
 
 		self.write_bones()
-		self.write_meshes(meshes_indexes, skin)
+		self.write_meshes(meshes_indexes, skin, rcra_skin)
 
 	#
 
@@ -116,6 +116,7 @@ class AsciiWriter(object):
 
 		has_skin = (skin_section is not None and skin_batch_section is not None)
 		skin = None
+		rcra_skin = None
 
 		if has_skin:
 			skin = []
@@ -209,12 +210,12 @@ class AsciiWriter(object):
 
 				# diff_skins(skin, rcra_skin)
 
-			skin = rcra_skin
-			has_skin = True
+			# skin = rcra_skin
+			# has_skin = True
 
 		#
 
-		return skin
+		return skin, rcra_skin
 
 	def get_weights(self, i, skin, weights_count):
 		vertex = skin[i]
@@ -298,12 +299,12 @@ class AsciiWriter(object):
 			self.f.write(f"{j.parent}\n")
 			self.f.write(f"{fmt(x)} {fmt(y)} {fmt(z)} {fmt(qx)} {fmt(qy)} {fmt(qz)} {fmt(qw)}\n")
 
-	def write_meshes(self, meshes_indexes, skin):
+	def write_meshes(self, meshes_indexes, skin, rcra_skin):
 		self.f.write("{}\n".format(len(meshes_indexes)))
 		for mi in meshes_indexes:
-			self.write_mesh(mi, skin)
+			self.write_mesh(mi, skin, rcra_skin)
 
-	def write_mesh(self, mesh_index, skin):
+	def write_mesh(self, mesh_index, skin, rcra_skin):
 		vc = self.current_vertex_index
 
 		mesh = self.meshes[mesh_index]
@@ -319,15 +320,24 @@ class AsciiWriter(object):
 		self.f.write("0\n") # textures
 
 		# vertexes
+
+		skin_to_use = skin
+		weight_offset = mesh.vertexStart
+		if (mesh.get_flags() & 0x100) > 0:
+			skin_to_use = rcra_skin
+			weight_offset = mesh.first_weight_index
 		
 		self.f.write("{}\n".format(mesh.vertexCount))
 		for vi in range(mesh.vertexStart, mesh.vertexStart + mesh.vertexCount):
-			self.write_vertex(vi, skin, groups_count)
+			self.write_vertex(vi, skin_to_use, vi - mesh.vertexStart + weight_offset, groups_count)
 
 		# indexes
 
 		s = self.model.dat1.get_section(SECTION_INDEXES)
 		indexes = s.values
+		
+		if (mesh.get_flags() & 0x10) > 0:
+			vc = 0 # indexes are relative already
 
 		faces_count = mesh.indexCount // 3
 		self.f.write("{}\n".format(faces_count))
@@ -335,7 +345,7 @@ class AsciiWriter(object):
 			index_index = mesh.indexStart + j*3
 			self.f.write("{} {} {}\n".format(indexes[index_index+2]-vc, indexes[index_index+1]-vc, indexes[index_index]-vc))
 
-	def write_vertex(self, vertex_index, skin, groups_count):
+	def write_vertex(self, vertex_index, skin, weight_index, groups_count):
 		fmt = pretty_format
 		v = self.vertexes[vertex_index]
 		
@@ -347,7 +357,7 @@ class AsciiWriter(object):
 		weights = "1 0 0 0"
 
 		if skin is not None:
-			groups, weights = self.get_weights(vertex_index, skin, groups_count)
+			groups, weights = self.get_weights(weight_index, skin, groups_count)
 
 		self.f.write(position + "\n")
 		self.f.write(normal + "\n")

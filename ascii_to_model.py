@@ -179,8 +179,8 @@ class ModelInjector(object):
 	def inject(self, model, ascii_data):
 		self.init(model)
 
-		meshes_updates = self.inject_vertexes(ascii_data)
 		meshes_indexes = self.update_looks()
+		meshes_updates = self.inject_vertexes(ascii_data, meshes_indexes)
 		self.update_meshes(meshes_updates, meshes_indexes)
 
 		self.refresh_sections()
@@ -242,10 +242,14 @@ class ModelInjector(object):
 			mesh.first_skin_batch = new_mesh[4]
 			mesh.first_weight_index = new_mesh[5]
 			mesh.skin_batches_count = new_mesh[6]
+			mesh.flags = mesh.flags | 0x100 # use new weights buffer
 
 		self.refresh_section(SECTION_MESHES)
 
-	def inject_vertexes(self, ascii_data):
+	def inject_vertexes(self, ascii_data, meshes_indexes):
+		s = self.model.dat1.get_section(SECTION_MESHES)
+		meshes = s.meshes
+
 		meshes_updates = []
 		for i, mesh_data in enumerate(ascii_data["meshes"]):
 			# name, uv_layers, textures, vertexes, faces
@@ -269,8 +273,14 @@ class ModelInjector(object):
 				self.write_weight(w)
 				self.write_rcra_weight(w)
 
+			mi = meshes_indexes[i]
+			mesh = meshes[mi]
+			face_index_offset = vertex_start
+			if (mesh.get_flags() & 0x10) > 0:
+				face_index_offset = 0 # put relative indexes
+
 			for face in faces_data:
-				self.write_face(face, vertex_start)
+				self.write_face(face, face_index_offset)
 			
 			skin_batches_count = self.end_skin_batches(first_skin_batch)
 			print(f"             added {skin_batches_count} skin batches, {self.current_skin_offset - self.skin_batch_section.batches[first_skin_batch].offset} bytes ({self.current_skin_offset}/{len(self.skin_section._raw)})")
