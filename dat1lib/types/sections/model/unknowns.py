@@ -79,6 +79,8 @@ class ModelBuiltSection(dat1lib.types.sections.Section):
 		# (global scaling is that number that is likely 0.00024. Int vertex positions are converted to floats and multiplied by this.
 		self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
 
+		# 0x2C <f -- vertex pos scale
+
 	def get_short_suffix(self):
 		return "Model Built ({})".format(len(self.values))
 

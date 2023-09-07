@@ -53,7 +53,7 @@ class x06A58050_Section(dat1lib.types.sections.Section):
 #
 
 class x0CD2CFE9_Section(dat1lib.types.sections.Section):
-	TAG = 0x0CD2CFE9
+	TAG = 0x0CD2CFE9 # Localization SortedIndexes Built
 	TYPE = 'Localization'
 
 	def __init__(self, data, container):
@@ -101,7 +101,7 @@ class x0CD2CFE9_Section(dat1lib.types.sections.Section):
 #
 
 class xA4EA55B2_Section(dat1lib.types.sections.Section):
-	TAG = 0xA4EA55B2
+	TAG = 0xA4EA55B2 # Localization TagOffsets Built
 	TYPE = 'Localization'
 
 	def __init__(self, data, container):
@@ -149,7 +149,7 @@ class xA4EA55B2_Section(dat1lib.types.sections.Section):
 #
 
 class xB0653243_Section(dat1lib.types.sections.Section):
-	TAG = 0xB0653243
+	TAG = 0xB0653243 # Localization Flags Built
 	TYPE = 'Localization'
 
 	def __init__(self, data, container):
@@ -197,7 +197,7 @@ class xB0653243_Section(dat1lib.types.sections.Section):
 #
 
 class xC43731B5_Section(dat1lib.types.sections.Section):
-	TAG = 0xC43731B5
+	TAG = 0xC43731B5 # Localization SortedHashes Built
 	TYPE = 'Localization'
 
 	def __init__(self, data, container):
@@ -245,7 +245,7 @@ class xC43731B5_Section(dat1lib.types.sections.Section):
 #
 
 class xF80DEEB4_Section(dat1lib.types.sections.Section):
-	TAG = 0xF80DEEB4
+	TAG = 0xF80DEEB4 # Localization TextOffsets Built
 	TYPE = 'Localization'
 
 	def __init__(self, data, container):

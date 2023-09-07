@@ -3,7 +3,7 @@ import io
 import struct
 
 class EntriesCountSection(dat1lib.types.sections.Section):
-	TAG = 0xD540A903
+	TAG = 0xD540A903 # Localization Header Built
 	TYPE = 'Localization'
 
 	def __init__(self, data, container):
@@ -45,7 +45,7 @@ class EntriesCountSection(dat1lib.types.sections.Section):
 #
 
 class KeyNamesSection(dat1lib.types.sections.StringsSection):
-	TAG = 0x4D73CEBD
+	TAG = 0x4D73CEBD # Localization Tags Built
 	TYPE = 'Localization'
 
 	def __init__(self, data, container):
@@ -83,7 +83,7 @@ class KeyNamesSection(dat1lib.types.sections.StringsSection):
 #
 
 class ValuesSection(dat1lib.types.sections.StringsSection):
-	TAG = 0x70A382B8
+	TAG = 0x70A382B8 # Localization Text Built
 	TYPE = 'Localization'
 
 	def __init__(self, data, container):

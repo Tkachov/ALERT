@@ -28,7 +28,7 @@ class AssetTypeSection(dat1lib.types.sections.Section):
 		0: "level", 1: "zone", 2: "actor", 3: "conduit", 4: "config",
 		5: "cinematic2", 6: "model", 7: "animclip", 8: "animset", 9: "material",
 		10: "materialgraph", 11: "texture", 12: "atmosphere", 13: "visualeffect", 14: "soundbank",
-		15: "localization", 18: "zonelightbin",
+		15: "localization", 18: "zonelightbin", 19: "levellight", 20: "nodegraph",
 		22: "wwiselookup"
 	}
 

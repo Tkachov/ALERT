@@ -72,9 +72,9 @@ class MeshesSection(dat1lib.types.sections.Section):
 		print("")
 		#######........ | 123  1234567812345678  12345678  12345678  12345678  12345678  12345678
 		print("           #             mesh_id  vert_off  vertexes  indx_off   indexes  material")
-		print("                                         ?         ?         ?         ?         ?")
-		print("                                     flags  sknb_off  sknb_cnt         ?         ?")
-		print("                                                   ?         ?  rcra_wgt         ?")
+		print("                               ?         ?         ?         ?         ?")
+		print("                           flags  sknb_off  sknb_cnt         ?         ?")
+		print("                                         ?         ?  rcra_wgt         ?")
 		print("         -------------------------------------------------------------------------")
 
 		for i, l in enumerate(self.meshes):
