@@ -240,9 +240,9 @@ class ModelInjector(object):
 			mesh.indexStart = new_mesh[2]
 			mesh.indexCount = new_mesh[3]
 			mesh.first_skin_batch = new_mesh[4]
-			mesh.first_weight_index = new_mesh[5]
+			if (mesh.get_flags() & 0x100) > 0:
+				mesh.first_weight_index = new_mesh[5]
 			mesh.skin_batches_count = new_mesh[6]
-			mesh.flags = mesh.flags | 0x100 # use new weights buffer
 
 		self.refresh_section(SECTION_MESHES)
 

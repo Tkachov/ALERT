@@ -112,13 +112,24 @@ class Vertex_I29(object):
 		nZ = int(bits[0:12], 2)  # 12 bits
 		nY = int(bits[12:22], 2) # 10 bits
 		nX = int(bits[22:32], 2) # 10 bits
+		
+		if False:
+			nX = nX/511.0 - 1.0
+			nY = nY/511.0 - 1.0
+			zz = 1 - nX*nX - nY*nY
+			if zz < 0:
+				zz *= -1
+			nZ = math.sqrt(zz)
 
-		nX = nX/511.0 - 1.0
-		nY = nY/511.0 - 1.0
-		zz = 1 - nX*nX - nY*nY
-		if zz < 0:
-			zz *= -1
-		nZ = math.sqrt(zz)
+			sgn = -1
+			if bits[0] == '1':
+				sgn = 1
+			nZ *= sgn			
+		else:
+			nX = nX/511.0 - 1.0
+			nY = nY/511.0 - 1.0
+			nZ = nZ/2047.0 - 1.0
+
 		self.nx, self.ny, self.nz = nX, nY, nZ
 
 		#
@@ -137,7 +148,7 @@ class Vertex_I29(object):
 
 		nX = (self.nx + 1.0)*511.0
 		nY = (self.ny + 1.0)*511.0
-		nZ = (self.ny + 1.0)*2047.0
+		nZ = (self.nz + 1.0)*2047.0
 		nX = int(nX)
 		nY = int(nY)
 		nZ = int(nZ)
