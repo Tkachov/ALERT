@@ -227,7 +227,7 @@ class x5A39FAB7_Section(dat1lib.types.sections.Section):
 #
 
 class x5240C82B_Section(dat1lib.types.sections.Section):
-	TAG = 0x5240C82B
+	TAG = 0x5240C82B # Model Skin Joint Remap
 	TYPE = 'Model'
 
 	def __init__(self, data, container):

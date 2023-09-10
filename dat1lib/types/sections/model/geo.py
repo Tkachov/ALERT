@@ -134,8 +134,8 @@ class Vertex_I29(object):
 
 		#
 
-		self.u = self.u/16384.0
-		self.v = self.v/16384.0
+		self.u = self.u/32768.0
+		self.v = self.v/32768.0
 
 	@classmethod
 	def empty(cls):
@@ -157,8 +157,8 @@ class Vertex_I29(object):
 		nZ = struct.unpack("<H", struct.pack("<h", nZ))[0]	
 		NXYZ = (nX & 0b1111111111) | ((nY & 0b1111111111) << 10) | ((nZ & 0b111111111111) << 20)
 
-		U = self.u * 16384.0
-		V = self.v * 16384.0
+		U = self.u * 32768.0
+		V = self.v * 32768.0
 		U, V = int(U), int(V)
 
 		return struct.pack("<4hI2h", X, Y, Z, W, NXYZ, U, V)
@@ -278,7 +278,7 @@ class VertexesSection(dat1lib.types.sections.Section):
 ###
 
 class x6B855EED_Section(dat1lib.types.sections.Section):
-	TAG = 0x6B855EED
+	TAG = 0x6B855EED # Model UV1 Vert
 	TYPE = 'model'
 
 	def __init__(self, data, container):
@@ -303,23 +303,39 @@ class x6B855EED_Section(dat1lib.types.sections.Section):
 		# examples: 855A86B217E053FB (min size), AE2DF2353798682F (max size)
 
 		# same amount as vertexes
-		# looks like a bunch of uints
-		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<I")
+		self.uvs = utils.read_struct_array_data(data, "<2h")
+
+	def save(self):
+		of = io.BytesIO(bytes())
+		for uv in self.uvs:
+			of.write(struct.pack("<2h", *uv))
+		of.seek(0)
+		return of.read()
+
+	def get_uv(self, index):
+		u, v = self.uvs[index]
+		u = u / 32768.0
+		v = v / 32768.0
+		return (u, v)
+
+	def set_uv(self, index, u, v):
+		u = u * 32768.0
+		v = v * 32768.0
+		self.uvs[index] = (int(u), int(v))
 
 	def get_short_suffix(self):
-		return "? ({})".format(len(self.values))
+		return "UV1s ({})".format(len(self.uvs))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | ?            | {:6} uints".format(self.TAG, len(self.values)))
-		print(self.values[:32], "...", self.values[-32:])
+		print("{:08X} | Vertex UV1   | {:6} UVs".format(self.TAG, len(self.uvs)))
 		print("")
 
 	def web_repr(self):
-		return {"name": "Vertex-related 1", "type": "text", "readonly": True, "content": "{} uints".format(len(self.values))}
+		return {"name": "Vertex UV1", "type": "text", "readonly": True, "content": "{} UVs".format(len(self.values))}
 
 class ColorsSection(dat1lib.types.sections.Section):
 	TAG = 0x5CBA9DE9 # Model Col Vert
@@ -356,7 +372,7 @@ class ColorsSection(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "? ({})".format(len(self.values))
+		return "colors ({})".format(len(self.values))
 
 	def print_verbose(self, config):
 		if config.get("web", False):

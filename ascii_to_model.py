@@ -9,6 +9,7 @@ import dat1lib.utils as utils
 
 SECTION_INDEXES     = dat1lib.types.sections.model.geo.IndexesSection.TAG
 SECTION_VERTEXES    = dat1lib.types.sections.model.geo.VertexesSection.TAG
+SECTION_UV1         = dat1lib.types.sections.model.geo.x6B855EED_Section.TAG
 SECTION_LOOK        = dat1lib.types.sections.model.look.ModelLookSection.TAG
 SECTION_MESHES      = dat1lib.types.sections.model.meshes.MeshesSection.TAG
 SECTION_SKIN_BATCH  = dat1lib.types.sections.model.skin.ModelSkinBatchSection.TAG
@@ -174,6 +175,8 @@ class ModelInjector(object):
 		self.rcra_weights_section = None if model is None else model.dat1.get_section(SECTION_RCRA_SKIN)
 		self.current_rcra_weight_index = 0
 
+		self.uv1_section = None if model is None else model.dat1.get_section(SECTION_UV1)
+
 	#
 
 	def inject(self, model, ascii_data):
@@ -293,6 +296,7 @@ class ModelInjector(object):
 		self.refresh_section(SECTION_SKIN_DATA)
 		self.refresh_section(SECTION_SKIN_BATCH)
 		self.refresh_section(SECTION_RCRA_SKIN)
+		self.refresh_section(SECTION_UV1)
 
 		return meshes_updates
 
@@ -304,6 +308,8 @@ class ModelInjector(object):
 		v.nx, v.ny, v.nz = nxyz
 		v.u, v.v = uv
 		self.vertexes_section.vertexes[self.current_vertex_index] = v
+		if self.uv1_section:
+			self.uv1_section.set_uv(self.current_vertex_index, *uv)
 		self.current_vertex_index += 1
 
 	def write_face(self, face, vertex_offset):

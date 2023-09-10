@@ -9,6 +9,7 @@ import struct
 
 SECTION_INDEXES     = dat1lib.types.sections.model.geo.IndexesSection.TAG
 SECTION_VERTEXES    = dat1lib.types.sections.model.geo.VertexesSection.TAG
+SECTION_UV1         = dat1lib.types.sections.model.geo.x6B855EED_Section.TAG
 SECTION_LOOK        = dat1lib.types.sections.model.look.ModelLookSection.TAG
 SECTION_MESHES      = dat1lib.types.sections.model.meshes.MeshesSection.TAG
 SECTION_SKIN_BATCH  = dat1lib.types.sections.model.skin.ModelSkinBatchSection.TAG
@@ -96,6 +97,7 @@ class AsciiWriter(object):
 			self.meshes = s.meshes
 
 		self.materials_section = None if model is None else model.dat1.get_section(SECTION_MATERIALS)
+		self.uv1_section = None if model is None else model.dat1.get_section(SECTION_UV1)
 
 	#
 
@@ -355,6 +357,10 @@ class AsciiWriter(object):
 		uv = f"{fmt(v.u)} {fmt(v.v)}"
 		groups = "0 0 0 0"
 		weights = "1 0 0 0"
+
+		if self.uv1_section is not None:
+			U, V = self.uv1_section.get_uv(vertex_index)
+			uv = f"{fmt(U)} {fmt(V)}" # " # {uv}"
 
 		if skin is not None:
 			groups, weights = self.get_weights(weight_index, skin, groups_count)
