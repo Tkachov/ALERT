@@ -58,7 +58,7 @@ class Material2(Material):
 	# examples: 820B8E05982851D5 (min size), 9C59C707EF49E793 (max size), 8000B10F551366C6 (2 sections), 8061D72FD2A04308 (12 sections)
 
 class MaterialRcra(Material):
-	MAGIC = 0x7C7BD7D6
+	MAGIC = 0x88730155
 
 	# RCRA
 	# 5721 occurrences
