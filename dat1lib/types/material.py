@@ -67,7 +67,7 @@ class MaterialRcra_v726(Material):
 	#
 	# examples: A6D6F52A42745073 (min size), 86C3AF142CFEE07A (max size), 8005441D2C016BE3 (2 sections), 809DFDB0DCB29FD0 (11 sections)
 
-class MaterialRcra(MaterialRcra):
+class MaterialRcra(Material):
 	MAGIC = 0x8873015
 
 	# RCRA ver. 1.922.0.0
