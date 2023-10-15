@@ -10,6 +10,12 @@ class ReferencesSection(dat1lib.types.sections.ReferencesSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.ReferencesSection.__init__(self, data, container)
 
+		# SO
+		# 1502 occurrences in 3415 files
+		# size = 4..2444 (avg = 23.7)
+		#
+		# examples: 004CD30B (min size), 918BAE9C (max size)
+
 		# MSMR
 		# 1276 occurrences in 2521 files
 		# size = 16..6336 (avg = 100.3)

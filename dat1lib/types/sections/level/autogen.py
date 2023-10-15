@@ -3,6 +3,7 @@ import io
 import struct
 
 # there's only 1 Level:
+# - SO      -- 34ABC921         (levels/sunset_city/sunset_city.level)
 # - MSMR/MM -- 93243FC0D3FE0498 (levels/i20_city/i20_city.level)
 # - RCRA    -- 95A02E80D5D79CF7 (levels/i29/i29.level)
 
@@ -49,6 +50,7 @@ class x2236C47A_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 11844
 		# MSMR: size = 8920
 		# MM: size = 8420
 		# RCRA: size = 3440
@@ -83,6 +85,7 @@ class x2BA33702_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 14916
 		# MSMR: size = 49212
 		# MM: size = 42124
 		# RCRA: size = 36704
@@ -117,6 +120,7 @@ class x3395AEC1_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 118440
 		# MSMR: size = 107040
 		# MM: size = 101040
 		# RCRA: size = 41280
@@ -151,6 +155,7 @@ class x339C970E_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 383992
 		# MSMR: size = 996932
 		# MM: size = 266284
 		# RCRA: size = 148492
@@ -185,6 +190,7 @@ class x396F9418_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 15712
 		# MSMR: size = 66348
 		# MM: size = 50724
 		# RCRA: size = 43776
@@ -219,6 +225,7 @@ class x4130D903_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 1964
 		# MSMR: size = 7372
 		# MM: size = 5636
 		# RCRA: size = 4864
@@ -253,6 +260,7 @@ class x41887FB3_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 4032
 		# MSMR: size = 12560
 		# MM: size = 8384
 		# RCRA: size = 4992
@@ -287,6 +295,7 @@ class x4E023760_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 29832
 		# MSMR: size = 147636
 		# MM: size = 126372
 		# RCRA: size = 110112
@@ -424,6 +433,7 @@ class x7CA7267D_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 36
 		# MSMR: size = 36
 		# MM: size = 36
 		# RCRA: size = 36
@@ -459,6 +469,7 @@ class x95F91E24_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 9702
 		# MSMR: size = 41632
 		# MM: size = 31346
 		# RCRA: size = 20270
@@ -493,6 +504,7 @@ class xC30D92B6_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO: size = 7040
 		# MSMR: size = 17712
 		# MM: size = 17904
 		# RCRA: size = 22032

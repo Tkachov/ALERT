@@ -57,6 +57,12 @@ class ModelBuiltSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 8780 occurrences in 8780 files (always present)
+		# size = 72
+		#
+		# examples: 000096E6
+
 		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 120
@@ -101,6 +107,12 @@ class ModelMaterialSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 8775 occurrences in 8780 files
+		# size = 32..1600 (avg = 68.8)
+		#
+		# examples: 000096E6 (min size), BC808EB3 (max size)
 
 		# MSMR
 		# 38298 occurrences in 38298 files (always present)
@@ -175,6 +187,12 @@ class x0AD3A708_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 3470 occurrences in 8780 files
+		# size = 36..2916 (avg = 302.5)
+		#
+		# examples: 00755370 (min size), ABB68111 (max size)
+
 		# MSMR
 		# 2122 occurrences in 38298 files
 		# size = 36..63476 (avg = 913.3)
@@ -224,6 +242,12 @@ class x707F1B58_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 5176 occurrences in 8780 files
+		# size = 112..76048 (avg = 1134.9)
+		#
+		# examples: 15C0082C (min size), 7E3E18BC (max size)
 
 		# MSMR
 		# 33628 occurrences in 38298 files

@@ -9,6 +9,13 @@ class WwiseBankSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 1473 occurrences in 1473 files (always present)
+		# size = 32..25923498 (avg = 343357.2)
+		# always last
+		#
+		# examples: 0E877128 (min size), 5264EACE (max size)
+
 		# MSMR
 		# 1345 occurrences in 1345 files (always present)
 		# size = 32..29272753 (avg = 769806.9)

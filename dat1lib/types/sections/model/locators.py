@@ -10,6 +10,12 @@ class LocatorsMapSection(dat1lib.types.sections.UintUintMapSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.UintUintMapSection.__init__(self, data, container)
 
+		# SO
+		# 1498 occurrences in 8780 files
+		# size = 8..1648 (avg = 82.5)
+		#
+		# examples: 00732A1F (min size), 7E3E18BC (max size)
+
 		# MSMR
 		# 1401 occurrences in 38298 files
 		# size = 8..2944 (avg = 312.4)
@@ -66,6 +72,12 @@ class LocatorsSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 1498 occurrences in 8780 files
+		# size = 64..13184 (avg = 660.1)
+		#
+		# examples: 00732A1F (min size), 7E3E18BC (max size)
+
 		# MSMR
 		# 1401 occurrences in 38298 files
 		# size = 64..23552 (avg = 2499.7)
@@ -118,6 +130,12 @@ class LocatorRelatedSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 31 occurrences in 8780 files
+		# size = 480..1776 (avg = 720.5)
+		#
+		# examples: 0395209B (min size), 0DF0DDA9 (max size)
 
 		# MSMR
 		# 39 occurrences in 38298 files

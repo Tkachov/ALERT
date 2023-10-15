@@ -11,6 +11,12 @@ class IndexesSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 8775 occurrences in 8780 files
+		# size = 6..2667096 (avg = 24884.3)
+		#
+		# examples: 2AD6B126 (min size), 7929FC02 (max size)
+
 		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 6..10127496 (avg = 21726.4)
@@ -169,6 +175,12 @@ class VertexesSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 8775 occurrences in 8780 files
+		# size = 48..8854176 (avg = 56787.4)
+		#
+		# examples: 2AD6B126 (min size), 7929FC02 (max size)
 
 		# MSMR
 		# 38298 occurrences in 38298 files (always present)
@@ -343,6 +355,12 @@ class ColorsSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 1425 occurrences in 8780 files
+		# size = 16..2213544 (avg = 22159.5)
+		#
+		# examples: 08BEC68D (min size), 7929FC02 (max size)
 
 		# MSMR
 		# 11302 occurrences in 38298 files

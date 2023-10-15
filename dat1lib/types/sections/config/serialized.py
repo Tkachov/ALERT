@@ -11,6 +11,12 @@ class ConfigTypeSection(dat1lib.types.sections.SerializedSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
 
+		# SO
+		# 2536 occurrences in 3415 files (all .config?)
+		# size = 48..76 (avg = 60.1)
+		#
+		# examples: 27C1C2B6 (min size), 01733293 (max size)
+
 		# MSMR
 		# 2521 occurrences in 2521 files (always present)
 		# size = 56..84 (avg = 65.1)
@@ -52,6 +58,12 @@ class ConfigContentSection(dat1lib.types.sections.SerializedSection):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
+
+		# SO
+		# 2536 occurrences in 3415 files (all .config?)
+		# size = 16..336060 (avg = 1784.8)
+		#
+		# examples: 2317AE31 (min size), 88E8D092 (max size)
 
 		# MSMR
 		# 2521 occurrences in 2521 files (always present)

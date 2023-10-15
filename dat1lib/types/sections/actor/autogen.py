@@ -10,6 +10,12 @@ class x364A6C7C_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 2568 occurrences in 2568 files (always present)
+		# size = 112..184 (avg = 168.2)
+		#
+		# examples: 01668585 (min size), 18D35F13 (max size)
+
 		# MSMR
 		# 5167 occurrences in 5167 files (always present)
 		# size = 176..320 (avg = 301.3)

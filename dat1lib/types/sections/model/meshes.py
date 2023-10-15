@@ -27,6 +27,12 @@ class MeshesSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 8775 occurrences in 8780 files
+		# size = 64..12032 (avg = 270.9)
+		#
+		# examples: 000096E6 (min size), 7929FC02 (max size)
+
 		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 64..56064 (avg = 305.0)

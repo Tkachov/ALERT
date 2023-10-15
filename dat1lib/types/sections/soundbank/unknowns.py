@@ -16,6 +16,12 @@ class EventsSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 1436 occurrences in 1473 files
+		# size = 16..58672 (avg = 2086.6)
+		#
+		# examples: 0A39177E (min size), 91C12D8E (max size)
+
 		# MSMR
 		# 1309 occurrences in 1345 files
 		# size = 16..123424 (avg = 1184.0)
@@ -62,6 +68,12 @@ class StringsSection(dat1lib.types.sections.StringsSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.StringsSection.__init__(self, data, container)
 
+		# SO
+		# 1473 occurrences in 1473 files (always present)
+		# size = 32..84851 (avg = 3031.1)
+		#
+		# examples: D39E6518 (min size), 91C12D8E (max size)
+
 		# MSMR
 		# 1345 occurrences in 1345 files (always present)
 		# size = 36..188456 (avg = 1981.2)
@@ -98,6 +110,13 @@ class HeaderSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 1473 occurrences in 1473 files (always present)
+		# size = 64
+		# always first
+		#
+		# examples: 010FB3C2
 
 		# MSMR
 		# 1345 occurrences in 1345 files (always present)

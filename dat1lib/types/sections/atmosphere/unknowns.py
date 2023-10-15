@@ -12,6 +12,13 @@ class HeaderSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 16 occurrences in 16 files (always present)
+		# size = 131552
+		# always first
+		#
+		# examples: 00B27A40
+
 		# MSMR
 		# 133 occurrences in 133 files (always present)
 		# size = 1576
@@ -140,6 +147,13 @@ class xE7997256_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 16 occurrences in 16 files (always present)
+		# size = 2244624
+		# always last
+		#
+		# examples: 00B27A40
 
 		# MSMR
 		# 66 occurrences in 133 files

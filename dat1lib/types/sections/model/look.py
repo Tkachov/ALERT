@@ -28,6 +28,12 @@ class ModelLookSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 8775 occurrences in 8780 files
+		# size = 16
+		#
+		# examples: 000096E6
+
 		# MSMR
 		# 38298 occurrences in 38298 files (always present)
 		# size = 32..2080 (avg = 34.1)

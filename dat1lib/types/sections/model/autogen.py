@@ -195,6 +195,12 @@ class x5A39FAB7_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 558 occurrences in 8780 files
+		# size = 32..544 (avg = 90.8)
+		#
+		# examples: 00B7CEF1 (min size), 165E0270 (max size)
+
 		# MSMR
 		# 64 occurrences in 38298 files
 		# size = 38..1414 (avg = 388.9)
@@ -232,6 +238,12 @@ class x5240C82B_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 2 occurrences in 8780 files
+		# size = 2794..6014 (avg = 4404.0)
+		#
+		# examples: 4C49135A (min size), 7E3E18BC (max size)
 
 		# MSMR
 		# 77 occurrences in 38298 files

@@ -9,7 +9,19 @@ class x81999057_Section(dat1lib.types.sections.SerializedSection):
 	TYPE = 'Zone'
 
 	def __init__(self, data, container):
-		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
+		if container.version == dat1lib.VERSION_SO:
+			dat1lib.types.sections.Section.__init__(self, data, container) # TODO: make SerializedSection_I16
+			self.root = None
+			self.extras = []
+
+		else:
+			dat1lib.types.sections.SerializedSection.__init__(self, data, container)
+
+		# SO
+		# 1467 occurrences in 4936 files
+		# size = 32..156688 (avg = 14497.5)
+		#
+		# examples: 02ADA8DE (min size), 9F96A54E (max size)
 
 		# MSMR
 		# 4959 occurrences in 12274 files
@@ -49,7 +61,19 @@ class x2300D240_Section(dat1lib.types.sections.SerializedSection):
 	TYPE = 'Zone'
 
 	def __init__(self, data, container):
-		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
+		if container.version == dat1lib.VERSION_SO:
+			dat1lib.types.sections.Section.__init__(self, data, container) # TODO: make SerializedSection_I16
+			self.root = None
+			self.extras = []
+
+		else:
+			dat1lib.types.sections.SerializedSection.__init__(self, data, container)
+
+		# SO
+		# 1094 occurrences in 4936 files
+		# size = 16..368428 (avg = 5927.6)
+		#
+		# examples: 4FF6E72F (min size), EC99AF96 (max size)
 
 		# MSMR
 		# 2929 occurrences in 12274 files

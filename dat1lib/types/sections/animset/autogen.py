@@ -65,6 +65,12 @@ class AnimDriverVarInfoSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 64 occurrences in 901 files
+		# size = 12..3504 (avg = 255.1)
+		#
+		# examples: 10DD7F51 (min size), EA60260B (max size)
+
 		# MSMR
 		# 134 occurrences in 1683 files
 		# size = 12..4992 (avg = 189.0)

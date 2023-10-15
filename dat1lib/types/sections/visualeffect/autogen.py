@@ -11,6 +11,13 @@ class x3F03BE86_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 2348 occurrences in 2348 files (always present)
+		# size = 56..952 (avg = 155.1)
+		# always first
+		#
+		# examples: 004EFE9F (min size), C84921AA (max size)
+
 		# MSMR
 		# 4957 occurrences in 4957 files (always present)
 		# size = 120..3600 (avg = 429.4)
@@ -154,6 +161,12 @@ class xAF650E9E_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 2126 occurrences in 2348 files
+		# size = 8..112 (avg = 23.5)
+		#
+		# examples: 004EFE9F (min size), 4DB5928D (max size)
+
 		# MSMR
 		# 4335 occurrences in 4957 files
 		# size = 8..184 (avg = 29.7)
@@ -201,6 +214,12 @@ class xB1F4C248_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 2348 occurrences in 2348 files (always present)
+		# size = 112..5120 (avg = 752.5)
+		#
+		# examples: 00F36388 (min size), 4DB5928D (max size)
 
 		# MSMR
 		# 4957 occurrences in 4957 files (always present)
@@ -250,6 +269,12 @@ class xB40E134B_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 673 occurrences in 2348 files
+		# size = 12..96 (avg = 19.4)
+		#
+		# examples: 00421581 (min size), 0551BB2C (max size)
+
 		# MSMR
 		# 2282 occurrences in 4957 files
 		# size = 12..336 (avg = 26.9)
@@ -297,6 +322,12 @@ class xB86CF442_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 2348 occurrences in 2348 files (always present)
+		# size = 264..6336 (avg = 1018.2)
+		#
+		# examples: 004EFE9F (min size), 4DB5928D (max size)
 
 		# MSMR
 		# 4884 occurrences in 4957 files
@@ -346,6 +377,12 @@ class xC3CC2AB5_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 1700 occurrences in 2348 files
+		# size = 244..3904 (avg = 744.0)
+		#
+		# examples: 00A72C3E (min size), C84921AA (max size)
+
 		# MSMR
 		# 3727 occurrences in 4957 files
 		# size = 448..12992 (avg = 1803.2)
@@ -394,6 +431,12 @@ class xD78E007C_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 2348 occurrences in 2348 files (always present)
+		# size = 112..3344 (avg = 519.9)
+		#
+		# examples: 004EFE9F (min size), 4DB5928D (max size)
+
 		# MSMR
 		# 4957 occurrences in 4957 files (always present)
 		# size = 32..8096 (avg = 1118.9)
@@ -441,6 +484,12 @@ class xEFD8600D_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 37 occurrences in 2348 files
+		# size = 16
+		#
+		# examples: 0144F83C
 
 		# MSMR
 		# 47 occurrences in 4957 files

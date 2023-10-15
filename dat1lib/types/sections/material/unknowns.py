@@ -238,6 +238,13 @@ class xE1275683_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 6925 occurrences in 6925 files (always present)
+		# size = 36
+		# always first
+		#
+		# examples: 000C8FCD
+
 		# MSMR
 		# 13178 occurrences in 13178 files (always present)
 		# size = 40

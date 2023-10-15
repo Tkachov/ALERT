@@ -15,6 +15,13 @@ class x212BD372_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 607 occurrences in 1251 files
+		# met in AnimSetPerformanceSet_I16, Cinematic2_I16
+		# size = 20..2884 (avg = 190.6)
+		#
+		# examples: 0046BE13 (min size), A563E049 (max size)
+
 		# MSMR
 		# 2174 occurrences in 2407 files
 		# met in AnimSet/PerformanceSet, Cinematic2
@@ -86,6 +93,13 @@ class AnimSetBuiltSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 1251 occurrences in 1251 files (always present)
+		# met in AnimSetPerformanceSet_I16, Cinematic2_I16
+		# size = 20
+		#
+		# examples: 0046BE13
+
 		# MSMR
 		# 2407 occurrences in 2407 files (always present)
 		# met in AnimSet/PerformanceSet, Cinematic2
@@ -134,6 +148,13 @@ class AnimDriverClassBuiltSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 617 occurrences in 1251 files
+		# met in AnimSetPerformanceSet_I16, Cinematic2_I16
+		# size = 80..504960 (avg = 4933.5)
+		#
+		# examples: 04793899 (min size), A563E049 (max size)
 
 		# MSMR
 		# 1207 occurrences in 2407 files
@@ -191,6 +212,13 @@ class AnimClipLookupSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 1208 occurrences in 1251 files
+		# met in AnimSetPerformanceSet_I16, Cinematic2_I16
+		# size = 16..102528 (avg = 933.8)
+		#
+		# examples: 00CE6212 (min size), A563E049 (max size)
+
 		# MSMR
 		# 2175 occurrences in 2407 files
 		# met in AnimSet/PerformanceSet, Cinematic2
@@ -246,6 +274,13 @@ class AnimDriverClassDataSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 617 occurrences in 1251 files
+		# met in AnimSetPerformanceSet_I16, Cinematic2_I16
+		# size = 96..605952 (avg = 6902.0)
+		#
+		# examples: 04793899 (min size), A563E049 (max size)
+
 		# MSMR
 		# 1204 occurrences in 2407 files
 		# met in AnimSet/PerformanceSet, Cinematic2
@@ -299,6 +334,13 @@ class AnimDriverClassLookupSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 617 occurrences in 1251 files
+		# met in AnimSetPerformanceSet_I16, Cinematic2_I16
+		# size = 16..100992 (avg = 986.7)
+		#
+		# examples: 04793899 (min size), A563E049 (max size)
+
 		# MSMR
 		# 1207 occurrences in 2407 files
 		# met in AnimSet/PerformanceSet, Cinematic2
@@ -351,6 +393,13 @@ class AnimClipDataSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 1208 occurrences in 1251 files
+		# met in AnimSetPerformanceSet_I16, Cinematic2_I16
+		# size = 272..48115944 (avg = 620523.3)
+		#
+		# examples: B5F55891 (min size), EA60260B (max size)
 
 		# MSMR
 		# 783 occurrences in 2407 files

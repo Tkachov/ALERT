@@ -14,6 +14,13 @@ class x1CAFE804_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 950 occurrences in 1012 files
+		# met only in MaterialGraph
+		# size = 16..608 (avg = 100.9)
+		#
+		# examples: 08B1979D (min size), 3E35F844 (max size)
+
 		# MSMR
 		# 4423 occurrences in 1049 files
 		# met in Material, MaterialGraph
@@ -74,6 +81,13 @@ class x45C4F4C0_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 846 occurrences in 1012 files
+		# met only in MaterialGraph
+		# size = 8..672 (avg = 115.3)
+		#
+		# examples: 1BDC5883 (min size), 5DBE1A14 (max size)
 
 		# MSMR
 		# 4389 occurrences in 1049 files
@@ -137,6 +151,13 @@ class xA59F667B_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 846 occurrences in 1012 files
+		# met only in MaterialGraph
+		# size = 16..416 (avg = 85.6)
+		#
+		# examples: 02670F45 (min size), 3E35F844 (max size)
 
 		# MSMR
 		# 4389 occurrences in 1049 files
@@ -288,6 +309,13 @@ class xBC93FB5E_Section(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 1012 occurrences in 1012 files (always present)
+		# met only in MaterialGraph
+		# size = 20..40 (avg = 38.9)
+		#
+		# examples: 02670F45 (min size), 007C5193 (max size)
+
 		# MSMR
 		# 4530 occurrences in 1049 files
 		# met in Material, MaterialGraph
@@ -338,6 +366,12 @@ class xC24B19D9_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# met only in MaterialGraph
+		# size = 16
+		#
+		# examples: 7376D96B
 
 		# MSMR
 		# 279 occurrences in 1049 files

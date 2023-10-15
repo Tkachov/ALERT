@@ -10,6 +10,13 @@ class ActorModelNameSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 2568 occurrences in 2568 files (always present)
+		# size = 4
+		# always first
+		#
+		# examples: 006C6ED7
+
 		# MSMR
 		# 5167 occurrences in 5167 files (always present)
 		# size = 4
@@ -52,6 +59,12 @@ class ActorAssetRefsSection(dat1lib.types.sections.ReferencesSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.ReferencesSection.__init__(self, data, container)
 
+		# SO
+		# 2442 occurrences in 2568 files
+		# size = 4..256 (avg = 23.1)
+		#
+		# examples: 021282FE (min size), 42C7BBC2 (max size)
+
 		# MSMR
 		# 4928 occurrences in 5167 files
 		# size = 16..2336 (avg = 101.9)
@@ -86,6 +99,12 @@ class ComponentDefinitionsSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 2253 occurrences in 2568 files
+		# size = 16..368 (avg = 69.2)
+		#
+		# examples: 0100BDAE (min size), F0C5BEFF (max size)
 
 		# MSMR
 		# 4301 occurrences in 5167 files
@@ -139,6 +158,12 @@ class ComponentsDataSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 2059 occurrences in 2568 files
+		# size = 32..8480 (avg = 873.0)
+		#
+		# examples: 0BB4FB78 (min size), 50556F1C (max size)
 
 		# MSMR
 		# 3506 occurrences in 5167 files

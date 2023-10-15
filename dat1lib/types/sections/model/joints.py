@@ -12,6 +12,12 @@ class JointsMapSection(dat1lib.types.sections.UintUintMapSection):
 	def __init__(self, data, container):
 		dat1lib.types.sections.UintUintMapSection.__init__(self, data, container)
 
+		# SO
+		# 3508 occurrences in 8780 files
+		# size = 16..3976 (avg = 246.7)
+		#
+		# examples: 0078706C (min size), 7E3E18BC (max size)
+
 		# MSMR
 		# 2311 occurrences in 38298 files
 		# size = 16..25416 (avg = 458.6)
@@ -56,6 +62,12 @@ class JointsSection(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 3508 occurrences in 8780 files
+		# size = 16..7936 (avg = 477.5)
+		#
+		# examples: 0078706C (min size), 7E3E18BC (max size)
 
 		# MSMR
 		# 2311 occurrences in 38298 files
@@ -109,6 +121,12 @@ class xDCC88A19_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 3508 occurrences in 8780 files
+		# size = 128..55552 (avg = 3366.9)
+		#
+		# examples: 0078706C (min size), 7E3E18BC (max size)
 
 		# MSMR
 		# 2311 occurrences in 38298 files
@@ -230,6 +248,12 @@ class xC5354B60_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 3508 occurrences in 8780 files
+		# size = 4..1676 (avg = 76.4)
+		#
+		# examples: 0078706C (min size), 7E3E18BC (max size)
 
 		# MSMR
 		# 2311 occurrences in 38298 files

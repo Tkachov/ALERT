@@ -1,3 +1,4 @@
+import dat1lib
 import dat1lib.crc32 as crc32
 import dat1lib.crc64 as crc64
 import io
@@ -12,6 +13,10 @@ class Section(object):
 	def __init__(self, data, container):
 		self._raw = data
 		self._dat1 = container
+
+		self.version = None
+		if self._dat1 is not None:
+			self.version = self._dat1.version
 
 	def save(self):
 		return self._raw
@@ -101,8 +106,12 @@ class SerializedSection(Section):
 		result = {}
 
 		zero, unknown, children_count, data_len = struct.unpack("<IIII", f.read(16))
-		if zero != 0 or unknown != 0x03150044:
-			print("[!] Strange serialized object header: zero={}, unknown={:08X}".format(zero, unknown))
+		if self.version == dat1lib.VERSION_SO:
+			if zero != 0 or unknown != 0x07201969:
+				print("[!] Strange serialized object header: zero={}, unknown={:08X}".format(zero, unknown))
+		else:
+			if zero != 0 or unknown != 0x03150044:
+				print("[!] Strange serialized object header: zero={}, unknown={:08X}".format(zero, unknown))
 
 		start = f.tell()
 		children = [struct.unpack("<IHBB", f.read(8)) for i in range(children_count)]

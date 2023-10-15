@@ -40,6 +40,12 @@ class HavokSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 8550 occurrences in 8780 files
+		# size = 384..11708880 (avg = 127925.2)
+		#
+		# examples: 000096E6 (min size), 68A85431 (max size)
+
 		# MSMR
 		# 9987 occurrences in 38298 files
 		# size = 1976..349824 (avg = 16819.7)
@@ -58,7 +64,13 @@ class HavokSection(dat1lib.types.sections.Section):
 		#
 		# examples: 80028A780883AD15 (min size), B5EE7D94C1E5BC7B (max size)
 
-		self.data = HavokData(io.BytesIO(data))
+		self.version = self._dat1.version
+		if self.version is None:
+			self.version = dat1lib.VERSION_MSMR
+
+		self.data = None
+		if self.version != dat1lib.VERSION_SO:
+			self.data = HavokData(io.BytesIO(data))
 
 	def get_short_suffix(self):
 		return "havok"

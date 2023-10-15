@@ -32,6 +32,12 @@ class ModelSkinBatchSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 3470 occurrences in 8780 files
+		# size = 16..4848 (avg = 204.3)
+		#
+		# examples: 0078706C (min size), 7E3E18BC (max size)
+
 		# MSMR
 		# 2121 occurrences in 38298 files
 		# size = 16..16256 (avg = 453.0)
@@ -83,6 +89,12 @@ class ModelSkinDataSection(dat1lib.types.sections.Section): # vertex weights
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 3470 occurrences in 8780 files
+		# size = 4..845968 (avg = 31616.6)
+		#
+		# examples: 1254B70A (min size), EED9B1B8 (max size)
 
 		# MSMR
 		# 2121 occurrences in 38298 files

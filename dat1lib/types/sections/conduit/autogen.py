@@ -11,6 +11,12 @@ class ConduitAssetRefsSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
+		# SO
+		# 575 occurrences in 3415 files
+		# size = 4..380 (avg = 14.6)
+		#
+		# examples: 04458CBC (min size), 1F436835 (max size)
+
 		# MSMR
 		# 708 occurrences in 1234 files
 		# size = 16..1728 (avg = 71.3)
@@ -58,6 +64,12 @@ class xCEB30E68_Section(dat1lib.types.sections.Section):
 
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
+
+		# SO
+		# 879 occurrences in 3415 files (all .conduit?)
+		# size = 76..255484 (avg = 7950.3)
+		#
+		# examples: 0AC7F086 (min size), C9A19964 (max size)
 
 		# MSMR
 		# 1234 occurrences in 1234 files (always present)

@@ -50,22 +50,30 @@ class DAT1(object):
 			self.version = self._outer.version
 
 		position = f.tell()
-		peek = f.read(6)
+		peek = f.read(7)
 		f.seek(position)
 
 		normal_magic = struct.unpack("<I", peek[0:4])[0]
 		compressed_magic = struct.unpack("<I", peek[2:6])[0]
+		rare_compressed_magic = struct.unpack("<I", peek[1:5])[0]
+		rarest_compressed_magic = struct.unpack("<I", peek[3:7])[0] # TODO: research how these compression bytes work and rewrite this
 		if normal_magic == self.MAGIC:
 			# everything's fine
 			pass
 		else:
-			if compressed_magic == self.MAGIC:
+			if compressed_magic == self.MAGIC or rare_compressed_magic == self.MAGIC or rarest_compressed_magic == self.MAGIC:
 				# OK, let's decompress everything
-				_, magic, asset_magic, real_size = struct.unpack("<HIII", f.read(14))
+				if compressed_magic == self.MAGIC:
+					_, magic, asset_magic, real_size = struct.unpack("<HIII", f.read(14))
+				elif rare_compressed_magic == self.MAGIC:
+					_, magic, asset_magic, real_size = struct.unpack("<BIII", f.read(13))
+				else:
+					_, _, magic, asset_magic, real_size = struct.unpack("<HBIII", f.read(15))
 				f.seek(position)
 				## print("compressed: {:08X} {:08X} {}".format(magic, asset_magic, real_size))
 
 				f = decompression.decompress_file(f, real_size)
+
 			else:
 				# fail, doesn't seem to be DAT1
 				# let's try treating it as one
@@ -126,7 +134,15 @@ class DAT1(object):
 					start = i
 					continue
 
-				s = data[start:i].decode('utf-8')
+				s = ""
+				if self.version == dat1lib.VERSION_SO:
+					try:
+						s = data[start:i].decode('ascii')
+					except:
+						start = i+1
+						continue
+				else:
+					s = data[start:i].decode('utf-8')
 				self._strings_map[start] = s
 				self._strings_inverse_map[s] = start
 				start = i+1
