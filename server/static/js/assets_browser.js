@@ -498,7 +498,7 @@ assets_browser = {
 			}
 
 			// model
-			if (info.type == "Model" || info.type == "Model2" || info.type == "ModelRcra") {
+			if (info.type.startsWith("Model")) {
 				var sep = document.createElement("span");
 				sep.className = "separator";
 				links.appendChild(sep);
@@ -513,7 +513,7 @@ assets_browser = {
 			}
 
 			// texture
-			if (info.type == "Texture" || info.type == "TextureRcra") {
+			if (info.type.startsWith("Texture")) {
 				var sep = document.createElement("span");
 				sep.className = "separator";
 				links.appendChild(sep);

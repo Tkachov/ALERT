@@ -132,15 +132,30 @@ class ModelMaterialSection(dat1lib.types.sections.Section):
 		#
 		# examples: 80018BF9BEE4995C (min size), 852FDCBEB5359992 (max size)
 
-		ENTRY_SIZE = 16
-		count = len(data) // 2 // ENTRY_SIZE
-		self.string_offsets = [struct.unpack("<QQ", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]		
-		# matfile, matname
+		self.version = self._dat1.version
 
-		ENTRY_SIZE = 16
-		data2 = data[count * ENTRY_SIZE:]
-		self.triples = [struct.unpack("<QII", data2[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
-		# crc64(matfile), crc32(matname), ?
+		if self.version == dat1lib.VERSION_SO:
+			ENTRY_SIZE = 32
+			count = len(data) // ENTRY_SIZE
+
+			self.string_offsets = []
+			self.rest = []
+
+			for i in range(count):
+				entry = struct.unpack("<8I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])
+				self.string_offsets += [(entry[0], entry[1])]
+				self.rest += [(entry[2], entry[3], entry[4], entry[5], entry[6], entry[7])]
+
+		else:
+			ENTRY_SIZE = 16
+			count = len(data) // 2 // ENTRY_SIZE
+			self.string_offsets = [struct.unpack("<QQ", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
+			# matfile, matname
+
+			ENTRY_SIZE = 16
+			data2 = data[count * ENTRY_SIZE:]
+			self.triples = [struct.unpack("<QII", data2[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
+			# crc64(matfile), crc32(matname), ?
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -152,30 +167,41 @@ class ModelMaterialSection(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "Model Material ({})".format(len(self.triples))
+		return "Model Material ({})".format(len(self.string_offsets))
 
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Materials    | {:6} materials".format(self.TAG, len(self.triples)))
+		print("{:08X} | Materials    | {:6} materials".format(self.TAG, len(self.string_offsets)))
 
-		for i, q in enumerate(self.triples):
-			matfile = self._dat1.get_string(self.string_offsets[i][0])
-			matname = self._dat1.get_string(self.string_offsets[i][1])
+		if self.version == dat1lib.VERSION_SO:
+			for i, q in enumerate(self.string_offsets):
+				matfile = self._dat1.get_string(self.string_offsets[i][0])
+				matname = self._dat1.get_string(self.string_offsets[i][1])
 
-			print("")
-			print("  - {:<2}  {:016X}  {}".format(i, q[0], matfile if matfile is not None else "<str at {}>".format(self.string_offsets[i][0])))
-			print("        {:<8}{:08X}  {}".format(q[2], q[1], matname if matname is not None else "<str at {}>".format(self.string_offsets[i][1])))
+				print("")
+				print("  - {:<2}  {}".format(i, matfile if matfile is not None else "<str at {}>".format(self.string_offsets[i][0])))
+				print("        {}".format(matname if matname is not None else "<str at {}>".format(self.string_offsets[i][1])))	
 
-			if config.get("section_warnings", True):
-				if matfile is not None:
-					real_hash = crc64.hash(matfile)
-					if real_hash != q[0]:
-						print("        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, q[0]))
+		else:
+			for i, q in enumerate(self.triples):
+				matfile = self._dat1.get_string(self.string_offsets[i][0])
+				matname = self._dat1.get_string(self.string_offsets[i][1])
 
-				if matname is not None:
-					real_hash = crc32.hash(matname)
-					if real_hash != q[1]:
-						print("        [!] material name real hash {:08X} is not equal to one written in the struct {:08X}".format(real_hash, q[1]))
+				print("")
+				print("  - {:<2}  {:016X}  {}".format(i, q[0], matfile if matfile is not None else "<str at {}>".format(self.string_offsets[i][0])))
+				print("        {:<8}{:08X}  {}".format(q[2], q[1], matname if matname is not None else "<str at {}>".format(self.string_offsets[i][1])))
+
+				if config.get("section_warnings", True):
+					if matfile is not None:
+						real_hash = crc64.hash(matfile)
+						if real_hash != q[0]:
+							print("        [!] filename real hash {:016X} is not equal to one written in the struct {:016X}".format(real_hash, q[0]))
+
+					if matname is not None:
+						real_hash = crc32.hash(matname)
+						if real_hash != q[1]:
+							print("        [!] material name real hash {:08X} is not equal to one written in the struct {:08X}".format(real_hash, q[1]))
+		
 		print("")
 
 ###
@@ -267,6 +293,7 @@ class x707F1B58_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 800102AC251CF360 (min size), 8D14D85B15DFB268 (max size)
 
+		"""
 		self.unknown, self.data_len, self.count0, self.count1, self.count2 = struct.unpack("<IIHHI", data[:16])
 		self.floats = utils.read_struct_N_array_data(data[16:], (self.data_len - 20)//4, "<f")
 		self.count3, = struct.unpack("<I", data[self.data_len-4:self.data_len])
@@ -274,18 +301,21 @@ class x707F1B58_Section(dat1lib.types.sections.Section):
 		if len(data) > self.data_len:
 			self.shorts = utils.read_struct_N_array_data(data[self.data_len:], (len(data)-self.data_len)//2, "<H")
 			# unicode strings with \n??? (ends with \n\n)
+		"""
 
-	def get_short_suffix(self):
-		return "? ({}, {})".format(len(self.floats), len(self.shorts))
+	def get_short_suffix(self):		
+		return "707F1B58" # return "? ({}, {})".format(len(self.floats), len(self.shorts))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
+		"""
 		print("{:08X} | Matrixes?    | {:6} floats, {:6} shorts".format(self.TAG, len(self.floats), len(self.shorts)))
 		print("           {} {} {} {} {}".format(self.unknown, self.count0, self.count1, self.count2, self.count3))
 		print("")
+		"""
 
 ###
 

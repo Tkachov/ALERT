@@ -54,30 +54,40 @@ class ModelsViewer(object):
 		#
 
 		materials_section = model.dat1.get_section(SECTION_MATERIALS)
-		materials = materials_section.triples
-		for i, q in enumerate(materials):
-			mat_aid = "{:016X}".format(q[0])
-			matfile = model.dat1.get_string(materials_section.string_offsets[i][0])
-			matname = model.dat1.get_string(materials_section.string_offsets[i][1])			
-			result["materials"] += [{
-				"name": matname,
-				"file": matfile,
-				"aid": mat_aid
-			}]
+		if materials_section.version == dat1lib.VERSION_SO:
+			materials = materials_section.string_offsets
+			for i, q in enumerate(materials):
+				mat_aid = "{:016X}".format(0) # TODO
+				matfile = model.dat1.get_string(q[0])
+				matname = model.dat1.get_string(q[1])
+				result["materials"] += [{
+					"name": matname,
+					"file": matfile,
+					"aid": mat_aid
+				}]
+
+		else:
+			materials = materials_section.triples
+			for i, q in enumerate(materials):
+				mat_aid = "{:016X}".format(q[0])
+				matfile = model.dat1.get_string(materials_section.string_offsets[i][0])
+				matname = model.dat1.get_string(materials_section.string_offsets[i][1])			
+				result["materials"] += [{
+					"name": matname,
+					"file": matfile,
+					"aid": mat_aid
+				}]
 
 		#
 
 		looks_section = model.dat1.get_section(SECTION_LOOK)
-		looks_built_section = model.dat1.get_section(SECTION_LOOK_BUILT)
-
 		looks = looks_section.looks
-		looks_built = looks_built_section.looks
 
 		# determine non-empty LODs
 		for i in range(8):
 			empty = True
 			for look in looks:
-				if look.lods[i].count > 0:
+				if i < len(look.lods) and look.lods[i].count > 0:
 					empty = False
 					break
 
@@ -86,16 +96,31 @@ class ModelsViewer(object):
 
 		#
 
-		for i in range(len(looks)):
-			look = looks[i]
-			look_built = looks_built[i]
+		looks_built_section = model.dat1.get_section(SECTION_LOOK_BUILT)
+		if model.version == dat1lib.VERSION_SO or looks_built_section is None:
+			for i in range(len(looks)):
+				look = looks[i]
+				name = "Default"
+				lods = [(l.start, l.count) for l in look.lods]
 
-			name = model.dat1.get_string(look_built.string_offset)
-			lods = [(l.start, l.count) for l in look.lods]
+				result["looks"] += [{
+					"name": name,
+					"lods": lods
+				}]
 
-			result["looks"] += [{
-				"name": name,
-				"lods": lods
-			}]
+		else:
+			looks_built = looks_built_section.looks
+
+			for i in range(len(looks)):
+				look = looks[i]
+				look_built = looks_built[i]
+
+				name = model.dat1.get_string(look_built.string_offset)
+				lods = [(l.start, l.count) for l in look.lods]
+
+				result["looks"] += [{
+					"name": name,
+					"lods": lods
+				}]
 
 		return result

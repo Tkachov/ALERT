@@ -52,7 +52,16 @@ class ModelLookSection(dat1lib.types.sections.Section):
 		#
 		# examples: 800102AC251CF360 (min size), 9453965A305B5750 (max size)
 
-		self.looks = utils.read_class_array_data(data, 4*8, Look)
+		self.version = self._dat1.version
+		if self.version is None:
+			if len(data) == 16:
+				self.version = dat1lib.VERSION_SO
+
+		looks_count = 8
+		if self.version == dat1lib.VERSION_SO:
+			looks_count = 4
+
+		self.looks = utils.read_class_array_data(data, 4*looks_count, Look)
 
 	def save(self):
 		of = io.BytesIO(bytes())

@@ -2,6 +2,7 @@ import flask
 from server.api_utils import get_int, get_field, make_get_json_route, make_post_json_route
 
 import dat1lib.types.autogen
+import dat1lib.types.so
 import dat1lib.types.sections.texture.header
 import io
 import os
@@ -140,7 +141,7 @@ class Textures(object):
 
 	def _make_dds_data(self, texture_asset, hd_data, mipmap_index):
 		try:
-			if not isinstance(texture_asset, dat1lib.types.autogen.Texture):
+			if not isinstance(texture_asset, dat1lib.types.autogen.Texture) and not isinstance(texture_asset, dat1lib.types.so.Texture_I16):
 				return None
 
 			info = texture_asset.dat1.get_section(dat1lib.types.sections.texture.header.TextureHeaderSection.TAG)

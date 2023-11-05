@@ -53,7 +53,7 @@ class IndexesSection(dat1lib.types.sections.Section):
 			for i in range(len(self.values)):
 				self.values[i] %= 2**16
 
-		elif self.version == dat1lib.VERSION_RCRA:
+		elif self.version == dat1lib.VERSION_RCRA or self.version == dat1lib.VERSION_SO:
 			self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
 
 	def save(self):
@@ -251,7 +251,7 @@ class VertexesSection(dat1lib.types.sections.Section):
 					V ^= v
 					self.vertexes += [Vertex_I20((X, Y, Z), (NX, NY, NZ), (U, V))]
 
-		elif self.version == dat1lib.VERSION_RCRA:
+		elif self.version == dat1lib.VERSION_RCRA or self.version == dat1lib.VERSION_SO:
 			for i in range(0, len(data), 16):
 				X, Y, Z, W, NXYZ, U, V = struct.unpack("<4hI2h", data[i:i+16])
 				self.vertexes += [Vertex_I29((X, Y, Z), NXYZ, (U, V))]
