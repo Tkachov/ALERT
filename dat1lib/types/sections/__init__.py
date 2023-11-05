@@ -62,6 +62,8 @@ class StringsSection(Section):
 
 # based off of https://github.com/team-waldo/InsomniacArchive/blob/spiderman_pc/InsomniacArchive/Section/SerializedObjectSection.cs
 
+DEBUG_SERIALIZED = False
+
 class SerializedSection(Section):
 	NT_UINT8 		= 0x00
 	NT_UINT16 		= 0x01
@@ -71,7 +73,9 @@ class SerializedSection(Section):
 	NT_INT32 		= 0x06
 	NT_FLOAT 		= 0x08
 	NT_STRING 		= 0x0A
+	NT_SO_UNKWN 	= 0x0B # 4 bytes
 	NT_OBJECT 		= 0x0D
+	NT_SO_OBJECT 	= 0x2D # same as object?
 	NT_BOOLEAN 		= 0x0F
 	NT_INSTANCE_ID 	= 0x11 # 8 bytes
 	NT_NULL 		= 0x13 # 1 byte, always zero. maybe null?
@@ -80,6 +84,7 @@ class SerializedSection(Section):
 		Section.__init__(self, data, container)
 
 		f = io.BytesIO(data)
+		self._debug_depth = 0
 		self.root = self._deserialize(f)
 		self.extras = []
 		while f.tell() < len(data):
@@ -100,6 +105,9 @@ class SerializedSection(Section):
 	#
 
 	def _deserialize(self, f):
+		self._debug_depth = 0
+		if DEBUG_SERIALIZED:
+			print("READING ROOT OBJECT:")
 		return self._deserialize_object(f)
 
 	def _deserialize_object(self, f):
@@ -107,11 +115,15 @@ class SerializedSection(Section):
 
 		zero, unknown, children_count, data_len = struct.unpack("<IIII", f.read(16))
 		if self.version == dat1lib.VERSION_SO:
-			if zero != 0 or unknown != 0x07201969:
+			if zero != 0 or (unknown != 0x07201969 and unknown != 0x03150044):
 				print("[!] Strange serialized object header: zero={}, unknown={:08X}".format(zero, unknown))
 		else:
 			if zero != 0 or unknown != 0x03150044:
 				print("[!] Strange serialized object header: zero={}, unknown={:08X}".format(zero, unknown))
+
+		self._debug_depth += 1
+		if DEBUG_SERIALIZED:
+			print('\t'*self._debug_depth + f"READING OBJECT: {children_count} children, {data_len} bytes")
 
 		start = f.tell()
 		children = [struct.unpack("<IHBB", f.read(8)) for i in range(children_count)]
@@ -122,7 +134,13 @@ class SerializedSection(Section):
 			name = self._dat1.get_string(children_offsets[i][0])
 
 			items_count = children[i][1] >> 4
-			is_array = items_count > 1
+			is_array = items_count != 1
+
+			if DEBUG_SERIALIZED:
+				if is_array:
+					print('\t'*self._debug_depth + f" - \"{name}\" (arr, len={items_count}):")
+				else:
+					print('\t'*self._debug_depth + f" - \"{name}\":")
 
 			if is_array:
 				result[name] = self._deserialize_array(f, children[i][3], items_count)
@@ -137,6 +155,8 @@ class SerializedSection(Section):
 			print("[!] Read more data ({}) than expected ({})".format(finish - start, data_len))
 		elif left > 0:
 			f.read(left)
+
+		self._debug_depth -= 1
 
 		return result
 
@@ -168,8 +188,16 @@ class SerializedSection(Section):
 		if item_type == self.NT_STRING:
 			return self._deserialize_string(f)
 
+		if item_type == self.NT_SO_UNKWN:
+			if self.version == dat1lib.VERSION_SO:
+				return struct.unpack("<I", f.read(4))[0]
+
 		if item_type == self.NT_OBJECT:
 			return self._deserialize_object(f)
+
+		if item_type == self.NT_SO_OBJECT:
+			if self.version == dat1lib.VERSION_SO:
+				return self._deserialize_object(f)
 
 		if item_type == self.NT_BOOLEAN:
 			return (struct.unpack("<B", f.read(1))[0] != 0)
@@ -185,11 +213,18 @@ class SerializedSection(Section):
 		return None
 
 	def _deserialize_string(self, f):
-		length, h32, h64 = struct.unpack("<IIQ", f.read(16))
+		length, h32, h64 = 0, 0, 0
+		if self.version == dat1lib.VERSION_SO:
+			length, h32, h64 = struct.unpack("<III", f.read(12))
+		else:
+			length, h32, h64 = struct.unpack("<IIQ", f.read(16))
 		v = f.read(length)
 		f.read(1) # nullbyte
 		self._align(f, 4)
-		return v.decode('ascii')
+		if self.version == dat1lib.VERSION_SO:
+			return v.decode('utf-8')
+		else:
+			return v.decode('ascii')
 
 	def _align(self, f, a):
 		r = f.tell() % a
