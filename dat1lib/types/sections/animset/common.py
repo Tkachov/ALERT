@@ -58,8 +58,12 @@ class x212BD372_Section(dat1lib.types.sections.Section):
 		count = self.count2
 		self.hashes = []
 		for i in range(count):
-			self.hashes += [struct.unpack("<Q", data[off:off+8])[0]]
-			off += 8
+			if self.version == dat1lib.VERSION_SO:
+				self.hashes += [struct.unpack("<I", data[off:off+4])[0]]
+				off += 4
+			else:
+				self.hashes += [struct.unpack("<Q", data[off:off+8])[0]]
+				off += 8
 
 		self.string_offsets = []
 		for i in range(count):
