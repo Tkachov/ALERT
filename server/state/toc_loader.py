@@ -72,6 +72,8 @@ class TocLoader(object):
 					try:
 						parts = line.split(",")
 						aid, path = parts[0], normalize_path(parts[1])
+						if dat1lib.VERSION_OVERRIDE == dat1lib.VERSION_SO and not aid.startswith("00000000"):
+							break # break since hashes should be ordered
 						if path != "":
 							self._insert_path(path, aid)
 					except:
