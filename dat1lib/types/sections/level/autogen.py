@@ -148,38 +148,30 @@ class x3395AEC1_Section(dat1lib.types.sections.Section):
 
 #
 
-class x339C970E_Section(dat1lib.types.sections.Section):
+class x339C970E_Section(dat1lib.types.sections.SerializedSection):
 	TAG = 0x339C970E
 	TYPE = 'Level'
 
 	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
+		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
 
 		# SO: size = 383992
 		# MSMR: size = 996932
 		# MM: size = 266284
 		# RCRA: size = 148492
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
 
 	def get_short_suffix(self):
-		return "339C970E ({})".format(len(self.entries))
+		return "339C970E"
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 339C970E     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | 339C970E     |".format(self.TAG))
+		print(json.dumps(self.root, indent=4, sort_keys=True))
+		if len(self.extras) > 0:
+			print(" "*10, self.extras)
+
+	def web_repr(self):
+		return {"name": "339C970E", "type": "json", "readonly": False, "content": self.root}
 
 #
 

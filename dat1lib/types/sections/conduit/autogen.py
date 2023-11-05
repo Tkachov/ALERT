@@ -2,14 +2,12 @@ import dat1lib.types.sections
 import io
 import struct
 
-#
-
-class ConduitAssetRefsSection(dat1lib.types.sections.Section):
+class ConduitAssetRefsSection(dat1lib.types.sections.ReferencesSection):
 	TAG = 0x2F4056CE # Conduit Asset Refs
 	TYPE = 'Conduit'
 
 	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
+		dat1lib.types.sections.ReferencesSection.__init__(self, data, container)
 
 		# SO
 		# 575 occurrences in 3415 files
@@ -34,36 +32,23 @@ class ConduitAssetRefsSection(dat1lib.types.sections.Section):
 		# size = 16..3088 (avg = 93.4)
 		#
 		# examples: 800ECA8DB20906EF (min size), 9C2BA85165B721C3 (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
 
 	def get_short_suffix(self):
 		return "Conduit Asset Refs ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | Asset Refs   | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | References   | {:6} entries".format(self.TAG, len(self.entries)))
+		dat1lib.types.sections.ReferencesSection.print_verbose(self, config)
 
 #
 
-class xCEB30E68_Section(dat1lib.types.sections.Section):
-	TAG = 0xCEB30E68
+class ConduitBuiltSection(dat1lib.types.sections.SerializedSection):
+	TAG = 0xCEB30E68 # Conduit Built
 	TYPE = 'Conduit'
 
 	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
+		dat1lib.types.sections.SerializedSection.__init__(self, data, container)
 
 		# SO
 		# 879 occurrences in 3415 files (all .conduit?)
@@ -91,25 +76,16 @@ class xCEB30E68_Section(dat1lib.types.sections.Section):
 		# always first
 		#
 		# examples: 821C237559C4B811 (min size), 872E298A3A2D59FD (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
 
 	def get_short_suffix(self):
-		return "CEB30E68 ({})".format(len(self.entries))
+		return "built"
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | CEB30E68     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Built        |".format(self.TAG))
+		print(json.dumps(self.root, indent=4, sort_keys=True))
+		if len(self.extras) > 0:
+			print(" "*10, self.extras)
 
+	def web_repr(self):
+		return {"name": "Conduit Built", "type": "json", "readonly": False, "content": self.root}
