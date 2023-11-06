@@ -49,9 +49,14 @@ class TextureHeaderSection(dat1lib.types.sections.Section):
 		self.hd_width, self.hd_height = struct.unpack("<HH", data[8:12])
 		self.sd_width, self.sd_height = struct.unpack("<HH", data[12:16])
 		self.array_size, self.stex_format, self.planes = struct.unpack("<HBB", data[16:20])
-		self.fmt, self.unk = struct.unpack("<HQ", data[20:30])
-		self.sd_mipmaps, self.unk2, self.hd_mipmaps, self.unk3 = struct.unpack("<BBBB", data[30:34])
-		self.unk4 = data[34:]
+		if self.version == dat1lib.VERSION_SO:
+			self.fmt, _, _, self.sd_mipmaps, self.unk2 = struct.unpack("<HHIBB", data[20:30])
+			self.unk, self.unk3, self.hd_mipmaps = struct.unpack("<IBB", data[30:36])
+			self.unk4 = data[36:]
+		else:
+			self.fmt, self.unk = struct.unpack("<HQ", data[20:30])
+			self.sd_mipmaps, self.unk2, self.hd_mipmaps, self.unk3 = struct.unpack("<BBBB", data[30:34])
+			self.unk4 = data[34:]
 
 	def save(self):
 		of = io.BytesIO(bytes())

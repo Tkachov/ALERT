@@ -2,6 +2,7 @@ import flask
 from server.api_utils import get_field, make_get_json_route, make_post_json_route
 
 import dat1lib.types.autogen
+import dat1lib.types.so
 import io
 import os
 import os.path
@@ -131,7 +132,7 @@ class Thumbnails(object):
 			if data is None or asset is None:
 				data, asset = self.state.get_asset(locator)
 
-			if isinstance(asset, dat1lib.types.autogen.Texture):
+			if isinstance(asset, dat1lib.types.autogen.Texture) or isinstance(asset, dat1lib.types.so.Texture_I16):
 				img = self.state.textures.load_mipmap_image(locator, 0, use_hd_data=False) # OK to pass locator after get_asset(), as it should be cached
 				if img is None:
 					return False

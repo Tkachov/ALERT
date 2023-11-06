@@ -4,6 +4,7 @@ from server.api_utils import get_int, get_field, make_get_json_route, make_post_
 import dat1lib.types.autogen
 import dat1lib.types.so
 import dat1lib.types.sections.texture.header
+import dat1lib.decompression as decompression
 import io
 import os
 import os.path
@@ -128,7 +129,8 @@ class Textures(object):
 				if success:
 					image = Image.open(save_as)
 
-					_remove_file(dds_fn)
+					if not DEBUG_DDS:
+						_remove_file(dds_fn)
 					if not save_png:
 						_remove_file(save_as)
 
@@ -202,6 +204,9 @@ class Textures(object):
 			pixels_written = False
 			hd_mipmaps_count = 0
 			if hd_data is not None:
+				if texture_asset.version == dat1lib.VERSION_SO:
+					hd_data = decompression.decompress(hd_data, info.hd_len)
+
 				hd_mipmaps_count = info.hd_mipmaps
 				if mipmap_index < info.hd_mipmaps:
 					offset = 0
@@ -215,10 +220,17 @@ class Textures(object):
 
 			if not pixels_written:
 				offset = 0x80 - 36
+				if texture_asset.version == dat1lib.VERSION_SO:
+					offset = 0
 				for i in range(mipmap_index):
 					mw, mh = mipmaps[i + hd_mipmaps_count]
 					offset += int(sd_bpp * mw * mh)
-				dds_data += texture_asset._raw_dat1[offset:]
+
+				if texture_asset.version == dat1lib.VERSION_SO:
+					sd_data = decompression.decompress(texture_asset._raw_dat1, texture_asset.size + struct.unpack("<I", texture_asset.unk[:4])[0])
+					dds_data += sd_data[texture_asset.size + offset:]
+				else:
+					dds_data += texture_asset._raw_dat1[offset:]
 
 			return dds_data
 		
