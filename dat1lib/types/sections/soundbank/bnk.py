@@ -39,3 +39,6 @@ class WwiseBankSection(dat1lib.types.sections.Section):
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Wwise Bank   |".format(self.TAG))
+
+	def web_repr(self):
+		return {"name": "Wwise Bank", "type": "text", "readonly": True, "content": ""}
