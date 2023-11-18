@@ -1,6 +1,8 @@
 import dat1lib.types.sections
+import dat1lib.types.sections.model.geo
 import io
 import struct
+import dat1lib.float16 as f16
 
 #
 
@@ -15,27 +17,54 @@ class x16F3BA18_Section(dat1lib.types.sections.Section):
 		# size = 12..2213544 (avg = 16140.1)
 		#
 		# examples: 2AD6B126 (min size), 7929FC02 (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+
+		self.data = data
+		self.f16 = None
 
 	def save(self):
 		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
+		of.write(self.data)
 		of.seek(0)
 		return of.read()
 
 	def get_short_suffix(self):
-		return "16F3BA18 ({})".format(len(self.entries))
+		return "16F3BA18 ({} bytes)".format(len(self.data))
 
 	def print_verbose(self, config):
 		if config.get("web", False):
 			return
 		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 16F3BA18     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | 16F3BA18     | {:6} bytes".format(self.TAG, len(self.data)))
+
+	def get_uv(self, vertex_index):
+		s = self._dat1.get_section(dat1lib.types.sections.model.geo.VertexesSection.TAG)
+		sz = len(s._raw) // 16
+
+		ENTRY_SIZE = 4
+		if sz*8 == len(self.data):
+			ENTRY_SIZE = 8
+
+		u, v = None, None
+		if ENTRY_SIZE == 4:
+			u, v = struct.unpack("<hh", self.data[vertex_index*ENTRY_SIZE:(vertex_index+1)*ENTRY_SIZE])
+			u = self._unpack(u)
+			v = self._unpack(v)
+		else:
+			u, v, _, _ = struct.unpack("<hhhh", self.data[vertex_index*ENTRY_SIZE:(vertex_index+1)*ENTRY_SIZE])
+			u = self._unpack(u)
+			v = self._unpack(v)
+			# TODO: what is the second pair for?
+			# 	maybe that's multiple UV layers?
+			# 	in that case, maybe it's possible that there is more than 2, so not only 4 and 8 cases must be handled here?
+
+		return (u, v)
+
+	def _unpack(self, packed_f16):
+		if self.f16 is None:
+			self.f16 = f16.Float16Compressor()
+
+		return self.f16.decompress_and_unpack(packed_f16)
 
 #
 

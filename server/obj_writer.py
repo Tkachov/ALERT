@@ -38,7 +38,7 @@ class ObjHelper(object):
 	def end_mesh(self):
 		self.cur_vertex_offset += self.mesh_vertexes
 
-	def write_vertex(self, v):
+	def write_vertex(self, v, uv):
 		def transform(x, y, z):
 			return (x, y, z)
 
@@ -47,7 +47,12 @@ class ObjHelper(object):
 		self.write("v {} {} {}\n".format(x, y, z))
 		self.mesh_vertexes += 1
 
-		self.write("vt {} {}\n".format(v.u, 1.0 - v.v))
+		uu, vv = v.u, 1.0 - v.v
+		if uv is not None:
+			uu, vv = uv
+			vv = 1.0 - vv
+
+		self.write("vt {} {}\n".format(uu, vv))
 
 	def usemtl(self, mat):
 		if mat != self.current_material:
@@ -77,6 +82,8 @@ class ObjHelper(object):
 		s = model.dat1.get_section(SECTION_INDEXES)
 		indexes = s.values
 
+		uvs = model.dat1.get_section(0x16F3BA18) # SO UVs
+
 		materials_section = model.dat1.get_section(SECTION_MATERIALS)
 
 		looks_section = model.dat1.get_section(SECTION_LOOK)
@@ -105,7 +112,8 @@ class ObjHelper(object):
 
 			for vi in range(mesh.vertexStart, mesh.vertexStart + mesh.vertexCount):
 				v = vertexes[vi]
-				self.write_vertex(v)
+				uv = None if uvs is None else uvs.get_uv(vi)
+				self.write_vertex(v, uv)
 
 			#
 

@@ -1,4 +1,5 @@
 import dat1lib
+import dat1lib.crc32 as crc32
 import dat1lib.crc64 as crc64
 import dat1lib.types.model
 import dat1lib.types.sections.model.geo
@@ -88,8 +89,12 @@ class MtlHelper(object):
 			# material template
 
 			template_path = material.dat1.get_string(0x44)
+			if material.dat1.version == dat1lib.VERSION_SO:
+				template_path = material.dat1.get_string(0x54)
 			if template_path is not None:
 				mtm_aid = "{:016X}".format(crc64.hash(template_path))
+				if material.dat1.version == dat1lib.VERSION_SO:
+					mtm_aid = "{:016X}".format(crc32.hash(template_path))
 				template = find_asset_by_aid(state, stage, mtm_aid)
 				if template is not None:
 					section = template.dat1.get_section(0x1CAFE804)
@@ -115,6 +120,13 @@ class MtlHelper(object):
 							params[key] = params_values[offset:offset+size]
 
 			# material overrides
+
+			section = material.dat1.get_section(0xB967FF7A)
+			if section is not None:
+				for i in range(len(section.entries)):
+					spos, _, _, slot, _ = section.entries[i]
+					s = material.dat1.get_string(spos)
+					textures[slot] = s
 
 			section = material.dat1.get_section(0xF5260180)
 			if section is not None:
@@ -169,6 +181,8 @@ class MtlHelper(object):
 				continue
 
 			tex_aid = "{:016X}".format(crc64.hash(filename))
+			if material.dat1.version == dat1lib.VERSION_SO:
+				tex_aid = "{:016X}".format(crc32.hash(filename))
 			locator = get_best_asset_locator(state, stage, tex_aid)
 
 			if locator is None:
@@ -213,17 +227,29 @@ class MtlHelper(object):
 
 	def write_materials(self, model, stage, state):
 		materials_section = model.dat1.get_section(SECTION_MATERIALS)
-		materials = materials_section.triples
+		if materials_section is None:
+			return
 
-		for i, q in enumerate(materials):
-			matname = get_material_name(i, model.dat1, materials_section)
+		if materials_section.version == dat1lib.VERSION_SO:
+			materials = materials_section.string_offsets
+			for i, q in enumerate(materials):
+				matfile = model.dat1.get_string(q[0])
+				matname = model.dat1.get_string(q[1])
+				mat_aid = "{:016X}".format(0)
+				if matfile is not None:
+					mat_aid = "{:016X}".format(crc32.hash(matfile))
+				self.write_material(matname, stage, mat_aid, state)
+		else:
+			materials = materials_section.triples
+			for i, q in enumerate(materials):
+				matname = get_material_name(i, model.dat1, materials_section)
 
-			mat_aid = "{:016X}".format(q[0])
-			matfile = model.dat1.get_string(materials_section.string_offsets[i][0])
-			if matfile is not None:
-				mat_aid = "{:016X}".format(crc64.hash(matfile))
+				mat_aid = "{:016X}".format(q[0])
+				matfile = model.dat1.get_string(materials_section.string_offsets[i][0])
+				if matfile is not None:
+					mat_aid = "{:016X}".format(crc64.hash(matfile))
 
-			self.write_material(matname, stage, mat_aid, state)
+				self.write_material(matname, stage, mat_aid, state)
 
 ###
 

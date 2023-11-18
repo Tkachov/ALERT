@@ -1,6 +1,7 @@
 import flask
 from server.api_utils import get_int, get_field, make_get_json_route, make_post_json_route
 
+import dat1lib.crc32 as crc32
 import dat1lib.crc64 as crc64
 import dat1lib.types.autogen
 import dat1lib.types.config
@@ -192,6 +193,8 @@ class References(object):
 		for s in asset.dat1._strings_inverse_map:
 			if is_pathlike(s):
 				aid = "{:016X}".format(crc64.hash(s))
+				if asset.dat1.version == dat1lib.VERSION_SO:
+					aid = "{:016X}".format(crc32.hash(s))
 				result += [(aid, s, "Strings Block")]
 
 		for s in asset.dat1.sections:

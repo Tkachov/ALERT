@@ -1,6 +1,7 @@
 import flask
 from server.api_utils import get_field, get_int, make_get_json_route, make_post_json_route
 
+import dat1lib.crc32 as crc32
 import dat1lib.types.sections.model.look
 import dat1lib.types.sections.model.unknowns
 import io
@@ -57,9 +58,11 @@ class ModelsViewer(object):
 		if materials_section.version == dat1lib.VERSION_SO:
 			materials = materials_section.string_offsets
 			for i, q in enumerate(materials):
-				mat_aid = "{:016X}".format(0) # TODO
 				matfile = model.dat1.get_string(q[0])
 				matname = model.dat1.get_string(q[1])
+				mat_aid = f"{0:016X}"
+				if matfile is not None:
+					mat_aid = "{:016X}".format(crc32.hash(matfile))
 				result["materials"] += [{
 					"name": matname,
 					"file": matfile,
