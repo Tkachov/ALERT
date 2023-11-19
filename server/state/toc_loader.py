@@ -67,17 +67,26 @@ class TocLoader(object):
 			return path.lower().replace('\\', '/').strip()
 
 		try:
-			with open("hashes.txt", "r") as f:
-				for line in f:
-					try:
-						parts = line.split(",")
-						aid, path = parts[0], normalize_path(parts[1])
-						if dat1lib.VERSION_OVERRIDE == dat1lib.VERSION_SO and not aid.startswith("00000000"):
-							break # break since hashes should be ordered
-						if path != "":
-							self._insert_path(path, aid)
-					except:
-						pass
+			if dat1lib.VERSION_OVERRIDE == dat1lib.VERSION_SO:
+				with open("hashes_so.txt", "r") as f:
+					for line in f:
+						try:
+							parts = line[:-1].split("\t")
+							aid, path = parts[0], normalize_path(parts[1])
+							if path != "":
+								self._insert_path(path, "00000000" + aid)
+						except:
+							pass
+			else:
+				with open("hashes.txt", "r") as f:
+					for line in f:
+						try:
+							parts = line.split(",")
+							aid, path = parts[0], normalize_path(parts[1])
+							if path != "":
+								self._insert_path(path, aid)
+						except:
+							pass
 		except:
 			pass
 
