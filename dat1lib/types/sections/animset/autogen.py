@@ -28,17 +28,15 @@ class xD614B18B_Section(dat1lib.types.sections.Section):
 		#
 		# examples: 802FF1404940D6AA
 
-		self.bones_count, self.unk1, self.unk2, self.unk3, self.modelname_hash = struct.unpack("<IIIIQ", data[:24])
-
-		rest = data[24:]
-		ENTRY_SIZE = 4
-		count = len(rest)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", rest[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+		ENTRY_SIZE = 48
+		count = len(data)//ENTRY_SIZE
+		self.entries = [struct.unpack("<4IQ6I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
+		# bones_count, unk1, unk2, unk3, modelname_hash, 0s
 
 	def save(self):
 		of = io.BytesIO(bytes())
 		for e in self.entries:
-			of.write(struct.pack("<I", e))
+			of.write(struct.pack("<4IQ6I", e))
 		of.seek(0)
 		return of.read()
 
@@ -46,15 +44,14 @@ class xD614B18B_Section(dat1lib.types.sections.Section):
 		return "D614B18B ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | D614B18B     | {:6} entries".format(self.TAG, len(self.entries)))
-		print("bones={}, modelname_hash={:016X}, 0={}, ?={}, ?={}".format(self.bones_count, self.modelname_hash, self.unk1, self.unk2, self.unk3))
+		print()
+		print("    #  model_name_hash   bones     #1    #2    #3    #4    #5    #6    #7    #8    #9")
+		print(" -------------------------------------------------------------------------------------")
 		for i, x in enumerate(self.entries):
-			print("  - {:<3}  {:08X} {:10} {}".format(i, x, x, self._dat1.get_string(x)))
-		print("")
+			print("  - {}  {:016X}  {:5}  {:5} {:5} {:5} {:5} {:5} {:5} {:5} {:5} {:5}".format(i, x[4], x[0], x[1], x[2], x[3], x[5], x[6], x[7], x[8], x[9], x[10]))
+		print()
 
 #
 

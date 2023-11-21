@@ -28,7 +28,7 @@ class SomeBonesInfoSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8A7DB48B384467EF (min size), 802FF1404940D6AA (max size)
 
-		s = container.get_section(0xD614B18B)
+		# s = container.get_section(0xD614B18B)
 		
 		ENTRY_SIZE = 12
 		self.entries = []
