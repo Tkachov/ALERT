@@ -1400,6 +1400,9 @@ class x6987F172_Section(dat1lib.types.sections.Section):
 		# size = 4..116540 (avg = 5932.0)
 		#
 		# examples: 80097DED02BAD963 (min size), B0AB219A7776D2C9 (max size)
+
+		# mentioned for some reason in daemon's code as number of instances?
+		# with 4 being a size of entry in this section
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -1875,6 +1878,9 @@ class xC6A5905E_Section(dat1lib.types.sections.Section):
 		# size = 12..12540 (avg = 362.7)
 		#
 		# examples: 8080DACF09064EBF (min size), 9900FC8D29A64E64 (max size)
+
+		# mentioned for some reason in daemon's code as number of models
+		# with 0xC being a size of entry in this section
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

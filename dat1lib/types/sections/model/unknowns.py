@@ -83,9 +83,31 @@ class ModelBuiltSection(dat1lib.types.sections.Section):
 
 		# 0x283D0383 seems to be some model info that has things like bounding box and global model scaling?
 		# (global scaling is that number that is likely 0.00024. Int vertex positions are converted to floats and multiplied by this.
-		self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
+		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<f")
 
-		# 0x2C <f -- vertex pos scale
+	#
+
+	def get_vertex_position_offset(self):
+		return (self.values[0x1C//4], self.values[0x20//4], self.values[0x24//4])
+
+	def get_vertex_position_scale(self):
+		return self.values[0x2C//4]
+
+	def get_uv_scale(self):
+		return self.values[0x30//4]
+
+	def get_lod_distance(self, index):
+		if index < 1 or index > 5:
+			return None		
+		return self.values[0x34//4 + index - 1]
+
+	def get_indexes_count(self):
+		return struct.unpack("<I", struct.pack("<f", self.values[0x64//4]))[0]
+
+	def get_vertexes_count(self):
+		return struct.unpack("<I", struct.pack("<f", self.values[0x68//4]))[0]
+
+	#
 
 	def get_short_suffix(self):
 		return "Model Built ({})".format(len(self.values))
@@ -97,7 +119,26 @@ class ModelBuiltSection(dat1lib.types.sections.Section):
 		print("")
 
 	def web_repr(self):
-		return {"name": "Model Built", "type": "text", "readonly": True, "content": "{} shorts:\n{}\n\n".format(len(self.values), self.values)}
+		content = "{} shorts:\n{}\n\n".format(len(self.values), self.values)
+		content += "vertex_position_offset = {}\n".format(self.get_vertex_position_offset())
+		
+		s = self.get_vertex_position_scale()
+		inv = 0
+		if s > 0:
+			inv = 1.0/s
+		content += "vertex_position_scale  = {} (inv = {})\n".format(s, inv)
+
+		s = self.get_uv_scale()
+		inv = 0
+		if s > 0:
+			inv = 1.0/s
+		content += "uv_scale               = {} (inv = {})\n".format(s, inv)
+
+		content += "vertexes = {}\n".format(self.get_vertexes_count())
+		content += "indexes  = {}\n".format(self.get_indexes_count())
+
+		content += "\n"
+		return {"name": "Model Built", "type": "text", "readonly": True, "content": content}
 
 ###
 
@@ -320,7 +361,7 @@ class x707F1B58_Section(dat1lib.types.sections.Section):
 ###
 
 """
-class x380A5744_Section(dat1lib.types.sections.Section):
+class x380A5744_Section(dat1lib.types.sections.Section): # muscle deformation
 	TAG = 0x380A5744
 	TYPE = 'model'
 
@@ -346,6 +387,13 @@ class x380A5744_Section(dat1lib.types.sections.Section):
 		# examples: 8455ADEAEACE6204 (min size), 93E189C6F48429E9 (max size)
 
 		# occurs with 5E709570 and A600C108 (hero-related?)
+
+		# 4? tables? of data
+		# daemon's tool writes:
+		# <iii 0 0 0
+		# <iii 0x40 0x48 0
+		# skips 0x40 (- 6*4) bytes
+		# <qq -1 -1
 
 		self.unknowns = struct.unpack("<" + "I"*16, data[:4*16])
 		offset = 4*16

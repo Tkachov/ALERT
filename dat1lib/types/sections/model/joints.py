@@ -166,9 +166,9 @@ class xDCC88A19_Section(dat1lib.types.sections.Section):
 		print("{:08X} | Joints Tnsfm | {:6} entries".format(self.TAG, len(self.matrixes34)))
 
 		print()
-		print("\t- #     | scale?                          |  | transform                       |")
-		print("\t        | rotation = rotm2quat(tranform)  |  |                                 |")
-		print("\t        | local? position                 |  |                                 |")
+		print("\t- #     | scale                           |  | transform                       |")
+		print("\t        | rotation = rotm2quat(transform) |  |                                 |")
+		print("\t        | local position                  |  |                                 |")
 		print("\t                                             |                                 |")
 		print()
 		
@@ -318,6 +318,8 @@ class x90CDB60C_Section(dat1lib.types.sections.Section):
 		# size = 80
 		#
 		# examples: 80028A780883AD15
+
+		# daemon's: unk, bones_count = <hh
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE

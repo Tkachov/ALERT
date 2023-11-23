@@ -302,6 +302,8 @@ class x5E709570_Section(dat1lib.types.sections.Section):
 		# examples: 99F087989A2594FB (min size), B1C377CA094E4902 (max size)
 
 		# occurs with 380A5744 and A600C108 (hero-related?)
+
+		# daemon's: muscledef-related?
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
