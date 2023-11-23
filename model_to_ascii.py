@@ -115,7 +115,7 @@ class AsciiWriter(object):
 
 	#
 
-	def write_model(self, f, model, looks, lod):
+	def write_model(self, f, model, looks, lod, materials_txt=None):
 		self.init(f, model)
 
 		meshes_indexes = self.get_meshes_indexes_by_looks_and_lod(looks, lod)
@@ -123,6 +123,37 @@ class AsciiWriter(object):
 
 		self.write_bones()
 		self.write_meshes(meshes_indexes, skin, rcra_skin)
+		if materials_txt:
+			with open(materials_txt, "w") as f:
+				self.write_materials_txt(f, looks, lod, meshes_indexes)
+
+	def write_materials_txt(self, f, looks, lod, meshes_indexes):
+		looks_section = self.model.dat1.get_section(SECTION_LOOK)
+
+		if looks is None:
+			looks = list(range(len(looks_section.looks)))
+
+		f.write("LookGroups:\n")
+		for look in looks:
+			look_lod = looks_section.looks[look].lods[lod]
+			f.write(f"{look_lod.start} {look_lod.count}\n")
+		f.write("\n")
+
+		f.write("Materials used:\n")
+		for mesh_index in meshes_indexes:
+			mesh = self.meshes[mesh_index]
+			mat_index = mesh.get_material()
+			matpath = self.get_material_path(mat_index)
+			f.write(f"{mat_index}\t{matpath}\n")
+		f.write("\n")
+
+		f.write("Slots:\n")
+		f.write("===============================================================\n")
+		for i in range(len(self.materials_section.string_offsets)):
+			matpath = self.get_material_path(i)
+			if matpath == "":
+				continue
+			f.write(f"{i}\t{matpath}\n")
 
 	#
 
@@ -336,9 +367,7 @@ class AsciiWriter(object):
 		vc = self.current_vertex_index
 
 		mesh = self.meshes[mesh_index]
-		matpath = self.model.dat1.get_string(self.materials_section.string_offsets[mesh.get_material()][0])
-		if matpath is None:
-			matpath = ""
+		matpath = self.get_material_path(mesh.get_material())
 		self.f.write(f"sm{mesh_index:02}_{matpath}\n")
 
 		groups_count = 4
@@ -404,6 +433,14 @@ class AsciiWriter(object):
 
 		self.current_vertex_index += 1
 
+	#
+
+	def get_material_path(self, mat_index):
+		matpath = self.model.dat1.get_string(self.materials_section.string_offsets[mat_index][0])
+		if matpath is None:
+			matpath = ""
+		return matpath
+
 ###
 
 import sys
@@ -417,7 +454,7 @@ import dat1lib.types.model
 def main(argv):
 	if len(argv) < 2:
 		print("Usage:")
-		print("$ {} <.model filename> [output .ascii filename]".format(argv[0]))
+		print("$ {} <.model filename> [output .ascii filename] [output materials.txt filename]".format(argv[0]))
 		return
 
 	#
@@ -448,12 +485,16 @@ def main(argv):
 	if len(argv) > 2:
 		output_fn = argv[2]
 
+	materials_txt = None
+	if len(argv) > 3:
+		materials_txt = argv[3]
+
 	with open(output_fn, "w") as f:
 		looks = [0]
 		looks = None # all looks
 		lod = 0
 		helper = AsciiWriter()
-		helper.write_model(f, model, looks, lod)
+		helper.write_model(f, model, looks, lod, materials_txt=materials_txt)
 
 if __name__ == "__main__":
 	main(sys.argv)
