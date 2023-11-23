@@ -78,10 +78,28 @@ class IndexesSection(dat1lib.types.sections.Section):
 
 ###
 
+def _decode_normal(norm):
+	norm = norm & 0xFFFFFFFF
+	nx = float((norm & 0x3FF)) * 0.00276483595 - math.sqrt(2)
+	ny = float(((norm >> 10) & 0x3FF)) * 0.00276483595 - math.sqrt(2)
+	flip = (norm >> 31) == 0
+
+	nxxyy = nx * nx + ny * ny
+	nw = math.sqrt(1 - 0.25 * nxxyy)
+
+	nx = nx * nw
+	ny = ny * nw
+	nz = 1 - 0.5 * nxxyy
+
+	if flip:
+		nz = -nz
+
+	return (nx, ny, nz)
+
 class Vertex_I20(object):
 	def __init__(self, xyz, nxyz, uv):
 		self.x, self.y, self.z = xyz
-		self.nx, self.ny, self.nz = nxyz
+		self.nx, self.ny, self.nz = _decode_normal(nxyz)
 		self.u, self.v = uv
 
 		def float12(x):
@@ -91,12 +109,8 @@ class Vertex_I20(object):
 		self.y = float12(self.y)
 		self.z = float12(self.z)
 
-		self.nx = float12(self.nx)
-		self.ny = float12(self.ny)
-		self.nz = float12(self.nz)
-
-		self.u = self.u/16384.0
-		self.v = self.v/16384.0
+		self.u = self.u
+		self.v = self.v
 
 class Vertex_I29(object):
 	def __init__(self, xyz, nxyz, uv):
@@ -114,29 +128,7 @@ class Vertex_I29(object):
 
 		#
 
-		bits = format(nxyz, 'b').zfill(32)
-		nZ = int(bits[0:12], 2)  # 12 bits
-		nY = int(bits[12:22], 2) # 10 bits
-		nX = int(bits[22:32], 2) # 10 bits
-		
-		if False:
-			nX = nX/511.0 - 1.0
-			nY = nY/511.0 - 1.0
-			zz = 1 - nX*nX - nY*nY
-			if zz < 0:
-				zz *= -1
-			nZ = math.sqrt(zz)
-
-			sgn = -1
-			if bits[0] == '1':
-				sgn = 1
-			nZ *= sgn			
-		else:
-			nX = nX/511.0 - 1.0
-			nY = nY/511.0 - 1.0
-			nZ = nZ/2047.0 - 1.0
-
-		self.nx, self.ny, self.nz = nX, nY, nZ
+		self.nx, self.ny, self.nz = _decode_normal(nxyz)
 
 		#
 
@@ -161,7 +153,7 @@ class Vertex_I29(object):
 		nX = struct.unpack("<H", struct.pack("<h", nX))[0]
 		nY = struct.unpack("<H", struct.pack("<h", nY))[0]
 		nZ = struct.unpack("<H", struct.pack("<h", nZ))[0]	
-		NXYZ = (nX & 0b1111111111) | ((nY & 0b1111111111) << 10) | ((nZ & 0b111111111111) << 20)
+		NXYZ = (nX & 0b1111111111) | ((nY & 0b1111111111) << 10) | ((nZ & 0b111111111111) << 20) # TODO: this is wrong normals encoding
 
 		U = self.u * 32768.0
 		V = self.v * 32768.0
@@ -201,17 +193,6 @@ class VertexesSection(dat1lib.types.sections.Section):
 		#
 		# examples: 8FE2973E7E447C52 (min size), AE2DF2353798682F (max size)
 
-		"""
-		ENTRY_SIZE = 16
-		count = len(data)//ENTRY_SIZE
-		# self.vertexes = [Vertex(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
-		# self.alternative = list(struct.unpack("<" + "h"*(8*count), data))
-		# self.alternative = list(struct.unpack("<h" + "f"*(4*count - 1) + "h", data))
-
-		BUF_SIZE = len(data)//8
-		buffers = [struct.unpack("<" + "h" * (BUF_SIZE//2), data[i*BUF_SIZE:(i+1)*BUF_SIZE]) for i in range(8)]
-		"""
-
 		self.version = self._dat1.version
 		if self.version is None:
 			self.version = dat1lib.VERSION_MSMR
@@ -234,22 +215,22 @@ class VertexesSection(dat1lib.types.sections.Section):
 				for i in range(BUFS):
 					buffers[i] += list(struct.unpack("<{}h".format(buf_size//2), batch[i*buf_size:(i+1)*buf_size]))
 
+				N_buffer = list(struct.unpack("<{}I".format(buf_size//2), batch[0:2*buf_size]))
+
+				N = 0
 				X, Y, Z = 0, 0, 0
-				NX, NY, NZ = 0, 0, 0
 				U, V = 0, 0
+
 				for i in range(len(buffers[0])):
-					x, y, z = buffers[2][i], buffers[3][i], buffers[4][i]
-					nx, ny, nz = buffers[0][i], buffers[1][i], buffers[5][i]
+					x, y, z, _ = buffers[2][i], buffers[3][i], buffers[4][i], buffers[5][i]
 					u, v = buffers[6][i], buffers[7][i]
+					N ^= N_buffer[i]
 					X ^= x
 					Y ^= y
 					Z ^= z
-					NX ^= nx
-					NY ^= ny
-					NZ ^= nz
 					U ^= u
 					V ^= v
-					self.vertexes += [Vertex_I20((X, Y, Z), (NX, NY, NZ), (U, V))]
+					self.vertexes += [Vertex_I20((X, Y, Z), N, (U, V))]
 
 		elif self.version == dat1lib.VERSION_RCRA or self.version == dat1lib.VERSION_SO:
 			for i in range(0, len(data), 16):

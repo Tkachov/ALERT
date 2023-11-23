@@ -86,6 +86,10 @@ class AsciiWriter(object):
 		self.model = model
 		self.current_vertex_index = 0
 
+		self.mode = dat1lib.VERSION_RCRA
+		if not isinstance(self.model, dat1lib.types.model.ModelRcra):
+			self.mode = dat1lib.VERSION_MSMR
+
 		self.vertexes = []
 		if model is not None:
 			s = model.dat1.get_section(SECTION_VERTEXES)
@@ -98,6 +102,16 @@ class AsciiWriter(object):
 
 		self.materials_section = None if model is None else model.dat1.get_section(SECTION_MATERIALS)
 		self.uv1_section = None if model is None else model.dat1.get_section(SECTION_UV1)
+
+		self.has_bones = None
+
+		self.uv_scale = 1.0/16384.0
+		if self.mode != dat1lib.VERSION_RCRA: # TODO: test RCRA
+			SECTION_BUILT = 0x283D0383
+			s = None if model is None else model.dat1.get_section(SECTION_BUILT) # TODO: cleanup
+			if s:
+				iuvscale = struct.unpack("<i", struct.pack("<f", s.get_uv_scale()))[0] # TODO: move that in the section, probably without unpacking <f in the first place
+				self.uv_scale = (1 << (iuvscale & 0xF)) / 16384.0
 
 	#
 
@@ -247,6 +261,9 @@ class AsciiWriter(object):
 	def get_meshes_indexes_by_looks_and_lod(self, looks, lod):
 		looks_section = self.model.dat1.get_section(SECTION_LOOK)
 
+		if looks is None:
+			looks = list(range(len(looks_section.looks)))
+
 		meshes_to_display = set()
 		for look in looks:
 			look_lod = looks_section.looks[look].lods[lod]
@@ -264,6 +281,8 @@ class AsciiWriter(object):
 	#
 
 	def write_bones(self):
+		self.has_bones = False
+
 		joints_section = self.model.dat1.get_section(0x15DF9D3B)
 		joints_transform_section = self.model.dat1.get_section(0xDCC88A19)
 		memoized = {}
@@ -292,6 +311,13 @@ class AsciiWriter(object):
 
 		fmt = pretty_format
 
+		if not joints_section:
+			self.f.write("0\n")
+			return
+
+		if len(joints_section.joints) > 0:
+			self.has_bones = True
+
 		self.f.write(f"{len(joints_section.joints)}\n")
 		for i, j in enumerate(joints_section.joints):
 			name = self.model.dat1.get_string(j.string_offset)
@@ -311,11 +337,14 @@ class AsciiWriter(object):
 
 		mesh = self.meshes[mesh_index]
 		matpath = self.model.dat1.get_string(self.materials_section.string_offsets[mesh.get_material()][0])
+		if matpath is None:
+			matpath = ""
 		self.f.write(f"sm{mesh_index:02}_{matpath}\n")
 
 		groups_count = 4
-		for vi in range(mesh.vertexStart, mesh.vertexStart + mesh.vertexCount):
-			groups_count = max(len(skin[vi]), groups_count)
+		if skin is not None:
+			for vi in range(mesh.vertexStart, mesh.vertexStart + mesh.vertexCount):
+				groups_count = max(len(skin[vi]), groups_count)
 
 		uv_layers = 1
 		self.f.write("{}\n".format(uv_layers))
@@ -354,13 +383,13 @@ class AsciiWriter(object):
 		position = f"{fmt(v.x)} {fmt(v.y)} {fmt(v.z)}"
 		normal = f"{fmt(v.nx)} {fmt(v.ny)} {fmt(v.nz)}"
 		color = "0 0 0 0"
-		uv = f"{fmt(v.u)} {fmt(v.v)}"
+		uv = f"{fmt(v.u * self.uv_scale)} {fmt(v.v * self.uv_scale)}"
 		groups = "0 0 0 0"
 		weights = "1 0 0 0"
 
-		if self.uv1_section is not None:
+		if self.mode == dat1lib.VERSION_RCRA and self.uv1_section is not None:
 			U, V = self.uv1_section.get_uv(vertex_index)
-			uv = f"{fmt(U)} {fmt(V)}" # " # {uv}"
+			uv = f"{fmt(U)} {fmt(V)}"
 
 		if skin is not None:
 			groups, weights = self.get_weights(weight_index, skin, groups_count)
@@ -369,8 +398,9 @@ class AsciiWriter(object):
 		self.f.write(normal + "\n")
 		self.f.write(color + "\n")
 		self.f.write(uv + "\n")
-		self.f.write(groups + "\n")
-		self.f.write(weights + "\n")
+		if self.has_bones:
+			self.f.write(groups + "\n")
+			self.f.write(weights + "\n")
 
 		self.current_vertex_index += 1
 
@@ -408,7 +438,7 @@ def main(argv):
 		print("[!] Couldn't comprehend '{}'".format(fn))
 		return
 
-	if not isinstance(model, dat1lib.types.model.ModelRcra):
+	if not isinstance(model, (dat1lib.types.model.Model, dat1lib.types.model.Model2, dat1lib.types.model.ModelRcra)):
 		print("[!] Not a model")
 		return
 
@@ -420,6 +450,7 @@ def main(argv):
 
 	with open(output_fn, "w") as f:
 		looks = [0]
+		looks = None # all looks
 		lod = 0
 		helper = AsciiWriter()
 		helper.write_model(f, model, looks, lod)
