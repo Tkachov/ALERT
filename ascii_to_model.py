@@ -369,7 +369,7 @@ class ModelInjector(object):
 		self.batch_vertex_index = 0
 
 	def end_skin_batch(self):
-		self.skin_batch_section.batches[self.current_skin_batch].unk1 = 0
+		self.skin_batch_section.batches[self.current_skin_batch].unk1 = 0 # daemon: 0x4000 for MSMR/MM?
 		self.skin_batch_section.batches[self.current_skin_batch].vertex_count = self.batch_vertex_index
 		self.skin_batch_section.batches[self.current_skin_batch].first_vertex = self.sum_batch_vertex_index		
 		self.current_skin_batch += 1

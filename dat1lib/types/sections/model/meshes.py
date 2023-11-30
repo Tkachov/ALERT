@@ -16,10 +16,19 @@ class MeshDefinition(object):
 		else:
 			self.unknowns = struct.unpack("<IQHHHH", data[:20])
 			# ?, mesh_id, ?, ?, ?, ?
+			# daemon: <fff center
+			# daemon: <h radius
+			# daemon: <hhh xyz size
+
 			self.vertexStart, self.indexStart, self.indexCount, self.vertexCount = struct.unpack("<IIII", data[20:36])
 			self.flags, self.material_index, self.first_skin_batch, self.skin_batches_count = struct.unpack("<HHHH", data[36:44])
 			self.unknowns2 = struct.unpack("<HHff", data[44:56]) # ?, ? | ?, ?
 			self.first_weight_index, self.unknown3 = struct.unpack("<II", data[56:]) # first weight index in CCBAFF15 (at least in RCRA) -- basically equal to vertexStart, ?
+
+			# daemon: indexCount has to be multiple of 16
+			# daemon: flags 0x1 means "skinned"
+			# daemon: skin_batches_count actually is <BB, both equal to (<mesh vertex count> + 0x9FF) / 0xA00 -- strange
+
 
 	def get_id(self):
 		return self.unknowns[1]
