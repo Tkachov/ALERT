@@ -1,3 +1,4 @@
+import os
 import sys
 import math
 import traceback
@@ -11,12 +12,18 @@ COMPARE_NORMALS = True
 COMPARE_WEIGHTS = True
 COMPARE_UVS = True
 
+def getenv_float(k, default):
+	v = os.getenv(k, None)
+	if v is None:
+		return default
+	return float(v)
+
 BONE_POSITIONS_EPS = EPS
 BONE_ROTATIONS_EPS = EPS
-POSITIONS_EPS = EPS
-NORMALS_EPS = EPS
+POSITIONS_EPS = getenv_float("POSITIONS_EPS", EPS)
+NORMALS_EPS = getenv_float("NORMALS_EPS", EPS)
 WEIGHTS_EPS = EPS
-UVS_EPS = EPS
+UVS_EPS = getenv_float("UVS_EPS", EPS)
 
 def read_ascii(fn):
 	f = open(fn)
