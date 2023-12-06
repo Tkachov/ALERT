@@ -15,6 +15,7 @@ SECTION_MESHES      = dat1lib.types.sections.model.meshes.MeshesSection.TAG
 SECTION_SKIN_BATCH  = dat1lib.types.sections.model.skin.ModelSkinBatchSection.TAG
 SECTION_SKIN_DATA   = dat1lib.types.sections.model.skin.ModelSkinDataSection.TAG
 SECTION_RCRA_SKIN   = dat1lib.types.sections.model.skin.xCCBAFF15_Section.TAG
+SECTION_BUILT       = dat1lib.types.sections.model.unknowns.ModelBuiltSection.TAG
 SECTION_MATERIALS   = dat1lib.types.sections.model.unknowns.ModelMaterialSection.TAG
 
 def _pretty_format(n):
@@ -107,11 +108,9 @@ class AsciiWriter(object):
 
 		self.uv_scale = 1.0/16384.0
 		if self.mode != dat1lib.VERSION_RCRA: # TODO: test RCRA
-			SECTION_BUILT = 0x283D0383
-			s = None if model is None else model.dat1.get_section(SECTION_BUILT) # TODO: cleanup
+			s = None if model is None else model.dat1.get_section(SECTION_BUILT)
 			if s:
-				iuvscale = struct.unpack("<i", struct.pack("<f", s.get_uv_scale()))[0] # TODO: move that in the section, probably without unpacking <f in the first place
-				self.uv_scale = (1 << (iuvscale & 0xF)) / 16384.0
+				self.uv_scale = s.get_uv_scale()
 
 	#
 

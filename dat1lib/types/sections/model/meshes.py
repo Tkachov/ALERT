@@ -29,6 +29,13 @@ class MeshDefinition(object):
 			# daemon: flags 0x1 means "skinned"
 			# daemon: skin_batches_count actually is <BB, both equal to (<mesh vertex count> + 0x9FF) / 0xA00 -- strange
 
+	def clear(self):
+		if self.version != dat1lib.VERSION_SO:
+			self.unknowns = (0, 0, 0, 0, 0, 0)
+			self.vertexStart, self.indexStart, self.indexCount, self.vertexCount = (0, 0, 0, 0)
+			self.flags, self.material_index, self.first_skin_batch, self.skin_batches_count = (0, 0, 0, 0)
+			self.unknowns2 = (0, 0, 0, 0)
+			self.first_weight_index, self.unknown3 = (0, 0)
 
 	def get_id(self):
 		return self.unknowns[1]

@@ -57,12 +57,31 @@ class IndexesSection(dat1lib.types.sections.Section):
 			self.values = utils.read_struct_N_array_data(data, len(data)//2, "<H")
 
 	def save(self):
-		if self.version != dat1lib.VERSION_RCRA:
+		if self.version == dat1lib.VERSION_SO:
+			return self._raw
 			return None # TODO
 
+		if self.version == dat1lib.VERSION_RCRA:
+			of = io.BytesIO(bytes())
+			for v in self.values:
+				of.write(struct.pack("<H", v))
+			of.seek(0)
+			return of.read()
+
+		def short_overflow(v):
+			while v < -0x7FFF - 1:
+				v += 2**16
+
+			while v > 0x7FFF:
+				v -= 2**16
+
+			return v
+
 		of = io.BytesIO(bytes())
+		prev = 0
 		for v in self.values:
-			of.write(struct.pack("<H", v))
+			of.write(struct.pack("<h", short_overflow(v - prev)))
+			prev = v
 		of.seek(0)
 		return of.read()
 
@@ -85,7 +104,11 @@ def _decode_normal(norm):
 	flip = (norm >> 31) == 0
 
 	nxxyy = nx * nx + ny * ny
-	nw = math.sqrt(1 - 0.25 * nxxyy)
+	nw = 0
+	try:
+		nw = math.sqrt(1 - 0.25 * nxxyy)
+	except:
+		pass
 
 	nx = nx * nw
 	ny = ny * nw
@@ -111,6 +134,9 @@ class Vertex_I20(object):
 
 		self.u = self.u
 		self.v = self.v
+
+		self.tangent = None
+		self.bitangent = None
 
 class Vertex_I29(object):
 	def __init__(self, xyz, nxyz, uv):
@@ -238,12 +264,209 @@ class VertexesSection(dat1lib.types.sections.Section):
 				self.vertexes += [Vertex_I29((X, Y, Z), NXYZ, (U, V))]
 
 	def save(self):
-		if self.version != dat1lib.VERSION_RCRA:
-			return None # TODO
-
 		of = io.BytesIO(bytes())
-		for e in self.vertexes:
-			of.write(e.save())
+		
+		if self.version == dat1lib.VERSION_RCRA:
+			for e in self.vertexes:
+				of.write(e.save())
+		else:
+			MAX_BATCH = 0x8000
+
+			mscale = 1.0/4096.0
+			uv_scale = 1.0/16384.0
+		
+			SECTION_BUILT = 0x283D0383
+			s = self._dat1.get_section(SECTION_BUILT)
+			if s:
+				uv_scale = s.get_uv_scale()
+
+			def clamp_short(v):
+				return min(max(-0x7FFF - 1, v), 0x7FFF)
+
+			def clamp_ushort(v):
+				return min(max(0, v), 0xFFFF)
+
+			def encode_position(pos, scale):
+				return clamp_short(int(round(pos / scale)))
+
+			def encode_texcoord(pos, scale):
+				pos = int(round(pos / scale))
+				return clamp_short(pos)
+
+			def _encode_normal(nx, ny, nz):
+				flip = 1
+				if nz < 0:
+					nz = -nz
+					flip = 0
+
+				nxxyy = (1 - nz)*2.0
+				nw = 0
+				try:
+					nw = math.sqrt(1 - 0.25*nxxyy)
+				except:
+					pass
+				if nw > 0:
+					nx = nx/nw
+					ny = ny/nw
+				
+				c = math.sqrt(2) / (0x3FF / 2.0)
+				n1 = int(round((nx + math.sqrt(2)) / c)) & 0x3FF
+				n2 = int(round((ny + math.sqrt(2)) / c)) & 0x3FF
+				
+				return (flip<<31) | (n2<<10) | n1
+
+			def encode_tangents(n, t, b):
+				def vec_mult_scalar(vc, sc):
+					return (vc[0] * sc, vc[1] * sc, vc[2] * sc)
+
+				def vec_minus_vec(vc1, vc2):
+					return (vc1[0] - vc2[0], vc1[1] - vc2[1], vc1[2] - vc2[2])
+
+				def vec_plus_vec(vc1, vc2):
+					return (vc1[0] + vc2[0], vc1[1] + vc2[1], vc1[2] + vc2[2])
+
+				def vec_dot(vc1, vc2):
+					return (vc1[0] * vc2[0]) + (vc1[1] * vc2[1]) + (vc1[2] * vc2[2])
+
+				def vec_length(vc):
+					return math.sqrt(vec_dot(vc, vc))
+
+				def vec_normalize(vc):
+					l = vec_length(vc)
+					if l <= 0:
+						return (1, 0, 0)
+					return (vc[0]/l, vc[1]/l, vc[2]/l)
+
+				def vec_cross(a, b):
+					a1, a2, a3 = a
+					b1, b2, b3 = b
+					return (a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - a2*b1)
+
+				sqr2 = math.sqrt(2) * 2
+
+				thisn = n
+				thist = vec_minus_vec(t, vec_mult_scalar(thisn, vec_dot(thisn, t)))
+				thist = vec_normalize(thist)
+				btsign = 0
+				if vec_length(t) > 0 and vec_length(b) > 0:
+					t = vec_normalize(t)
+					b = vec_normalize(b)
+					cr = vec_cross(t, b)
+					bts = vec_dot(cr, thisn)
+					if bts > 0:
+						btsign = 1
+					else:
+						btsign = -1
+
+				n3 = n[2]
+				nsign = 1
+				if n3 < 0:
+					nsign = -1
+					n3 = -n3
+
+				sqrxy = math.sqrt(1 - (1 - n3) / 2.0)
+				n1 = n[0] / sqrxy
+				n2 = n[1] / sqrxy
+				n1 = n1 / sqr2 + 0.5
+				n2 = n2 / sqr2 + 0.5
+
+				n1 = min(max(0, n1), 1)
+				n2 = min(max(0, n2), 1)
+
+				norm1 = int(n2 * 1023) << 10
+				norm1 |= int(n1 * 1023)
+				
+				n3 = thist[2]
+				tsign = 1
+				if n3 < 0:
+					tsign = -1
+					n3 = -n3
+
+				sqrxy = math.sqrt(1 - (1 - n3) / 2.0)
+				n1 = thist[0] / sqrxy
+				n2 = thist[1] / sqrxy
+				n1 = n1 / sqr2 + 0.5
+				n2 = n2 / sqr2 + 0.5
+
+				n1 = min(max(0, n1), 1)
+				n2 = min(max(0, n2), 1)
+
+				norm1 |= int(n1 * 1023) << 20
+				if nsign > 0:
+					norm1 |= 0x80000000
+				if tsign > 0:
+					norm1 |= 0x40000000
+				rv1 = norm1 & (0x7FF<<20)
+				rv1 |= _encode_normal(*n)
+
+				norm1 = int(n2 * 1023)
+				norm1 |= 0x7C00
+				if btsign > 0:
+					norm1 = ~norm1 + 1
+				rv2 = clamp_short(norm1)
+
+				return (rv1, rv2)
+
+			ln = len(self.vertexes)
+			for i in range(0, ln, MAX_BATCH):
+				batch_end = i + MAX_BATCH
+				if batch_end > ln:
+					batch_end = ln
+				batch = self.vertexes[i:batch_end]
+
+				# normal/tangent
+				prev = 0
+				for v in batch:
+					curr = 0x7FF80200
+					if v.tangent is not None and v.bitangent is not None:
+						curr, _ = encode_tangents((v.nx, v.ny, v.nz), v.tangent, v.bitangent)
+					of.write(struct.pack("<I", prev ^ curr))
+					prev = curr
+				
+				# x
+				prev = 0
+				for v in batch:
+					curr = encode_position(v.x, mscale)
+					of.write(struct.pack("<h", prev ^ curr))
+					prev = curr
+
+				# y
+				prev = 0
+				for v in batch:
+					curr = encode_position(v.y, mscale)
+					of.write(struct.pack("<h", prev ^ curr))
+					prev = curr
+
+				# z
+				prev = 0
+				for v in batch:
+					curr = encode_position(v.z, mscale)
+					of.write(struct.pack("<h", prev ^ curr))
+					prev = curr
+
+				# bitangent
+				prev = 0
+				for v in batch:
+					curr = 0x7E
+					if v.tangent is not None and v.bitangent is not None:
+						_, curr = encode_tangents((v.nx, v.ny, v.nz), v.tangent, v.bitangent)
+					of.write(struct.pack("<h", prev ^ curr))
+					prev = curr
+
+				# u
+				prev = 0
+				for v in batch:
+					curr = encode_texcoord(v.u, uv_scale)
+					of.write(struct.pack("<h", prev ^ curr))
+					prev = curr
+
+				# v
+				prev = 0
+				for v in batch:
+					curr = encode_texcoord(v.v, uv_scale)
+					of.write(struct.pack("<h", prev ^ curr))
+					prev = curr
+
 		of.seek(0)
 		return of.read()
 

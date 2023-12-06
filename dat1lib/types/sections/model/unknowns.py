@@ -85,6 +85,13 @@ class ModelBuiltSection(dat1lib.types.sections.Section):
 		# (global scaling is that number that is likely 0.00024. Int vertex positions are converted to floats and multiplied by this.
 		self.values = utils.read_struct_N_array_data(data, len(data)//4, "<f")
 
+	def save(self):
+		of = io.BytesIO(bytes())
+		for v in self.values:
+			of.write(struct.pack("<f", v))
+		of.seek(0)
+		return of.read()
+
 	#
 
 	def get_vertex_position_offset(self):
@@ -94,7 +101,9 @@ class ModelBuiltSection(dat1lib.types.sections.Section):
 		return self.values[0x2C//4]
 
 	def get_uv_scale(self):
-		return self.values[0x30//4]
+		iuvscale = struct.unpack("<i", struct.pack("<f", self.values[0x30//4]))[0] # TODO: don't unpack <f in the first place
+		uv_scale = (1 << (iuvscale & 0xF)) / 16384.0
+		return uv_scale
 
 	def get_lod_distance(self, index):
 		if index < 1 or index > 5:
@@ -360,7 +369,6 @@ class x707F1B58_Section(dat1lib.types.sections.Section):
 
 ###
 
-"""
 class x380A5744_Section(dat1lib.types.sections.Section): # muscle deformation
 	TAG = 0x380A5744
 	TYPE = 'model'
@@ -395,6 +403,7 @@ class x380A5744_Section(dat1lib.types.sections.Section): # muscle deformation
 		# skips 0x40 (- 6*4) bytes
 		# <qq -1 -1
 
+		"""
 		self.unknowns = struct.unpack("<" + "I"*16, data[:4*16])
 		offset = 4*16
 
@@ -419,7 +428,9 @@ class x380A5744_Section(dat1lib.types.sections.Section): # muscle deformation
 		self.rest = []
 		if offset < len(data):
 			self.rest = utils.read_struct_N_array_data(data[offset:], (len(data)-offset)//4, "<I")
+		"""
 
+	"""
 	def get_short_suffix(self):
 		return "? ({}, {}, {})".format(len(self.pairs), len(self.pairs2), len(self.rest))
 
@@ -452,7 +463,7 @@ class x380A5744_Section(dat1lib.types.sections.Section): # muscle deformation
 
 		print(self.rest[:32], "...")
 		print("")
-"""
+	"""
 
 ###
 
