@@ -130,7 +130,7 @@ class GltfWriter(object):
 
 	def add_meshes(self, meshes_indexes, skin, rcra_skin):
 		for mi in meshes_indexes:
-			self.add_mesh(self.make_intermediate(self.meshes[mi]), self.meshes[mi], skin, rcra_skin)
+			self.add_mesh(self.make_intermediate(self.meshes[mi]), self.meshes[mi], skin, rcra_skin, mi)
 
 	def make_intermediate(self, mesh):
 		points = []
@@ -163,7 +163,7 @@ class GltfWriter(object):
 
 		return (points, normals, uvs, triangles)
 
-	def add_mesh(self, mesh, ig_mesh, skin, rcra_skin):
+	def add_mesh(self, mesh, ig_mesh, skin, rcra_skin, orig_mesh_index):
 		points, normals, uvs, triangles = mesh
 
 		vertexes_buffer_data = self.make_buffer_func(points, lambda x: struct.pack("<3f", x[0], x[1], x[2]))
@@ -303,10 +303,12 @@ class GltfWriter(object):
 
 		gltf_mesh, gltf_mesh_index = self.create_mesh()
 		gltf_mesh.primitives.append(primitive)
+		gltf_mesh.name = f"sm{orig_mesh_index:02}"
 
 		gltf_node, gltf_node_index = self.create_node()
 		gltf_node.mesh = gltf_mesh_index
 		gltf_node.skin = 0
+		gltf_node.name = f"sm{orig_mesh_index:02}"
 
 	#	
 
