@@ -12,6 +12,7 @@ SECTION_INDEXES   = dat1lib.types.sections.model.geo.IndexesSection.TAG
 SECTION_VERTEXES  = dat1lib.types.sections.model.geo.VertexesSection.TAG
 SECTION_LOOK      = dat1lib.types.sections.model.look.ModelLookSection.TAG
 SECTION_MESHES    = dat1lib.types.sections.model.meshes.MeshesSection.TAG
+SECTION_BUILT     = dat1lib.types.sections.model.unknowns.ModelBuiltSection.TAG
 SECTION_MATERIALS = dat1lib.types.sections.model.unknowns.ModelMaterialSection.TAG
 
 class ObjHelper(object):
@@ -24,6 +25,7 @@ class ObjHelper(object):
 		self.meshes_count = 0
 
 		self.f = io.BytesIO(bytes())
+		self.uv_scale = 1.0/16384.0
 
 	#
 
@@ -47,10 +49,11 @@ class ObjHelper(object):
 		self.write("v {} {} {}\n".format(x, y, z))
 		self.mesh_vertexes += 1
 
-		uu, vv = v.u, 1.0 - v.v
+		uu, vv = v.u * self.uv_scale, 1.0 - v.v * self.uv_scale
 		if uv is not None:
 			uu, vv = uv
-			vv = 1.0 - vv
+			uu = uu * self.uv_scale
+			vv = 1.0 - vv * self.uv_scale
 
 		self.write("vt {} {}\n".format(uu, vv))
 
@@ -73,6 +76,17 @@ class ObjHelper(object):
 	#
 
 	def write_model(self, model, looks, lod):
+		mode = dat1lib.VERSION_RCRA
+		if not isinstance(model, dat1lib.types.model.ModelRcra):
+			mode = dat1lib.VERSION_MSMR
+
+		if mode != dat1lib.VERSION_RCRA: # TODO: test RCRA
+			s = None if model is None else model.dat1.get_section(SECTION_BUILT)
+			if s:
+				uv_scale = s.get_uv_scale()
+
+		#
+
 		s = model.dat1.get_section(SECTION_MESHES)
 		meshes = s.meshes
 
