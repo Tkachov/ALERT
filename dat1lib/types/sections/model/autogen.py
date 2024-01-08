@@ -276,61 +276,6 @@ class x5240C82B_Section(dat1lib.types.sections.Section):
 
 #
 
-class x5E709570_Section(dat1lib.types.sections.Section):
-	TAG = 0x5E709570
-	TYPE = 'Model'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 255 occurrences in 38298 files
-		# size = 1248..12720124 (avg = 1245716.2)
-		#
-		# examples: A296B03EFEBF937A (min size), A20532A6756AC4AE (max size)
-
-		# MM
-		# 66 occurrences in 37147 files
-		# size = 480..7788288 (avg = 1321672.7)
-		#
-		# examples: BD8E0CB2CF2185EC (min size), 9DE5B2D46357DB69 (max size)
-
-		# RCRA
-		# 19 occurrences in 11387 files
-		# size = 102192..12314252 (avg = 7375643.5)
-		#
-		# examples: 99F087989A2594FB (min size), B1C377CA094E4902 (max size)
-
-		# occurs with 380A5744 and A600C108 (hero-related?)
-
-		# daemon's: muscledef-related?
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
-
-	def get_short_suffix(self):
-		return "5E709570 ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 5E709570     | {:6} entries".format(self.TAG, len(self.entries)))
-
-	def web_repr(self):
-		return {"name": "Very Big Section", "type": "text", "readonly": True, "content": "{} 4-byte values".format(len(self.entries))}
-
-#
-
 class xBCE86B01_Section(dat1lib.types.sections.Section):
 	TAG = 0xBCE86B01
 	TYPE = 'Model'
@@ -499,56 +444,6 @@ class x8A84E4D6_Section(dat1lib.types.sections.Section):
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 8A84E4D6     | {:6} bytes".format(self.TAG, len(self._raw)))
-
-#
-
-class xA600C108_Section(dat1lib.types.sections.Section):
-	TAG = 0xA600C108
-	TYPE = 'Model'
-
-	def __init__(self, data, container):
-		dat1lib.types.sections.Section.__init__(self, data, container)
-
-		# MSMR
-		# 255 occurrences in 38298 files
-		# size = 76..709280 (avg = 133422.9)
-		#
-		# examples: A296B03EFEBF937A (min size), 9870FFAD9BAF955A (max size)
-
-		# MM
-		# 66 occurrences in 37147 files
-		# size = 12..931032 (avg = 151739.9)
-		#
-		# examples: BD8E0CB2CF2185EC (min size), 9DE5B2D46357DB69 (max size)
-
-		# RCRA
-		# 19 occurrences in 11387 files
-		# size = 2380..658056 (avg = 344779.1)
-		#
-		# examples: BF6DD7D3DE8A301B (min size), 96D2CE8B17C5471D (max size)
-
-		# occurs with 380A5744 and 5E709570 (hero-related?)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-
-	def save(self):
-		of = io.BytesIO(bytes())
-		for e in self.entries:
-			of.write(struct.pack("<I", e))
-		of.seek(0)
-		return of.read()
-
-	def get_short_suffix(self):
-		return "A600C108 ({})".format(len(self.entries))
-
-	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
-		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | A600C108     | {:6} entries".format(self.TAG, len(self.entries)))
 
 #
 
