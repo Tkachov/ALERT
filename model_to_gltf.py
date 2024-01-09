@@ -9,6 +9,7 @@ import struct
 
 import base64
 import io
+import math
 import pygltflib
 
 SECTION_INDEXES     = dat1lib.types.sections.model.geo.IndexesSection.TAG
@@ -129,8 +130,13 @@ class GltfWriter(object):
 		self.gltf.skins.append(gltf_skin)		
 
 	def add_meshes(self, meshes_indexes, skin, rcra_skin):
+		morph_section = self.model.dat1.get_section(0x380A5744)
+		shapekeys = []
+		for mi in morph_section.morph_infos:
+			shapekeys += [(morph_section._dat1.get_string(mi.name_offset), mi.subset_ids)]
+
 		for mi in meshes_indexes:
-			self.add_mesh(self.make_intermediate(self.meshes[mi]), self.meshes[mi], skin, rcra_skin, mi)
+			self.add_mesh(self.make_intermediate(self.meshes[mi]), self.meshes[mi], skin, rcra_skin, mi, shapekeys)
 
 	def make_intermediate(self, mesh):
 		points = []
@@ -163,7 +169,7 @@ class GltfWriter(object):
 
 		return (points, normals, uvs, triangles)
 
-	def add_mesh(self, mesh, ig_mesh, skin, rcra_skin, orig_mesh_index):
+	def add_mesh(self, mesh, ig_mesh, skin, rcra_skin, orig_mesh_index, shapekeys):
 		points, normals, uvs, triangles = mesh
 
 		vertexes_buffer_data = self.make_buffer_func(points, lambda x: struct.pack("<3f", x[0], x[1], x[2]))
@@ -305,10 +311,211 @@ class GltfWriter(object):
 		gltf_mesh.primitives.append(primitive)
 		gltf_mesh.name = f"sm{orig_mesh_index:02}"
 
+		first_sk = True
+		for i, sk in enumerate(shapekeys):
+			sk_name, sk_subsets = sk
+			if orig_mesh_index in sk_subsets:
+				if first_sk:
+					primitive.targets = []
+					gltf_mesh.extras["targetNames"] = []
+					first_sk = False
+
+				# print(f"sm{orig_mesh_index:02} -- {sk_name}")
+				self.add_shapekey(gltf_mesh, primitive, i, orig_mesh_index, len(points), len(normals))
+
 		gltf_node, gltf_node_index = self.create_node()
 		gltf_node.mesh = gltf_mesh_index
 		gltf_node.skin = 0
 		gltf_node.name = f"sm{orig_mesh_index:02}"
+
+	#
+
+	def add_shapekey(self, gltf_mesh, gltf_primitive, sk_index, subset_id, orig_vertexes_count, orig_normals_count):
+		morph_section = self.model.dat1.get_section(0x380A5744)
+		morph_data_section = self.model.dat1.get_section(0x5E709570)
+		morph_index_section = self.model.dat1.get_section(0xA600C108)
+
+		def from_bits(byte_list, num_bits):
+			results = []
+			result = 0
+			bit_count = 0
+
+			for byte in byte_list:
+				for i in range(7, -1, -1):
+					bit = (byte >> i) & 1
+					result = (result << 1) | bit
+					bit_count += 1
+
+					if bit_count == num_bits:
+						results.append(result)
+						result = 0
+						bit_count = 0
+
+			if bit_count > 0:
+				results.append(result)
+
+			return results
+
+		morph_info = morph_section.morph_infos[sk_index]
+		sk_name = morph_section._dat1.get_string(morph_info.name_offset)
+		
+		i = morph_info.subset_ids.index(subset_id)
+		if i == -1:
+			return
+
+		mi = morph_info
+		if mi.packing_count >= 3:
+			print(f"[!] warning: unexpected number of elements == {mi.packing_count} in shapekey '{morph_section._dat1.get_string(mi.name_offset)}'")
+
+		positions = []
+		normals = []
+		indexes = []
+
+		#for i in range(mi.subset_count):
+
+		positions_data = []
+		normals_data = []
+
+		stride = mi.packing_count * mi.packing_bits
+		offset = mi.data_offset + mi.subset_vertex_offsets[i]
+		for vertexes_count, indexes_count in mi.subset_data_tables[i]:
+			sz = math.ceil(stride * vertexes_count / 8.0)
+			packed = morph_data_section._raw[offset:offset+sz]
+			unpacked = from_bits(packed, mi.packing_bits2)
+
+			corrected_length = len(unpacked) - (len(unpacked) % (3*mi.packing_count))
+
+			if mi.packing_count >= 1: # read positions
+				positions_data = [unpacked[i:i+3] for i in range(0, corrected_length, 3*mi.packing_count)]
+
+			if mi.packing_count >= 2: # read normals
+				normals_data = [unpacked[i+3:i+6] for i in range(0, corrected_length, 3*mi.packing_count)]
+
+			nrml = 1.0 / (2**mi.packing_bits2)
+			nrml = 1.0
+			for xyz in positions_data:
+				x = xyz[0]
+				y = xyz[1]
+				z = xyz[2]
+				positions += [(x * nrml * mi.position_scale + mi.position_bias, y * nrml * mi.position_scale + mi.position_bias, z * nrml * mi.position_scale + mi.position_bias)]
+
+			for xyz in normals_data:
+				x = xyz[0]
+				y = xyz[1]
+				z = xyz[2]
+				normals += [(x * nrml * mi.normal_scale + mi.normal_bias, y * nrml * mi.normal_scale + mi.normal_bias, z * nrml * mi.normal_scale + mi.normal_bias)]
+
+		i = morph_info.subset_ids.index(subset_id)
+
+		offset = mi.indexes_offset + mi.subset_index_offsets[i]
+		current_index = 0
+		for j, (vertexes_count, indexes_count) in enumerate(mi.subset_data_tables[i]):
+			current_index = 0xA00 * j
+			for k in range(indexes_count):
+				skip, read = struct.unpack("<HH", morph_index_section._raw[offset:offset+4])
+				offset += 4
+
+				if read == 0:
+					read = 0x20
+
+				current_index += skip
+				indexes += [current_index + ndx for ndx in range(read)]
+				current_index += read
+
+		def joined_ranges(indexes):
+			if len(indexes) == 0:
+				return "[]"
+
+			result = "["
+			start = indexes[0]
+			end = start
+			indexes = indexes[1:] + [None]
+			for i in indexes:
+				if i is not None and i == end+1:
+					end = i
+				else:
+					if len(result) > 1:
+						result += ", "
+					result += f"{start}-{end}"
+					start = i
+					end = start
+			result += "]"
+			return result
+
+		if False:
+			if len(positions) == orig_vertexes_count:
+				print(f"-- sm{subset_id:02}, {mi.packing_count}, {len(mi.subset_data_tables[i])}, {sorted(indexes) == list(range(len(indexes)))}, ranges: {joined_ranges(indexes)}")
+			print(f"shapekey '{sk_name}': {len(positions)}/{len(indexes)} vertexes into {orig_vertexes_count}, min={min(indexes)}, max={max(indexes)}")
+
+		positions_buffer = [(0,0,0) for i in range(orig_vertexes_count)]
+		for i, ndx in enumerate(indexes):
+			positions_buffer[ndx] = positions[i]
+
+		normals_buffer = [(0,0,0) for i in range(orig_vertexes_count)]
+		if len(normals) > 0:
+			for i, ndx in enumerate(indexes):
+				normals_buffer[ndx] = normals[i]
+
+		skpos_buffer_data = self.make_buffer_func(positions_buffer, lambda x: struct.pack("<3f", x[0], x[1], x[2]))
+		skpos_buffer_view, skpos_buffer_view_index = self.create_buffer_view(skpos_buffer_data, pygltflib.ARRAY_BUFFER)
+
+		sknorm_buffer_data, sknorm_buffer_view, sknorm_buffer_view_index = None, None, None
+		if len(normals) > 0:
+			sknorm_buffer_data = self.make_buffer_func(normals_buffer, lambda x: struct.pack("<3f", x[0], x[1], x[2]))
+			sknorm_buffer_view, sknorm_buffer_view_index = self.create_buffer_view(sknorm_buffer_data, pygltflib.ARRAY_BUFFER)
+
+		def minmax_positions(positions):
+			min_x, min_y, min_z = None, None, None
+			max_x, max_y, max_z = None, None, None
+			for p in positions:
+				x, y, z = p[0], p[1], p[2]
+				if min_x is None or min_x > x:
+					min_x = x
+				if min_y is None or min_y > y:
+					min_y = y
+				if min_z is None or min_z > z:
+					min_z = z
+				if max_x is None or max_x < x:
+					max_x = x
+				if max_y is None or max_y < y:
+					max_y = y
+				if max_z is None or max_z < z:
+					max_z = z
+
+			return ([min_x, min_y, min_z], [max_x, max_y, max_z])
+
+		v_min, v_max = minmax_positions(positions_buffer)
+
+		skpos_accessor, skpos_accessor_index = self.create_accessor()
+		skpos_accessor.bufferView = skpos_buffer_view_index
+		skpos_accessor.byteOffset = 0
+		skpos_accessor.componentType = pygltflib.FLOAT
+		skpos_accessor.count = len(positions_buffer)
+		skpos_accessor.type = pygltflib.VEC3
+		skpos_accessor.min = v_min
+		skpos_accessor.max = v_max
+
+		sknorm_accessor, sknorm_accessor_index = None, None
+		if len(normals) > 0:
+			v_min, v_max = minmax_positions(normals_buffer)
+
+			sknorm_accessor, sknorm_accessor_index = self.create_accessor()
+			sknorm_accessor.bufferView = sknorm_buffer_view_index
+			sknorm_accessor.byteOffset = 0
+			sknorm_accessor.componentType = pygltflib.FLOAT
+			sknorm_accessor.count = len(normals_buffer)
+			sknorm_accessor.type = pygltflib.VEC3
+			sknorm_accessor.min = v_min
+			sknorm_accessor.max = v_max
+
+		ska = pygltflib.Attributes()
+		ska.POSITION = skpos_accessor_index
+
+		if len(normals) > 0:
+			ska.NORMAL = sknorm_accessor_index
+
+		gltf_primitive.targets += [ska]
+		gltf_mesh.extras["targetNames"] += [sk_name]
 
 	#	
 
