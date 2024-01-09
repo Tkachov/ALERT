@@ -512,6 +512,21 @@ assets_browser = {
 				};
 			}
 
+			// nodegraph
+			if (info.type.startsWith("NodeGraph")) {
+				var sep = document.createElement("span");
+				sep.className = "separator";
+				links.appendChild(sep);
+
+				var btn = createElementWithTextNode("a", "View reconstructed");
+				links.appendChild(btn);
+				var self = this;
+				btn.onclick = function () {
+					//let [shortname, fullname] = get_asset_names(self);
+					window.open("/nodegraph.html#" + locator, '_blank');
+				};
+			}
+
 			// texture
 			if (info.type.startsWith("Texture")) {
 				var sep = document.createElement("span");

@@ -1,0 +1,390 @@
+﻿<html>
+	<head>
+		<title>MSMR Assets Browser: Nodegraph Viewer</title>
+		<style>
+			html, body, canvas {
+				width: 100vw;
+				height: 100vh;
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+	</head>
+	<body onload="on_load();" onresize="update();" onhashchange="on_hashchange();">
+		<canvas id="a"></canvas>
+		<script>
+function on_load() {
+	update();
+	on_hashchange();
+}
+
+function on_hashchange() {
+	var hash = window.location.hash;
+	if (hash.length > 1) {
+		hash = hash.substr(1);		
+		ajax.postAndParseJson(
+			"api/nodegraph/load_or_reconstruct", {
+				path: hash
+			},
+			function(r) {
+				if (r.error) {
+					return;
+				}
+
+				graph = parse_graph(r.result);
+				update();
+			},
+			function(e) {}
+		);
+	}
+}
+
+//
+
+var debug = false;
+var is_pressed = false;
+var scrolling_mode = false;
+var prev_mouse_x = -1;
+var prev_mouse_y = -1;
+var mouse_x = -1, mouse_y = -1;
+
+var scroll_x = 0, scroll_y = 0;
+var zoom = 0.75;
+
+function mousemove(e) {
+	prev_mouse_x = mouse_x;
+	prev_mouse_y = mouse_y;
+	mouse_x = e.clientX;
+	mouse_y = e.clientY;
+
+	if (is_pressed || scrolling_mode) {
+		scroll_x += (mouse_x - prev_mouse_x);
+		scroll_y += (mouse_y - prev_mouse_y);
+	}
+	
+	update();
+}
+
+function mousedown(e) {
+	// if ((e.buttons & 4) == 4) scrolling_mode = !scrolling_mode;
+	mousemove(e);
+	is_pressed = ((e.buttons & 1) == 1);
+}
+
+function mouseup(e) {
+	mousemove(e);
+	is_pressed = false;
+}
+
+function mousewheel(e) {
+	var minz = 0.05;
+	var maxz = 2.00;
+
+	var d = (-e.deltaY / 102.0) * 0.25 / 6.0;
+	if (zoom + d <= minz) {
+		zoom = minz;
+	} else if (zoom + d >= maxz) {
+		zoom = maxz;
+	} else {
+		zoom += d;
+	}
+
+	// TODO: tweak scroll_x/scroll_y so it looks like we zoom into where we scrolled?
+	
+	update();
+}
+
+document.getElementById("a").onmousemove = mousemove;
+document.getElementById("a").onmousedown = mousedown;
+document.getElementById("a").onmouseup = mouseup;
+document.getElementById("a").onwheel = mousewheel;
+
+//
+
+function parse_graph(g1) {
+	const PLUG_OFF_X = 150;
+	const PLUG_OFF_Y = 25;
+
+	function snap(x) {
+		const snapping = true;
+		if (!snapping) return x;		
+
+		off = (x % 10);
+		return x - off;
+	}
+
+	var graph = g1.NodeGraphCollection.MainGraph;
+	var nodes = {};
+	var connections = [];
+	for (var k in graph) {
+		if (k == "Id" || k == "Connections" || k == "Type" || k == "Name") {
+			continue;
+		}
+		
+		var collection = (k == "InitNode" ? {"node": graph[k]} : graph[k]);
+		for (var k2 in collection) {
+			var n = collection[k2];
+			var node_name = n.Id;
+			if ("DebugName" in n) {
+				node_name = n.DebugName;
+			}
+
+			var color = "#666";
+			if (k == "OrNodes") {
+				node_name = "||";
+			} else if (k == "AndNodes") {
+				node_name = "&&";
+			} else if (k == "MissionNodes") {
+				node_name = n.MissionName;
+				color = "#ff3333";
+			} else if (k == "StartArcNodes") {
+				node_name = n.ArcName;
+				color = "#3333ff";
+			} else if (k == "EndArcNodes") {
+				node_name = "<end of arc>";
+				color = "#3333ff";
+			} else if (k == "DebugChainStartNodes" || k == "DebugChainEndNodes") {
+				node_name = (k == "DebugChainStartNodes" ? "Debug Chain Start" : "Debug Chain End");
+				color = "#FFCC00";
+			} else if (k == "Comments") {
+				node_name = n.Text;
+				color = "#CCC";
+			}
+
+			if ("Act" in n) {
+				node_name = n.Act;
+				color = "#9933ff";
+			} else if ("StartAct" in n) {
+				node_name = n.StartAct;
+				color = "#9933ff";
+			}
+
+			if ("Delay" in n) {
+				node_name += " (delay=" + n.Delay + ")";
+			}
+
+			var node = {
+				x: snap(Math.round(n.X)),
+				y: snap(Math.round(n.Y)),
+				name: node_name,
+				color: color,
+				collection: k,
+				raw: n,
+				plugs: {}
+			};
+			nodes[n.Id] = node;
+
+			// plugs
+
+			var i = 0;
+			if ("Inputs" in n) {
+				var inputs = n.Inputs;
+				if (!(inputs instanceof Array)) {
+					inputs = [inputs];
+				}
+				for (var inp of inputs) {
+					node.plugs[inp.Id] = {
+						name: "Input " + i,
+						Type: inp.Type,
+						x: node.x,
+						y: node.y + PLUG_OFF_Y * (i+1)
+					};
+					i += 1;
+				}
+			}
+
+			i = 0;
+			const output_names = ["Output", "DebugOnlyOutput", "Start"];
+			for (var on of output_names) {
+				if (on in n) {
+					node.plugs[n[on].Id] = {
+						name: on,
+						Type: n[on].Type,
+						x: node.x + PLUG_OFF_X,
+						y: node.y + PLUG_OFF_Y * (i+1)
+					};
+					i += 1;
+				}
+			}
+		}
+	}
+
+	for (var c in graph.Connections) {
+		var connection = graph.Connections[c];
+
+		//
+
+		var pins = [];
+		if ("Pins" in connection) {
+			pins = connection.Pins;
+		}
+		if (!(pins instanceof Array)) {
+			pins = [pins];
+		}
+
+		var src = connection.SourceNodeId;
+		var dst = connection.TargetNodeId;
+		if (!is_str(src) || !is_str(dst)) continue;
+
+		var src_p = connection.SourcePlugId;
+		var dst_p = connection.TargetPlugId;
+		if (!is_str(src_p) || !is_str(dst_p)) continue;
+
+		if (!(src in nodes) || !(src_p in nodes[src].plugs) || !(dst in nodes) || !(dst_p in nodes[dst].plugs)) continue;
+		var src_node = nodes[src].plugs[src_p];
+		var dst_node = nodes[dst].plugs[dst_p];
+
+		var points = [[src_node.x, src_node.y]];
+		for (var p of pins) {
+			if (p.Type == "kConnectionPin") {
+				points.push([p.Point.X, p.Point.Y]);
+			}
+		}
+		points.push([dst_node.x, dst_node.y]);
+
+		//
+
+		connections.push({
+			points: points,
+			name: connection.Id,
+			raw: connection
+		})
+	}
+
+	return {"nodes": nodes, "connections": connections};
+}
+
+var graph = null;
+
+function update() {
+	var canvas = document.getElementById("a");
+	var context = canvas.getContext("2d");
+	var width = parseInt(document.body.clientWidth);
+	var height = parseInt(document.body.clientHeight);
+	context.width = canvas.width = width;
+	context.height = canvas.height = height;
+
+	const center_x = Math.floor(width/2);
+	const center_y = Math.floor(height/2);
+
+	context.translate(0.5, 0.5);
+
+	function rnd(x) {
+		return Math.round(x*100)/100.0;
+	}
+
+	context.beginPath();
+
+	var zx = center_x+scroll_x;
+	var zy = center_y+scroll_y;
+
+	if (zx >= 0 && zx < width) {
+		context.moveTo(zx, 0);
+		context.lineTo(zx, height);
+	}
+
+	if (zy >= 0 && zy < height) {
+		context.moveTo(0, zy);
+		context.lineTo(width, zy);
+	}
+
+	context.strokeStyle = "#DDDDDD";
+	context.closePath();
+	context.stroke();
+
+	context.translate(scroll_x, scroll_y);
+	context.translate(center_x, center_y);
+	context.scale(zoom, zoom);
+
+	if (graph != null) {
+		for (var cn of graph.connections) {
+			draw_connection(context, cn)
+		}
+
+		for (var k in graph.nodes) {
+			draw_node(context, graph.nodes[k]);
+		}
+	}
+}
+
+function draw_nodes(context, graph, collection_name) {
+	var collection = graph[collection_name];
+	for (var k in collection) {
+		draw_node(context, collection[k], collection_name);
+	}
+}
+
+function draw_node(context, node, cn) {
+	if (debug) {
+		context.beginPath();
+		context.moveTo(0, 0);
+		context.lineTo(node.x, node.y);
+		context.strokeStyle = "#FF0000";
+		context.closePath();
+		context.stroke();
+	}
+
+	context.beginPath();
+	context.arc(node.x, node.y, 10, 0, Math.PI*2, true);
+	context.fillStyle = node.color;
+	context.closePath();
+	context.fill();
+
+	context.fillStyle = "#000";
+	context.font = "bold 14px Arial";
+	context.textAlign = 'left';
+	context.textBaseline = 'middle';
+	context.fillText(node.name, node.x + 20, node.y);
+	if (debug) {
+		context.fillText("[" + node.collection + "]", node.x + 20, node.y + 20);
+	}
+
+	for (var pk in node.plugs) {
+		var p = node.plugs[pk];
+		var is_input = (p.Type == "kInputPlug");
+		var text_align = (is_input ? "left" : "right");
+		var x_offset = (is_input ? 10 : -10);
+
+		context.fillStyle = "#000";
+		context.font = "bold 14px Arial";
+		context.textAlign = text_align;
+		context.textBaseline = 'middle';
+		context.fillText(p.name, p.x + x_offset, p.y);
+	}
+}
+
+function is_str(x) {
+	return (typeof x === 'string' || x instanceof String);
+}
+
+function draw_connection(context, connection) {
+	var points = connection.points;
+	for (var i = 1; i < points.length; ++i) {
+		context.beginPath();
+		context.moveTo(points[i-1][0], points[i-1][1]);
+		context.lineTo(points[i][0], points[i][1]);
+		context.strokeStyle = "#000000";
+		context.closePath();
+		context.stroke();
+	}
+
+	if (debug) {
+		context.fillStyle = "#000";
+		context.font = "bold 14px Arial";
+		context.textAlign = 'center';
+		context.textBaseline = 'middle';
+		context.fillText(connection.name, (points[0][0] + points[1][0])/2, (points[0][1] + points[1][1])/2 - 20);
+	}
+
+	for (var i = 1; i < points.length - 1; ++i) {
+		context.beginPath();
+		context.arc(points[i][0], points[i][1], 5, 0, Math.PI*2, true);
+		context.fillStyle = "#000000";
+		context.closePath();
+		context.fill();
+	}
+}
+		</script>
+		<script src="js/utils/ajax.js"></script>
+	</body>
+</html>

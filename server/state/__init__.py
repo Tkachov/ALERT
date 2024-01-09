@@ -10,6 +10,7 @@ import server.state.caches
 import server.state.configs_editor
 import server.state.diff_tool
 import server.state.models_viewer
+import server.state.nodegraph
 import server.state.references
 import server.state.sections_editor
 import server.state.sections_viewer
@@ -31,6 +32,7 @@ class State(object):
 		self.configs_editor = server.state.configs_editor.ConfigsEditor(self)
 		self.diff_tool = server.state.diff_tool.DiffTool(self)
 		self.models_viewer = server.state.models_viewer.ModelsViewer(self)
+		self.nodegraph = server.state.nodegraph.NodeGraph(self)
 		self.references = server.state.references.References(self)
 		self.sections_editor = server.state.sections_editor.SectionsEditor(self)
 		self.sections_viewer = server.state.sections_viewer.SectionsViewer(self)
@@ -55,6 +57,7 @@ class State(object):
 		self.configs_editor.make_api_routes(app)
 		self.diff_tool.make_api_routes(app)
 		self.models_viewer.make_api_routes(app)
+		self.nodegraph.make_api_routes(app)
 		self.references.make_api_routes(app)
 		self.sections_editor.make_api_routes(app)
 		self.sections_viewer.make_api_routes(app)
