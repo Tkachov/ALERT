@@ -7,12 +7,19 @@
 				height: 100vh;
 				margin: 0;
 				padding: 0;
+
+				background: #282C34;
 			}
 		</style>
 	</head>
 	<body onload="on_load();" onresize="update();" onhashchange="on_hashchange();">
 		<canvas id="a"></canvas>
 		<script>
+const TEXT_COLOR = "#E3E3E3";
+const AXIS_COLOR = "#3D434F";
+const CONNECTION_COLOR = "#E3E3E3";
+const NODE_DEFAULT_COLOR = "#E3E3E3";
+
 function on_load() {
 	update();
 	on_hashchange();
@@ -129,7 +136,7 @@ function parse_graph(g1) {
 				node_name = n.DebugName;
 			}
 
-			var color = "#666";
+			var color = NODE_DEFAULT_COLOR;
 			if (k == "OrNodes") {
 				node_name = "||";
 			} else if (k == "AndNodes") {
@@ -288,7 +295,7 @@ function update() {
 		context.lineTo(width, zy);
 	}
 
-	context.strokeStyle = "#DDDDDD";
+	context.strokeStyle = AXIS_COLOR;
 	context.closePath();
 	context.stroke();
 
@@ -330,7 +337,7 @@ function draw_node(context, node, cn) {
 	context.closePath();
 	context.fill();
 
-	context.fillStyle = "#000";
+	context.fillStyle = TEXT_COLOR;
 	context.font = "bold 14px Arial";
 	context.textAlign = 'left';
 	context.textBaseline = 'middle';
@@ -345,7 +352,7 @@ function draw_node(context, node, cn) {
 		var text_align = (is_input ? "left" : "right");
 		var x_offset = (is_input ? 10 : -10);
 
-		context.fillStyle = "#000";
+		context.fillStyle = TEXT_COLOR;
 		context.font = "bold 14px Arial";
 		context.textAlign = text_align;
 		context.textBaseline = 'middle';
@@ -363,13 +370,13 @@ function draw_connection(context, connection) {
 		context.beginPath();
 		context.moveTo(points[i-1][0], points[i-1][1]);
 		context.lineTo(points[i][0], points[i][1]);
-		context.strokeStyle = "#000000";
+		context.strokeStyle = CONNECTION_COLOR;
 		context.closePath();
 		context.stroke();
 	}
 
 	if (debug) {
-		context.fillStyle = "#000";
+		context.fillStyle = TEXT_COLOR;
 		context.font = "bold 14px Arial";
 		context.textAlign = 'center';
 		context.textBaseline = 'middle';
@@ -379,7 +386,7 @@ function draw_connection(context, connection) {
 	for (var i = 1; i < points.length - 1; ++i) {
 		context.beginPath();
 		context.arc(points[i][0], points[i][1], 5, 0, Math.PI*2, true);
-		context.fillStyle = "#000000";
+		context.fillStyle = CONNECTION_COLOR;
 		context.closePath();
 		context.fill();
 	}
