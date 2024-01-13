@@ -54,3 +54,6 @@ class TexturesSection(dat1lib.types.sections.Section):
 
 		for aid in self.ids:
 			print("    - {:016X}".format(aid))
+
+# 0x62297090 # Archive TOC Texture Header # one <I
+# 0xC9FB9DDA # Archive TOC Texture Meta   # 72 bytes per texture

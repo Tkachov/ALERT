@@ -468,78 +468,78 @@ assets_browser = {
 						references_viewer.show_viewer(locator, shortname, fullname, entry.aid);
 					};
 				}
-			}
 
-			// config
-			if ((info.type == "Config" || info.type == "ConfigRcra") && controller.user.__configs_editor_enabled) {
-				var sep = document.createElement("span");
-				sep.className = "separator";
-				links.appendChild(sep);
+				// config
+				if ((info.type == "Config" || info.type == "ConfigRcra") && controller.user.__configs_editor_enabled) {
+					var sep = document.createElement("span");
+					sep.className = "separator";
+					links.appendChild(sep);
 
-				var btn = createElementWithTextNode("a", "Edit");
-				links.appendChild(btn);
-				btn.onclick = function () {
-					let [shortname, fullname] = get_asset_names(self);
-					configs_editor.show_editor(locator, shortname, fullname);
-				};
-			}
+					var btn = createElementWithTextNode("a", "Edit");
+					links.appendChild(btn);
+					btn.onclick = function () {
+						let [shortname, fullname] = get_asset_names(self);
+						configs_editor.show_editor(locator, shortname, fullname);
+					};
+				}
 
-			// configs/system/system_progression.config
-			if (false && entry.aid == "9C9C72A303FCFA30") { // TODO: enable back once it supports stages & MM
-				var sep = document.createElement("span");
-				sep.className = "separator";
-				links.appendChild(sep);
+				// configs/system/system_progression.config
+				if (false && entry.aid == "9C9C72A303FCFA30") { // TODO: enable back once it supports stages & MM
+					var sep = document.createElement("span");
+					sep.className = "separator";
+					links.appendChild(sep);
 
-				var btn = createElementWithTextNode("a", "Edit suits");
-				links.appendChild(btn);
-				btn.onclick = function () {
-					suits_editor.show_editor(""); // TODO: stage
-				};
-			}
+					var btn = createElementWithTextNode("a", "Edit suits");
+					links.appendChild(btn);
+					btn.onclick = function () {
+						suits_editor.show_editor(""); // TODO: stage
+					};
+				}
 
-			// model
-			if (info.type.startsWith("Model")) {
-				var sep = document.createElement("span");
-				sep.className = "separator";
-				links.appendChild(sep);
+				// model
+				if (info.type.startsWith("Model")) {
+					var sep = document.createElement("span");
+					sep.className = "separator";
+					links.appendChild(sep);
 
-				var btn = createElementWithTextNode("a", "View");
-				links.appendChild(btn);
-				var self = this;
-				btn.onclick = function () {
-					let [shortname, fullname] = get_asset_names(self);
-					models_viewer.show_mesh(locator, shortname, fullname);
-				};
-			}
+					var btn = createElementWithTextNode("a", "View");
+					links.appendChild(btn);
+					var self = this;
+					btn.onclick = function () {
+						let [shortname, fullname] = get_asset_names(self);
+						models_viewer.show_mesh(locator, shortname, fullname);
+					};
+				}
 
-			// nodegraph
-			if (info.type.startsWith("NodeGraph")) {
-				var sep = document.createElement("span");
-				sep.className = "separator";
-				links.appendChild(sep);
+				// nodegraph
+				if (info.type.startsWith("NodeGraph")) {
+					var sep = document.createElement("span");
+					sep.className = "separator";
+					links.appendChild(sep);
 
-				var btn = createElementWithTextNode("a", "View reconstructed");
-				links.appendChild(btn);
-				var self = this;
-				btn.onclick = function () {
-					//let [shortname, fullname] = get_asset_names(self);
-					window.open("/nodegraph.html#" + locator, '_blank');
-				};
-			}
+					var btn = createElementWithTextNode("a", "View reconstructed");
+					links.appendChild(btn);
+					var self = this;
+					btn.onclick = function () {
+						//let [shortname, fullname] = get_asset_names(self);
+						window.open("/nodegraph.html#" + locator, '_blank');
+					};
+				}
 
-			// texture
-			if (info.type.startsWith("Texture")) {
-				var sep = document.createElement("span");
-				sep.className = "separator";
-				links.appendChild(sep);
+				// texture
+				if (info.type.startsWith("Texture")) {
+					var sep = document.createElement("span");
+					sep.className = "separator";
+					links.appendChild(sep);
 
-				var btn = createElementWithTextNode("a", "View");
-				links.appendChild(btn);
-				var self = this;
-				btn.onclick = function () {
-					let [shortname, fullname] = get_asset_names(self);
-					textures_viewer.show_texture(locator, shortname, fullname);
-				};
+					var btn = createElementWithTextNode("a", "View");
+					links.appendChild(btn);
+					var self = this;
+					btn.onclick = function () {
+						let [shortname, fullname] = get_asset_names(self);
+						textures_viewer.show_texture(locator, shortname, fullname);
+					};
+				}
 			}
 
 			var p = document.createElement("p");
