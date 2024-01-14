@@ -5,7 +5,7 @@ import struct
 #
 
 class x09DC30AB_Section(dat1lib.types.sections.Section):
-	TAG = 0x09DC30AB
+	TAG = 0x09DC30AB # Anim Clip Curves
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -47,7 +47,7 @@ class x09DC30AB_Section(dat1lib.types.sections.Section):
 #
 
 class x1722FAEF_Section(dat1lib.types.sections.Section):
-	TAG = 0x1722FAEF
+	TAG = 0x1722FAEF # Anim Clip Geom Samples
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -95,7 +95,7 @@ class x1722FAEF_Section(dat1lib.types.sections.Section):
 #
 
 class x116EB684_Section(dat1lib.types.sections.Section):
-	TAG = 0x116EB684
+	TAG = 0x116EB684 # Anim Clip Custom Track Data
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -142,8 +142,8 @@ class x116EB684_Section(dat1lib.types.sections.Section):
 
 #
 
-class x2BB5BC8F_Section(dat1lib.types.sections.Section):
-	TAG = 0x2BB5BC8F
+class x2BB5BC8F_Section(dat1lib.types.sections.Section): # bone transforms (Qxyzw, xyz), same order as hashes in A3B26640?
+	TAG = 0x2BB5BC8F # Anim Clip Base State
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -191,7 +191,7 @@ class x2BB5BC8F_Section(dat1lib.types.sections.Section):
 #
 
 class x14014CB6_Section(dat1lib.types.sections.Section):
-	TAG = 0x14014CB6
+	TAG = 0x14014CB6 # Anim Clip Custom Tracks
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -251,7 +251,7 @@ class x14014CB6_Section(dat1lib.types.sections.Section):
 #
 
 class x1D4BD9FA_Section(dat1lib.types.sections.Section):
-	TAG = 0x1D4BD9FA
+	TAG = 0x1D4BD9FA # Anim Clip Pose Phoneme Visems Map
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -299,7 +299,7 @@ class x1D4BD9FA_Section(dat1lib.types.sections.Section):
 #
 
 class x3A7B4855_Section(dat1lib.types.sections.Section):
-	TAG = 0x3A7B4855
+	TAG = 0x3A7B4855 # Anim Clip Sample Data
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -347,7 +347,7 @@ class x3A7B4855_Section(dat1lib.types.sections.Section):
 #
 
 class x3976E44C_Section(dat1lib.types.sections.Section):
-	TAG = 0x3976E44C
+	TAG = 0x3976E44C # Anim Clip Path
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -397,7 +397,7 @@ class x3976E44C_Section(dat1lib.types.sections.Section):
 #
 
 class x277563F5_Section(dat1lib.types.sections.Section):
-	TAG = 0x277563F5
+	TAG = 0x277563F5 # Anim Clip Morph Info
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -445,7 +445,7 @@ class x277563F5_Section(dat1lib.types.sections.Section):
 #
 
 class x4FC98D7E_Section(dat1lib.types.sections.Section):
-	TAG = 0x4FC98D7E
+	TAG = 0x4FC98D7E # Anim Clip Curves Data
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -540,7 +540,7 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 			9: "bones count (A3B26640)",
 			15: "bones count (A3B26640)",
 			17: "? count (D070D358)",
-			28: "anims count (14014CB6)"
+			28: "anims count (14014CB6)" # "custom tracks"
 		}
 
 		for i in range(1, 46):
@@ -552,7 +552,7 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 #
 
 class x411852D5_Section(dat1lib.types.sections.Section):
-	TAG = 0x411852D5
+	TAG = 0x411852D5 # Anim Clip Geom Sample Data
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -589,8 +589,8 @@ class x411852D5_Section(dat1lib.types.sections.Section):
 
 #
 
-class xA3B26640_Section(dat1lib.types.sections.Section):
-	TAG = 0xA3B26640
+class xA3B26640_Section(dat1lib.types.sections.Section): # bone hashes
+	TAG = 0xA3B26640 # Anim Clip Joint Hashes
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -613,6 +613,8 @@ class xA3B26640_Section(dat1lib.types.sections.Section):
 		# size = 8..1824 (avg = 510.9)
 		#
 		# examples: 800CB253D80046C5 (min size), 801F365EC4F8F471 (max size)
+
+		# always goes with 2BB5BC8F
 		
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
@@ -693,7 +695,7 @@ class AnimClipTriggerDataSection(dat1lib.types.sections.Section):
 #
 
 class x495BA079_Section(dat1lib.types.sections.Section):
-	TAG = 0x495BA079
+	TAG = 0x495BA079 # Anim Clip Pose Expression Id Map
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -741,7 +743,7 @@ class x495BA079_Section(dat1lib.types.sections.Section):
 #
 
 class xE08AA35F_Section(dat1lib.types.sections.Section):
-	TAG = 0xE08AA35F
+	TAG = 0xE08AA35F # Anim Clip Motion Data
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -789,7 +791,7 @@ class xE08AA35F_Section(dat1lib.types.sections.Section):
 #
 
 class x69F64588_Section(dat1lib.types.sections.Section):
-	TAG = 0x69F64588
+	TAG = 0x69F64588 # Anim Clip Morph Frame Data
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -837,7 +839,7 @@ class x69F64588_Section(dat1lib.types.sections.Section):
 #
 
 class x74FC0175_Section(dat1lib.types.sections.Section):
-	TAG = 0x74FC0175
+	TAG = 0x74FC0175 # Anim Clip Trigger Joint Names
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
@@ -885,7 +887,7 @@ class x74FC0175_Section(dat1lib.types.sections.Section):
 #
 
 class xD070D358_Section(dat1lib.types.sections.Section):
-	TAG = 0xD070D358
+	TAG = 0xD070D358 # Anim Clip Sample Elem
 	TYPE = 'AnimClip_PerformanceClip'
 
 	def __init__(self, data, container):
