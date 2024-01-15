@@ -12,6 +12,8 @@ import io
 import math
 import pygltflib
 
+ADD_SHAPEKEYS = True
+
 SECTION_INDEXES     = dat1lib.types.sections.model.geo.IndexesSection.TAG
 SECTION_VERTEXES    = dat1lib.types.sections.model.geo.VertexesSection.TAG
 SECTION_UV1         = dat1lib.types.sections.model.geo.x6B855EED_Section.TAG
@@ -132,8 +134,9 @@ class GltfWriter(object):
 	def add_meshes(self, meshes_indexes, skin, rcra_skin):
 		morph_section = self.model.dat1.get_section(0x380A5744)
 		shapekeys = []
-		for mi in morph_section.morph_infos:
-			shapekeys += [(morph_section._dat1.get_string(mi.name_offset), mi.subset_ids)]
+		if ADD_SHAPEKEYS:
+			for mi in morph_section.morph_infos:
+				shapekeys += [(morph_section._dat1.get_string(mi.name_offset), mi.subset_ids)]
 
 		for mi in meshes_indexes:
 			self.add_mesh(self.make_intermediate(self.meshes[mi]), self.meshes[mi], skin, rcra_skin, mi, shapekeys)
