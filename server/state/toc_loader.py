@@ -35,14 +35,33 @@ class TocLoader(object):
 		parts = path.split("/")
 		dirs, file = parts[:-1], parts[-1]
 		
-		node = self.tree
-		for d in dirs:
+		new_parts = []
+		prev, node = None, self.tree
+		for i, d in enumerate(dirs):
+			if isinstance(node, list):
+				k = dirs[i-1] + "--embed"
+				if k not in prev:
+					prev[k] = {}
+				node = prev[k]
+				new_parts.pop()
+				new_parts += [k]
+
 			if d not in node:
 				node[d] = {}
-			node = node[d]
+			prev, node = node, node[d]
+			new_parts += [d]
+
+		if isinstance(node, list):
+			k = dirs[-1] + "--embed"
+			if k not in prev:
+				prev[k] = {}
+			node = prev[k]
+			new_parts.pop()
+			new_parts += [k]
 
 		node[file] = [aid, []]
-		self._known_paths[aid] = path
+		new_parts += [file]
+		self._known_paths[aid] = "/".join(new_parts)
 
 	def _add_index_to_tree(self, aid, asset_info):
 		path = self._known_paths[aid]
@@ -78,15 +97,23 @@ class TocLoader(object):
 						except:
 							pass
 			else:
+				lines = []
 				with open("hashes.txt", "r") as f:
 					for line in f:
 						try:
 							parts = line.split(",")
 							aid, path = parts[0], normalize_path(parts[1])
 							if path != "":
-								self._insert_path(path, aid)
+								lines += [(path, aid)]
 						except:
 							pass
+
+				lines = sorted(lines) # so <file> gets always processed earlier than <file>/<embed>, and we can detect that and fix into <file>--embeds/<embed>
+				for path, aid in lines:
+					try:
+						self._insert_path(path, aid)
+					except:
+						pass
 		except:
 			pass
 
