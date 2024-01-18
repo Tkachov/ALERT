@@ -9,6 +9,8 @@ VERSION_SO = 201800
 VERSION_MSMR = 202200
 VERSION_RCRA = 202300
 
+TRY_SECOND_MAGIC = False
+
 #
 
 def __inspect_module(module):
@@ -98,6 +100,18 @@ def read(f, try_unknown=True, version=None):
 
 	if magic in types.KNOWN_TYPES:
 		return types.KNOWN_TYPES[magic](f, version=version)
+
+	if TRY_SECOND_MAGIC:
+		try:
+			f.seek(36)
+			dat1_magic, magic = struct.unpack("<II", f.read(8))
+			f.seek(0)
+
+			if dat1_magic == 0x44415431:
+				if magic in types.KNOWN_TYPES:
+					return types.KNOWN_TYPES[magic](f, version=version)
+		except:
+			pass
 
 	if try_unknown:
 		try:

@@ -355,6 +355,9 @@ class LevelRcra(Level):
 	#
 	# examples: 95A02E80D5D79CF7
 
+class Level2(Level):
+	MAGIC = 0xD3188EE5
+
 #
 
 class LevelLight(object):
@@ -590,6 +593,9 @@ class NodeGraph(object):
 		print()
 
 		self.dat1.print_info(config)
+
+class NodeGraph2(NodeGraph):
+	MAGIC = 0x5C8EA4C0
 
 #
 

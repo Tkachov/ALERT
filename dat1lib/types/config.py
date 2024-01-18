@@ -24,6 +24,13 @@ class Config(object):
 		#
 		# examples: 813381135A2CC078 (min size), 97425517EBC3BB3F (max size), 80021D6AAE50A75C (2 sections), 80419E87ECF4E626 (3 sections)
 
+		# RCRA
+		# 1847 occurrences
+		# size = 144..4320644 (avg = 6285.8)
+		# from 2 to 3 sections (avg = 2.3)
+		#
+		# examples: 94982925AD887B35 (min size), BB876CAC4C37B181 (max size), 80483C8A48424009 (2 sections), 8001C43CEBA5E2FA (3 sections)
+
 		self.version = version
 		
 		self.magic, self.dat1_size = struct.unpack("<II", f.read(8))
@@ -73,12 +80,5 @@ class Config(object):
 
 		self.dat1.print_info(config)
 
-class ConfigRcra(Config):
-	MAGIC = 0x21A56F68
-
-	# RCRA
-	# 1847 occurrences
-	# size = 144..4320644 (avg = 6285.8)
-	# from 2 to 3 sections (avg = 2.3)
-	#
-	# examples: 94982925AD887B35 (min size), BB876CAC4C37B181 (max size), 80483C8A48424009 (2 sections), 8001C43CEBA5E2FA (3 sections)
+class Config2(Config):
+	MAGIC = 0x35F7AFA5
