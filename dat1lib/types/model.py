@@ -91,3 +91,6 @@ class ModelRcra(Model):
 			version = dat1lib.VERSION_RCRA
 
 		Model.__init__(self, f, version)
+
+class Model3(Model):
+	MAGIC = 0xCC9DAFF8

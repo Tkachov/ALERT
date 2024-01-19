@@ -59,3 +59,6 @@ class SoundbankRcra(Soundbank):
 	# from 3 to 4 sections (avg = 3.9)
 	#
 	# examples: 80401892FB7E19F8 (min size), 80E6D1589338AECF (max size), 800582AB4AE61DB1 (4 sections)
+
+class Soundbank2(Soundbank):
+	MAGIC = 0xD61E269F

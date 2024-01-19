@@ -60,6 +60,9 @@ class ActorRcra(Actor):
 	#
 	# examples: 8B8FEE5EB9F28855 (min size), ACFDE0920CD4F684 (max size), 815ECA36897F2155 (2 sections), 800E8B251E3B597E (5 sections)
 
+class Actor2(Actor):
+	MAGIC = 0x4F3EF120
+
 #
 
 class AnimClip(object): # animclip/performanceclip
@@ -118,6 +121,9 @@ class AnimClipRcra(AnimClip): # animclip/performanceclip
 	# from 0 to 12 sections (avg = 4.8)
 	#
 	# examples: 8272777BE3A34847 (min size), B582E825EF5E4B7C (max size), 88C87C171B873977 (12 sections)
+
+class AnimClip2(AnimClip):
+	MAGIC = 0x39AC933C
 
 #
 
@@ -178,6 +184,9 @@ class AnimSetRcra(AnimSet): # animset/performanceset
 	#
 	# examples: A3E979A667C95A6D (min size), 8867CE5CFD9543DE (max size), 81E6BC350A34B426 (10 sections)
 
+class AnimSet2(AnimSet):
+	MAGIC = 0x7B7EFC3F
+
 #
 
 class Cinematic2(object):
@@ -236,6 +245,9 @@ class Cinematic2Rcra(Cinematic2):
 	# from 6 to 28 sections (avg = 21.9)
 	#
 	# examples: B1630BAB8922BD62 (min size), 9A185216FAE8BCE9 (max size), 83EBA48314B2BACF (28 sections)
+
+class Cinematic2_2(Cinematic2):
+	MAGIC = 0x9F9D8974
 
 #
 
@@ -358,6 +370,9 @@ class LevelRcra(Level):
 class Level2(Level):
 	MAGIC = 0xD3188EE5
 
+class Level3(Level):
+	MAGIC = 0x578AF452
+
 #
 
 class LevelLight(object):
@@ -470,6 +485,9 @@ class Localization(object):
 
 		self.dat1.print_info(config)
 
+class Locatization2(Localization):
+	MAGIC = 0xB4D92563
+
 #
 
 class MaterialGraph(object):
@@ -535,6 +553,9 @@ class MaterialGraphRcra(MaterialGraph):
 	# from 3 to 9 sections (avg = 6.0)
 	#
 	# examples: A8A61DE9B77F351F (min size), 809D690CEE3F6048 (max size), 80161ACCDF88AB80 (3 sections), 82E6E9B90EA944BF (9 sections)
+
+class MaterialGraph3(MaterialGraph):
+	MAGIC = 0xB7914F8B
 
 #
 
@@ -660,6 +681,9 @@ class TextureRcra(Texture):
 	#
 	# examples: 84BB3722E22F90FC (min size), A6D7A1FC9477A361 (max size), 8001D626C025EAA0
 
+class Texture3(Texture):
+	MAGIC = 0x3E7886C8
+
 #
 
 class VisualEffect(object):
@@ -719,6 +743,9 @@ class VisualEffectRcra(VisualEffect):
 	#
 	# examples: 85790733BB01318A (min size), 81A3452B88E1C1CB (max size), 853B8C882DD88E6F (4 sections), 8D38880D6C9DD205 (11 sections)
 
+class VisualEffect2(VisualEffect):
+	MAGIC = 0x55A261E9
+
 #
 
 class WwiseLookup(object):
@@ -777,6 +804,9 @@ class WwiseLookupRcra(WwiseLookup):
 	# always 3 sections
 	#
 	# examples: A81AB0A616889CC2
+
+class WwiseLookup2(WwiseLookup):
+	MAGIC = 0x3ECEF00C
 
 #
 
@@ -838,6 +868,9 @@ class ZoneRcra(Zone):
 	# from 1 to 35 sections (avg = 4.9)
 	#
 	# examples: 8000BBDA09A7A62C (min size), 961B06FC2C552478 (max size), A1CC707540F0E1E4 (35 sections)
+
+class Zone2(Zone):
+	MAGIC = 0x9458E0F5
 
 #
 

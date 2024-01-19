@@ -143,7 +143,7 @@ class Textures(object):
 
 	def _make_dds_data(self, texture_asset, hd_data, mipmap_index):
 		try:
-			if not isinstance(texture_asset, dat1lib.types.autogen.Texture) and not isinstance(texture_asset, dat1lib.types.so.Texture_I16):
+			if not isinstance(texture_asset, (dat1lib.types.autogen.Texture, dat1lib.types.so.Texture_I16, dat1lib.types.autogen.Texture3)):
 				return None
 
 			info = texture_asset.dat1.get_section(dat1lib.types.sections.texture.header.TextureHeaderSection.TAG)

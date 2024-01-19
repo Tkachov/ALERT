@@ -59,3 +59,6 @@ class AtmosphereRcra(Atmosphere):
 	# from 1 to 4 sections (avg = 3.0)
 	#
 	# examples: A7F253C95A0A0098 (min size), B431B895EFE8E17D (max size), 837E5685BA7DF0F1 (4 sections)
+
+class Atmosphere2(Atmosphere):
+	MAGIC = 0x39835F68

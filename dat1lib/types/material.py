@@ -72,3 +72,6 @@ class MaterialRcra(Material):
 
 	# RCRA ver. 1.922.0.0
 	# New MAGIC value due to Material format update
+
+class Material3(Material):
+	MAGIC = 0xC9086F21
