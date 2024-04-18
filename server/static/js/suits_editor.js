@@ -1,3 +1,8 @@
+// ALERT: Amazing Luna Engine Research Tools
+// This program is free software, and can be redistributed and/or modified by you. It is provided 'as-is', without any warranty.
+// For more details, terms and conditions, see GNU General Public License.
+// A copy of the that license should come with this program (LICENSE.txt). If not, see <http://www.gnu.org/licenses/>.
+
 const BUILTIN_SUITS = ["SUIT_I20","SUIT_CLASSIC_DAMAGED","SUIT_CLASSIC","SUIT_NOIR","SUIT_SCARLET","SUIT_MK2","SUIT_SECRETWAR","SUIT_MCU","SUIT_NEGATIVEZONE","SUIT_ELECTRO","SUIT_PUNK","SUIT_WRESTLER","SUIT_FEARITSELF","SUIT_STEALTH","SUIT_MK3","SUIT_2099","SUIT_IRON","SUIT_ADI","SUIT_MK4","SUIT_SPIRIT","SUIT_2099_WHITE","SUIT_VINTAGE","SUIT_FINAL","SUIT_NAKED","SUIT_MAKESHIFT","SUIT_CASUAL","SUIT_ANTIOCK","SUIT_BLACK","SUIT_RESILIENT","SUIT_UK","SUIT_SCARLET2","SUIT_MK1","SUIT_IRONSPIDER","SUIT_SPIDERCLAN","SUIT_AIKMAN","SUIT_CYBORG","SUIT_SPIDERVERSE","SUIT_WEBBED","SUIT_BAGMAN","SUIT_FUTUREFOUNDATION","SUIT_UPGRADED","SUIT_FFHSTEALTH","SUIT_AMAZING","SUIT_ARACHNIDRIDER","SUIT_I20RTHIRD","SUIT_NWH","SUIT_NWHBLACK"];
 
 suits_editor = {
