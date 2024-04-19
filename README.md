@@ -1,4 +1,4 @@
-# ALERT: Amazing Luna Engine Research Tools
+# <img src="server/static/favicon.ico" height="27pt" /> ALERT: Amazing Luna Engine Research Tools
 
 This repository contains Python scripts written to research Insomniac Games' games assets formats.
 
