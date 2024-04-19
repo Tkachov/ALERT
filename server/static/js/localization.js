@@ -30,7 +30,7 @@ const BASE_LOCALE = "en";
 const ROOT_DIRECTORY = {
 	"ui": {
 		"title": {
-			"en": "MSMR Assets Browser"
+			"en": "ALERT Assets Browser"
 		},
 
 		"splashes": {
