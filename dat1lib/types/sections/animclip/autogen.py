@@ -148,7 +148,7 @@ class x116EB684_Section(dat1lib.types.sections.Section):
 
 #
 
-class x2BB5BC8F_Section(dat1lib.types.sections.Section): # bone transforms (Qxyzw, xyz), same order as hashes in A3B26640?
+class x2BB5BC8F_Section(dat1lib.types.sections.Section):
 	TAG = 0x2BB5BC8F # Anim Clip Base State
 	TYPE = 'AnimClip_PerformanceClip'
 
@@ -176,6 +176,11 @@ class x2BB5BC8F_Section(dat1lib.types.sections.Section): # bone transforms (Qxyz
 		ENTRY_SIZE = 4
 		count = len(data)//ENTRY_SIZE
 		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+
+		# 16 bytes bone transforms (Qxyzw, xyz), same order as hashes in A3B26640?
+		# (no transform for FFFFFFFF if it's listed there)
+
+		# then, some extra data
 
 	def save(self):
 		of = io.BytesIO(bytes())
