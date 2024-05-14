@@ -6,6 +6,7 @@
 import dat1lib.types.sections
 import io
 import struct
+import dat1lib.utils as utils
 
 #
 
@@ -658,12 +659,19 @@ class AnimClipTriggerDataSection(dat1lib.types.sections.Section):
 	def __init__(self, data, container):
 		dat1lib.types.sections.Section.__init__(self, data, container)
 
-		self.extra = struct.unpack("<4I", data[:16])
+		self.jsons_count, self.things_count, self.jsons_size = struct.unpack("<HHI", data[:8])
+		self.unk1, self.unk2, self.unk3, self.unk4 = struct.unpack("<4I", data[8:24])
+
+		# actually, not jsons_count and always 1?
+		# jsons go one after another but with somewhat like 8 or 12 bytes in between
+
 		self.jsons = None
 		try:
-			self.jsons = dat1lib.types.sections.SerializedSection(data[16:], self._dat1)
+			self.jsons = dat1lib.types.sections.SerializedSection(data[24:16+self.jsons_size], self._dat1) # from 24 because first 2 int32s are unk3 and unk4 that are not recognized by SerializedSection()
 		except:
 			pass
+
+		self.things = utils.read_struct_array_data(data[16+self.jsons_size:], "<2I2HI")
 
 		# MSMR
 		# 9621 occurrences in 101563 files
@@ -689,13 +697,32 @@ class AnimClipTriggerDataSection(dat1lib.types.sections.Section):
 	def print_verbose(self, config):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Trigger Data |".format(self.TAG))
-		print(" "*10, self.extra)
+		print()
+		print(" "*10, f"{self.jsons_count} jsons (size={self.jsons_size}), {self.things_count} things")
+		print(" "*10, f"unk: {self.unk1:08X} {self.unk2:08X} {self.unk3:08X} {self.unk4:08X}")
+		print()
 		try:
-			print(" "*10, self.jsons.root)
+			print(" "*10, "json #0:", self.jsons.root)
 			if len(self.jsons.extras) > 0:
-				print(" "*10, self.jsons.extras)
+				for i in range(len(self.jsons.extras)):
+					print(" "*10, f"json #{i+1}:", self.jsons.extras[i])
 		except:
 			pass
+			# TODO: print jsons bytes
+
+		print("")
+		#######........ | 123  12345678 12345678 1234 5678 12345678 
+		print("           #    a        b        c    d    e")
+		print("         -------------------------------------------")
+		for i, thing in enumerate(self.things):
+			a, b, c, d, e = thing
+			print("         - {:<3}  {:08X} {:08X} {:<4} {:04X} {:08X}".format(i, a, b, c, d, e))
+		print("")
+
+		# sorted by d or e
+		# c is only 0 or 1
+		# b mostly 00000000, sometimes equal to unk1 (which is also trigger joint name from 74FC0175), sometimes to something else
+		# a sometimes repeat in the same section; the same values can be met in different assets => ids or hashes of something common?
 
 #
 
@@ -883,11 +910,16 @@ class x74FC0175_Section(dat1lib.types.sections.Section):
 		return "74FC0175 ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 74FC0175     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | TrigJointNms | {:6} entries".format(self.TAG, len(self.entries)))
+
+		print("")
+		#######........ | 123  12345678
+		print("           #    joint nm")
+		print("         ---------------")
+		for i, e in enumerate(self.entries):
+			print("         - {:<3}  {:08X}".format(i, e))
+		print("")
 
 #
 
