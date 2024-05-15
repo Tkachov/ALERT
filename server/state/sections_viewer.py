@@ -60,6 +60,9 @@ class SectionsViewer(object):
 
 						if report["sections"][s.tag]["content"] == "":
 							content_set = False
+
+						if "web_name" in dir(section):
+							report["sections"][s.tag]["name"] = section.web_name()
 			except:
 				pass
 

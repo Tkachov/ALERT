@@ -146,6 +146,9 @@ class x116EB684_Section(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 116EB684     | {:6} entries".format(self.TAG, len(self.entries)))
 
+	def web_name(self):
+		return "Anim Clip Custom Track Data? (116EB684)"
+
 #
 
 class x2BB5BC8F_Section(dat1lib.types.sections.Section):
@@ -199,6 +202,9 @@ class x2BB5BC8F_Section(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 2BB5BC8F     | {:6} entries".format(self.TAG, len(self.entries)))
 
+	def web_name(self):
+		return "Anim Clip Base State (2BB5BC8F)"
+
 #
 
 class x14014CB6_Section(dat1lib.types.sections.Section):
@@ -251,13 +257,16 @@ class x14014CB6_Section(dat1lib.types.sections.Section):
 		for i, l in enumerate(self.entries):
 			print("         - {:<3}  {:08X}  {}  {}".format(i, l[0], self._dat1._strings_map.get(l[1], None), l[2:]))
 			# l[2], l[3] -- zeros
-			# l[4] -- offset in 116EB684?
-			# l[5] -- 257 (== count of bones?)
+			# l[4] -- offset in 116EB684
+			# l[5] -- 257 (== count of bones? maybe just some flags?)
 			# l[6], l[7] -- zeros
-			# l[8] -- 1 or 69, affects offset in l[4] (1 is 16 bytes, 69 is 288 bytes)
+			# l[8] -- number of 4-byte elements in 116EB684; data is aligned by 16, thus offset could be a bit higher than l[8]*4; key frames count in track?
 			# l[9] -- zero
 
 		print("")
+
+	def web_name(self):
+		return "Anim Clip Custom Tracks (14014CB6)"
 
 #
 
@@ -355,6 +364,9 @@ class x3A7B4855_Section(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 3A7B4855     | {:6} entries".format(self.TAG, len(self.entries)))
 
+	def web_name(self):
+		return "Anim Clip Sample Data? (3A7B4855)"
+
 #
 
 class x3976E44C_Section(dat1lib.types.sections.Section):
@@ -405,6 +417,9 @@ class x3976E44C_Section(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 3976E44C     | {:6} entries".format(self.TAG, len(self.entries)))
 
+	def web_name(self):
+		return "Anim Clip Path? (3976E44C)"
+
 #
 
 class x277563F5_Section(dat1lib.types.sections.Section):
@@ -452,6 +467,9 @@ class x277563F5_Section(dat1lib.types.sections.Section):
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 277563F5     | {:6} entries".format(self.TAG, len(self.entries)))
+
+	def web_name(self):
+		return "Anim Clip Morph Info? (277563F5)"
 
 #
 
@@ -548,10 +566,14 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 		print(" "*10, self._dat1._strings_map.get(self.entries[0], None)) #  self._dat1.get_string(self.entries[0]))
 
 		prefixes = {
-			9: "bones count (A3B26640)",
+			# 9: "bones count (A3B26640)",
 			15: "bones count (A3B26640)",
-			17: "? count (D070D358)",
-			28: "anims count (14014CB6)" # "custom tracks"
+			16: "frames count? (equal to 7th value of (almost?) every track in 14014CB6)",
+			17: "samples count? (D070D358)",
+			21: "number of 32-byte things in base state? [#21]",
+			23: "usually equal to frames count?",
+			24: "sometimes equal to #21?",
+			28: "tracks count (14014CB6)" # "custom tracks"
 		}
 
 		for i in range(1, 46):
@@ -559,6 +581,9 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 			if i in prefixes:
 				pref = " -- " + prefixes[i]
 			print(" "*10, "{0:5} {0:04X}{1}".format(self.entries[i], pref))
+	
+	def web_name(self):
+		return "Anim Clip Built? (9DF23F77)"
 
 #
 
@@ -654,6 +679,9 @@ class xA3B26640_Section(dat1lib.types.sections.Section): # bone hashes
 
 		print("")
 
+	def web_name(self):
+		return "Anim Clip Joint Hashes (A3B26640)"
+
 
 #
 
@@ -728,6 +756,9 @@ class AnimClipTriggerDataSection(dat1lib.types.sections.Section):
 		# c is only 0 or 1
 		# b mostly 00000000, sometimes equal to unk1 (which is also trigger joint name from 74FC0175), sometimes to something else
 		# a sometimes repeat in the same section; the same values can be met in different assets => ids or hashes of something common?
+
+	def web_name(self):
+		return "Anim Clip Trigger Data? (6962F7DE)"
 
 #
 
@@ -825,6 +856,9 @@ class xE08AA35F_Section(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | E08AA35F     | {:6} entries".format(self.TAG, len(self.entries)))
 
+	def web_name(self):
+		return "Anim Clip Motion Data? (E08AA35F)"
+
 #
 
 class x69F64588_Section(dat1lib.types.sections.Section):
@@ -872,6 +906,9 @@ class x69F64588_Section(dat1lib.types.sections.Section):
 		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | 69F64588     | {:6} entries".format(self.TAG, len(self.entries)))
+
+	def web_name(self):
+		return "Anim Clip Morph Frame Data? (69F64588)"
 
 #
 
@@ -926,6 +963,9 @@ class x74FC0175_Section(dat1lib.types.sections.Section):
 			print("         - {:<3}  {:08X}".format(i, e))
 		print("")
 
+	def web_name(self):
+		return "Anim Clip Trigger Joint Names (74FC0175)"
+
 #
 
 class xD070D358_Section(dat1lib.types.sections.Section):
@@ -962,6 +1002,7 @@ class xD070D358_Section(dat1lib.types.sections.Section):
 		offset = ENTRY_SIZE * count
 		ENTRY_SIZE = 1
 		self.entries2 = [struct.unpack("<B", data[offset+i*ENTRY_SIZE:offset+(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+		# number of times sample has to be repeated? and then this "extracted" buffer is read as values for something?
 
 	"""
 	def save(self):
@@ -983,10 +1024,17 @@ class xD070D358_Section(dat1lib.types.sections.Section):
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | D070D358     | {:6} entries".format(self.TAG, len(self.entries)))
 
+		e2_sum = 0
+
 		print("")
 		#######........ | 123  12345678  123
 		print("           #        hash  ndx")
 		print("         ---------------------")
 		for i, l in enumerate(self.entries):
 			print("         - {:<3}  {:08X}  {}".format(i, l, self.entries2[i]))
+			e2_sum += self.entries2[i]
 		print("")
+		print(f"sum of ndx = {e2_sum}; +1 per line = {e2_sum + len(self.entries)} // if these are repetitions, 0 makes no sense and probably means 1, then 1 is 2, etc")
+
+	def web_name(self):
+		return "Anim Clip Sample Elem? (D070D358)"
