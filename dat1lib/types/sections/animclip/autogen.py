@@ -3,10 +3,11 @@
 # For more details, terms and conditions, see GNU General Public License.
 # A copy of the that license should come with this program (LICENSE.txt). If not, see <http://www.gnu.org/licenses/>.
 
+import dat1lib.crc32 as crc32
 import dat1lib.types.sections
+import dat1lib.utils as utils
 import io
 import struct
-import dat1lib.utils as utils
 
 #
 
@@ -545,7 +546,8 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 		count = len(data)//ENTRY_SIZE
 		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
 		"""
-		self.entries = struct.unpack("<I46H", data)
+		self.string_offset, self.hash = struct.unpack("<2I", data[:8])
+		self.entries = struct.unpack("<44H", data[8:])
 
 	"""
 	def save(self):
@@ -562,25 +564,40 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 	def print_verbose(self, config):		
 		##### "{:08X} | ............ | {:6} ..."
 		print("{:08X} | Clip Built   |".format(self.TAG))
+		print()
 
-		print(" "*10, self._dat1._strings_map.get(self.entries[0], None)) #  self._dat1.get_string(self.entries[0]))
+		name = self._dat1._strings_map.get(self.string_offset, None)
+		if name is None:
+			print(f"   <no string at offset={self.string_offset}>")
+			print(f"   {self.hash:08X}")
+		else:
+			print(f"   {name}")
 
-		prefixes = {
-			# 9: "bones count (A3B26640)",
-			15: "bones count (A3B26640)",
-			16: "frames count? (equal to 7th value of (almost?) every track in 14014CB6)",
-			17: "samples count? (D070D358)",
-			21: "number of 32-byte things in base state? [#21]",
-			23: "usually equal to frames count?",
-			24: "sometimes equal to #21?",
-			28: "tracks count (14014CB6)" # "custom tracks"
+			real_hash = crc32.hash(name, False)
+			if real_hash == self.hash:
+				print(f"   {self.hash:08X}")
+			else:
+				print(f"   {self.hash:08X} | MISMATCH, real hash = {real_hash:08X}")
+		print()
+
+		###
+
+		suffixes = {
+			# 9-3: "bones count (A3B26640)",
+			15-3: "bones count (A3B26640)",
+			16-3: "frames count? (equal to 7th value of (almost?) every track in 14014CB6)",
+			17-3: "samples count? (D070D358)",
+			21-3: "number of 32-byte things in base state? [#21]",
+			23-3: "usually equal to frames count?",
+			24-3: "sometimes equal to #21?",
+			28-3: "tracks count (14014CB6)" # "custom tracks"
 		}
 
-		for i in range(1, 46):
-			pref = ""
-			if i in prefixes:
-				pref = " -- " + prefixes[i]
-			print(" "*10, "{0:5} {0:04X}{1}".format(self.entries[i], pref))
+		for i in range(len(self.entries)):
+			suff = ""
+			if i in suffixes:
+				suff = " -- " + suffixes[i]
+			print(" "*10, "{0:5} {0:04X}{1}".format(self.entries[i], suff))
 	
 	def web_name(self):
 		return "Anim Clip Built? (9DF23F77)"
