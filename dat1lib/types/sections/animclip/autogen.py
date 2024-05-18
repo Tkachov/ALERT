@@ -541,13 +541,55 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 		#
 		# examples: 80000DCC5F02623C
 		
-		"""
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
-		"""
 		self.string_offset, self.hash = struct.unpack("<2I", data[:8])
-		self.entries = struct.unpack("<44H", data[8:])
+
+		self.LAYOUT = [
+			("H", ""),
+			("H", ""),
+			("f", ""),
+			("f", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", "bones count (A3B26640)"),
+			("H", "frames count? (equal to 7th value of (almost?) every track in 14014CB6)"),
+			("H", "samples count? (D070D358)"),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", "number of 32-byte things in base state? [#21]"),
+			("H", ""),
+			("H", "usually equal to frames count?"),
+			("H", "sometimes equal to #21?"),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", "tracks count (14014CB6)"),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", "\"DEAD\""), # moved 4 bytes lower in i30?!
+			("H", "\"DEAD\""),
+			("H", "zeroes"),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", ""),
+			("H", "")
+		]
+
+		fmt = "".join([l[0] for l in self.LAYOUT])
+		self.entries = struct.unpack("<" + fmt, data[8:])
 
 	"""
 	def save(self):
@@ -582,22 +624,17 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 
 		###
 
-		suffixes = {
-			# 9-3: "bones count (A3B26640)",
-			15-3: "bones count (A3B26640)",
-			16-3: "frames count? (equal to 7th value of (almost?) every track in 14014CB6)",
-			17-3: "samples count? (D070D358)",
-			21-3: "number of 32-byte things in base state? [#21]",
-			23-3: "usually equal to frames count?",
-			24-3: "sometimes equal to #21?",
-			28-3: "tracks count (14014CB6)" # "custom tracks"
-		}
+		for l, e in zip(self.LAYOUT, self.entries):
+			fmt, suff = l
+			if suff != "":
+				suff = " -- " + suff
 
-		for i in range(len(self.entries)):
-			suff = ""
-			if i in suffixes:
-				suff = " -- " + suffixes[i]
-			print(" "*10, "{0:5} {0:04X}{1}".format(self.entries[i], suff))
+			if fmt == "H":
+				print(" "*2, "    {0:04X}  {0:<5}{1}".format(e, suff))
+			elif fmt == "f":
+				print(" "*2, "          {0:<5}{1}".format(e, suff))
+			else:
+				print(" "*2, f"fmt={fmt} {e}{suff}")
 	
 	def web_name(self):
 		return "Anim Clip Built? (9DF23F77)"
