@@ -206,11 +206,24 @@ class x2BB5BC8F_Section(dat1lib.types.sections.Section):
 		return "2BB5BC8F ({})".format(len(self.entries))
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 2BB5BC8F     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | Base State   | {:6} entries".format(self.TAG, len(self.entries)))
+
+		built_section = self._dat1.get_section(AnimClipBuiltSection.TAG)
+		joints, _, _, _, _, _, things = struct.unpack("<7H", built_section._raw[32:46])
+		
+		print()
+		print(f"  {joints} joints:   (qx, qy, qz, qw, x, y, z, log_scale, log_scale2)")
+		for i in range(joints):
+			entry = struct.unpack("<7hBB", self._raw[16*i:16*i+16])
+			print(f"  - {i:<3}  {entry}")
+
+		print()
+		print(f"  {things} things:")
+		things_offset = joints*16
+		for i in range(things):
+			thing = struct.unpack("<16H", self._raw[32*i + things_offset:32*i + 32 + things_offset])
+			print(f"  - {i:<3}  [" + " ".join([f"{e:04X}" for e in thing]) + "]  " + f"{thing}")
 
 	def web_name(self):
 		return "Anim Clip Base State (2BB5BC8F)"
