@@ -10,6 +10,7 @@ import base64
 import io
 import server.state.types.headless_dat1
 import sys
+import traceback
 
 class SectionsViewer(object):
 	def __init__(self, state):
@@ -45,6 +46,7 @@ class SectionsViewer(object):
 			report["sections"][s.tag] = ""
 			content_set = False
 
+			fail_trace = None
 			try:
 				if section is not None:
 					if "web_repr" in dir(section):
@@ -54,7 +56,7 @@ class SectionsViewer(object):
 						captured = io.StringIO()
 						sys.stdout = captured
 						section.print_verbose(CONFIG)
-						report["sections"][s.tag] = {"name": "{:08X}".format(s.tag), "type": "text", "readonly": True, "content": captured.getvalue()}
+						report["sections"][s.tag] = {"name": "{:08X}".format(s.tag), "type": "text", "readonly": True, "content": captured.getvalue(), "error": None}
 						sys.stdout = sys.__stdout__
 						content_set = True
 
@@ -64,16 +66,17 @@ class SectionsViewer(object):
 						if "web_name" in dir(section):
 							report["sections"][s.tag]["name"] = section.web_name()
 			except:
-				pass
+				fail_trace = traceback.format_exc()
 
 			try:
 				if not content_set:
 					if report["sections"][s.tag] == "":
-						report["sections"][s.tag] = {"name": "{:08X}".format(s.tag), "type": "", "readonly": True, "content": ""}
+						report["sections"][s.tag] = {"name": "{:08X}".format(s.tag), "type": "", "readonly": True, "content": "", "error": None}
 					
 					report["sections"][s.tag]["type"] = "bytes"
 					report["sections"][s.tag]["offset"] = s.offset
 					report["sections"][s.tag]["content"] = base64.b64encode(asset.dat1._sections_data[ndx]).decode('ascii')
+					report["sections"][s.tag]["error"] = fail_trace
 			except:
 				pass
 

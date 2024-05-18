@@ -140,21 +140,32 @@ sections_viewer = {
 		sh.appendChild(createElementWithTextNode("span", section.name));
 		s.appendChild(sh);
 		
+		var contents = document.createElement("div");
+
+		if (controller.user.__error_trace_experimental) {
+			if (section.error != null) {
+				var c = createElementWithTextNode("pre", section.error);
+				c.classList = "error_trace";
+				contents.appendChild(c);
+			}
+		}
+		
 		if (section.type == "text") {
 			if (section.content != "") {
 				var c = createElementWithTextNode("pre", section.content);
-				s.appendChild(c);
+				c.classList = "monotext";
+				contents.appendChild(c);
 			}
 
 			// TODO: not readonly => editable text
 		} else if (section.type == "json") {
 			var c = createElementWithTextNode("pre", JSON.stringify(section.content, null, 4));
-			s.appendChild(c);
+			c.classList = "monotext";
+			contents.appendChild(c);
 
 			// TODO: not readonly => editable json
 		} else if (section.type == "bytes") {
 			var raw = atob(section.content);
-			var contents = document.createElement("div");
 
 			var t = document.createElement("table");
 			t.className = "hex_view";
@@ -217,11 +228,11 @@ sections_viewer = {
 			
 			this.make_hexview(t, raw, section_settings.width, section_settings.absolute ? section.offset : 0);
 			contents.appendChild(t)
-			s.appendChild(contents);
 
 			// TODO: not readonly => hex editor
 		}
-
+		
+		s.appendChild(contents);
 		return s;
 	},
 

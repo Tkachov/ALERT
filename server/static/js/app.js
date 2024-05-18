@@ -3,7 +3,7 @@
 // For more details, terms and conditions, see GNU General Public License.
 // A copy of the that license should come with this program (LICENSE.txt). If not, see <http://www.gnu.org/licenses/>.
 
-const USER_STORED_FIELDS = ["toc_path", "locale", "history", "favorites", "__configs_editor_enabled", "__hexview_experimental", "__windows_bar_sliding_scrollbar", "__sb_overrides"];
+const USER_STORED_FIELDS = ["toc_path", "locale", "history", "favorites", "__configs_editor_enabled", "__hexview_experimental", "__error_trace_experimental", "__windows_bar_sliding_scrollbar", "__sb_overrides"];
 const USER_STORAGE_KEY = "user";
 
 // TODO: make windows title path a link to browse back to the details
@@ -43,6 +43,7 @@ var controller = {
 			enabled: false,
 			sections: {}
 		},
+		__error_trace_experimental: false,
 		__windows_bar_sliding_scrollbar: false,
 		__sb_overrides: {
 			prefix: false,

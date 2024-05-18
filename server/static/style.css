@@ -666,6 +666,21 @@ html, body {
 	overflow: auto;
 }
 
+.sections_viewer .error_trace {
+	margin-top: 0;
+	padding: 4pt 8pt 8pt;
+	border: 1px solid #FBDB9D;
+	border-radius: 5px;
+	background: #FFF5D9;
+	color: #090601;
+}
+
+.sections_viewer .monotext {
+	display: block;
+	margin: 0;
+	overflow: auto;
+}
+
 .hex_view {
 	font-family: monospace;
 }
