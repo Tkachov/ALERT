@@ -12,7 +12,7 @@ class OffsetEntry(object):
 		self.archive_index, self.offset = struct.unpack("<II", data)
 
 class OffsetsSection(dat1lib.types.sections.Section):
-	TAG = 0xDCD720B5
+	TAG = 0xDCD720B5 # Archive TOC Asset Dupe Metadata
 	TYPE = 'toc'
 
 	def __init__(self, data, container):

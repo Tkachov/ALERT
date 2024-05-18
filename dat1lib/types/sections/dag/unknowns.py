@@ -218,7 +218,7 @@ class xBC91D1CC_Section(dat1lib.types.sections.Section): # longest section, look
 #
 
 class xBFEC699F_Section(dat1lib.types.sections.Section): # shortest section, some indexes
-	TAG = 0xBFEC699F
+	TAG = 0xBFEC699F # LC Link Heads
 	TYPE = 'dag'
 
 	def __init__(self, data, container):
