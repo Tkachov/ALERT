@@ -125,10 +125,8 @@ class x116EB684_Section(dat1lib.types.sections.Section):
 		# size = 4..17664 (avg = 328.1)
 		#
 		# examples: 80072AF3C3605363 (min size), A72EC37700131823 (max size)
-		
-		ENTRY_SIZE = 4
-		count = len(data)//ENTRY_SIZE
-		self.entries = [struct.unpack("<I", data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE])[0] for i in range(count)]
+
+		pass
 
 	def save(self):
 		of = io.BytesIO(bytes())
@@ -138,14 +136,25 @@ class x116EB684_Section(dat1lib.types.sections.Section):
 		return of.read()
 
 	def get_short_suffix(self):
-		return "116EB684 ({})".format(len(self.entries))
+		return "116EB684"
 
 	def print_verbose(self, config):
-		if config.get("web", False):
-			return
-		
 		##### "{:08X} | ............ | {:6} ..."
-		print("{:08X} | 116EB684     | {:6} entries".format(self.TAG, len(self.entries)))
+		print("{:08X} | C.Track Data | {:6} bytes".format(self.TAG, len(self._raw)))
+
+		tracks_section = self._dat1.get_section(x14014CB6_Section.TAG)
+		for track in tracks_section.entries:
+			name = self._dat1._strings_map.get(track[1], "<none>")
+			offset = track[4]
+			count = track[8]
+			arr = struct.unpack(f"<{count}f", self._raw[offset:offset+4*count])			
+
+			print()
+			print(f"  {name}  " + (" "*(26-len(name))) + f" offset = {offset}")
+			print(f"  {track[0]:08X}  " + (" "*(26-8)) + f"  count = {count}")
+			print()
+			print("  [" + ", ".join([f"{e:3.2f}" for e in arr]) + "]")
+			print()
 
 	def web_name(self):
 		return "Anim Clip Custom Track Data? (116EB684)"
@@ -546,8 +555,8 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 		self.LAYOUT = [
 			("H", ""),
 			("H", ""),
-			("f", ""),
-			("f", ""),
+			("f", "fps?"),
+			("f", "duration in seconds?"),
 			("H", ""),
 			("H", ""),
 			("H", ""),
@@ -632,7 +641,7 @@ class AnimClipBuiltSection(dat1lib.types.sections.Section):
 			if fmt == "H":
 				print(" "*2, "    {0:04X}  {0:<5}{1}".format(e, suff))
 			elif fmt == "f":
-				print(" "*2, "          {0:<5}{1}".format(e, suff))
+				print(" "*2, "          {0:<5.1f}{1}".format(e, suff))
 			else:
 				print(" "*2, f"fmt={fmt} {e}{suff}")
 	
