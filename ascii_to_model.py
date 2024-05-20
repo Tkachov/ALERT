@@ -41,7 +41,7 @@ class AsciiReader(object):
 
 		result = {}		
 		result["bones"] = self.read_bones()
-		result["meshes"] = self.read_meshes()
+		result["meshes"] = self.read_meshes(len(result["bones"]))
 
 		return result
 
@@ -57,24 +57,24 @@ class AsciiReader(object):
 
 		return bones
 
-	def read_meshes(self):
+	def read_meshes(self, bones_count):
 		meshes = []
 
 		meshes_count = self.read_int()
 		for i in range(meshes_count):
 			name = self.read_line()
 			uv_layers = self.read_int()
-			textures = self.read_int()			
+			textures = self.read_int()
 			self.skip(textures*2)
 
-			vertexes = self.read_vertexes(uv_layers)
+			vertexes = self.read_vertexes(uv_layers, bones_count)
 			faces = self.read_faces()
 
 			meshes += [(name, uv_layers, textures, vertexes, faces)]
 
 		return meshes
 
-	def read_vertexes(self, uv_layers):
+	def read_vertexes(self, uv_layers, bones_count):
 		vertexes = []
 
 		vertexes_count = self.read_int()
@@ -90,8 +90,8 @@ class AsciiReader(object):
 			if uv_layers > 1:
 				self.skip(uv_layers - 1)
 
-			groups = self.read_split()
-			weights = self.read_split()
+			groups = self.read_split() if bones_count > 0 else []
+			weights = self.read_split() if bones_count > 0 else []
 
 			vertexes += [
 				(
@@ -352,7 +352,7 @@ class ModelInjector(object):
 			index_start = self.current_index_index
 			index_count = len(faces_data) * 3
 
-			first_skin_batch, first_weight_index = self.start_skin_batches(vertex_start, vertex_count)
+			first_skin_batch, first_weight_index = self.start_skin_batches(vertex_start, vertex_count) if has_skin else (0, 0)
 
 			prefix = f"mesh #{i}: "
 			if len(prefix) < 13:
@@ -376,9 +376,11 @@ class ModelInjector(object):
 			for face in faces_data:
 				self.write_face(face, face_index_offset)
 			
-			skin_batches_count = self.end_skin_batches(first_skin_batch)
-			print(f"             added {skin_batches_count} skin batches, {self.current_skin_offset - self.skin_batch_section.batches[first_skin_batch].offset} bytes ({self.current_skin_offset}/{len(self.skin_section._raw)})")
-			print()
+			skin_batches_count = 0
+			if has_skin:
+				skin_batches_count = self.end_skin_batches(first_skin_batch)
+				print(f"             added {skin_batches_count} skin batches, {self.current_skin_offset - self.skin_batch_section.batches[first_skin_batch].offset} bytes ({self.current_skin_offset}/{len(self.skin_section._raw)})")
+				print()
 
 			meshes_updates += [(vertex_start, vertex_count, index_start, index_count, first_skin_batch, first_weight_index, skin_batches_count)]
 
