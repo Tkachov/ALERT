@@ -368,8 +368,6 @@ class AsciiWriter(object):
 			self.write_mesh(mi, skin, rcra_skin)
 
 	def write_mesh(self, mesh_index, skin, rcra_skin):
-		vc = self.current_vertex_index
-
 		mesh = self.meshes[mesh_index]
 		matpath = self.get_material_path(mesh.get_material())
 		self.f.write(f"sm{mesh_index:02}_{matpath}\n")
@@ -400,6 +398,7 @@ class AsciiWriter(object):
 		s = self.model.dat1.get_section(SECTION_INDEXES)
 		indexes = s.values
 		
+		vc = mesh.vertexStart
 		if (mesh.get_flags() & 0x10) > 0:
 			vc = 0 # indexes are relative already
 
