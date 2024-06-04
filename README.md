@@ -12,10 +12,11 @@ Specifically, the games are:
 
 Scripts were mostly written for MSMR, MM and RCRA, with some support of SO added later. Scripts most likely would work with MSM2 and MW, though some minor changes could be required.
 
-The repo could be roughly split into three parts:
+The repo could be roughly split into four parts:
 - **dat1lib/** — a "library" that allows to load assets to work with or modify and save them;
 - **server/** — Assets Browser, a web UI application to explore game's archives and view assets contents (ranging from raw hex to specialized viewers);
-- standalone scripts that use the library to do different useful actions with the assets.
+- standalone scripts that use the library to do different useful actions with the assets;
+- [the wiki](https://github.com/Tkachov/ALERT/wiki), that contains some information on ALERT and, most importantly, games' formats.
 
 ## Assets Browser
 
@@ -23,7 +24,7 @@ The repo could be roughly split into three parts:
 
 Web app that allows to browse games' assets, view or extract them, export to stage, compare/diff and see other assets they reference. There are special viewers for .model, .texture and .nodegraph, and an option to view any asset's sections in text representation (on in hex view, if there is no implementation made for this section).
 
-Built .exe can be found in the [Releases](https://github.com/Tkachov/ALERT/releases).
+Built .exe can be found in the [Releases](https://github.com/Tkachov/ALERT/releases). Features are briefly described [in the wiki](https://github.com/Tkachov/ALERT/wiki/Assets-Browser).
 
 ## Scripts
 
@@ -35,6 +36,8 @@ Some of the most interesting ones:
 - **animclip_to_gltf.py** — makes a GLTF by applying base state of .animclip to .model. .animclip support is poor;
 - **dsar_codec.py** — compresses to or decompresses from DSAR archive format;
 - **change_soundbank.py** — can be used to inject modified .bnk into .soundbank.
+
+A bit more details are [in the wiki](https://github.com/Tkachov/ALERT/wiki/Scripts).
 
 ## Usage
 
