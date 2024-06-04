@@ -15,6 +15,11 @@ if __name__ == "__main__":
 			dat1lib.VERSION_OVERRIDE = dat1lib.VERSION_SO
 			custom_mode = True
 
+		elif sys.argv[1] == "msmr":
+			import dat1lib
+			dat1lib.VERSION_OVERRIDE = dat1lib.VERSION_MSMR
+			custom_mode = True
+
 		elif sys.argv[1] == "-try-second-magic":
 			import dat1lib
 			dat1lib.TRY_SECOND_MAGIC = True
