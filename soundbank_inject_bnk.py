@@ -3,14 +3,9 @@
 # For more details, terms and conditions, see GNU General Public License.
 # A copy of the that license should come with this program (LICENSE.txt). If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
 import dat1lib
-import dat1lib.types.dat1
 import dat1lib.types.soundbank
-import dat1lib.types.sections.soundbank.bnk
-
-###
+import sys
 
 def main(argv):
 	if len(argv) < 3:
@@ -24,22 +19,13 @@ def main(argv):
 	#
 
 	fn = argv[1]
-	sb = None
-	try:
-		with open(fn, "rb") as f:
-			sb = dat1lib.read(f)
-	except Exception as e:
-		print("[!] Couldn't open '{}'".format(fn))
-		print(e)
-		return
+	sb = dat1lib.read_stg(fn, dat1lib.types.soundbank.Soundbank.MAGIC)
 
-	#
-	
 	if sb is None:
 		print("[!] Couldn't comprehend '{}'".format(fn))
 		return
 
-	if not isinstance(sb, dat1lib.types.soundbank.Soundbank) and not isinstance(sb, dat1lib.types.soundbank.SoundbankRcra):
+	if not isinstance(sb, dat1lib.types.soundbank.Soundbank):
 		print("[!] Not a soundbank")
 		return
 
@@ -55,15 +41,9 @@ def main(argv):
 		print(e)
 		return
 
-	if data is None:
-		print("[!] Couldn't read '{}'".format(bnk_fn))
-
 	#
 
-	BNK_SECTION = dat1lib.types.sections.soundbank.bnk.WwiseBankSection.TAG
-	sb.dat1.get_section(BNK_SECTION).replace_data(data)
-	sb.dat1.refresh_section_data(BNK_SECTION)
-	sb.dat1.recalculate_section_headers()
+	sb.replace_wwise_bank_section(data)
 
 	with open(fn + ".edited", "wb") as f:
 		sb.save(f)

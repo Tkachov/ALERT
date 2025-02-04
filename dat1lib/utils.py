@@ -36,6 +36,20 @@ def read_class_array_data(data, sz, struct_class):
 
 ###
 
+def read_to_align(f, cnt):
+	rem = f.tell() % cnt
+	if rem > 0:
+		f.read(cnt - rem)
+
+def write_to_align(f, cnt, padding=b'\x00'):
+	rem = f.tell() % cnt
+	if rem > 0:
+		for i in range(cnt - rem):
+			pi = i % len(padding)
+			f.write(padding[pi:pi+1])
+
+###
+
 def print_table(arr, fmt, entries_per_line):
 	s = ""
 	cnt = 0

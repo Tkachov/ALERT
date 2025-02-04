@@ -3,67 +3,54 @@
 # For more details, terms and conditions, see GNU General Public License.
 # A copy of the that license should come with this program (LICENSE.txt). If not, see <http://www.gnu.org/licenses/>.
 
-import dat1lib.types.dat1
-import dat1lib.utils as utils
+import dat1lib.types.stg
+import dat1lib.types.sections.soundbank.bnk
+import dat1lib.types.sections.soundbank.header
+import dat1lib.types.sections.soundbank.info
+import dat1lib.types.sections.soundbank.strings
 import io
-import struct
 
-class Soundbank(object):
-	MAGIC = 0x7E4F1BB7
+class Soundbank(dat1lib.types.stg.STG):
+	MAGIC = 0x66350FBB
 
-	def __init__(self, f, version=None):
-		# MSMR
-		# 1345 occurrences
-		# size = 260..29288741 (avg = 773143.8)
-		# from 3 to 4 sections (avg = 3.9)
-		#
-		# examples: 8C129CA7DA42BEAE (min size), 9B3473B5F2EF53D3 (max size), 803894E1B9984FE9 (3 sections), 801825F7A321A714 (4 sections)
+	def __init__(self, f):
+		dat1lib.types.stg.STG.__init__(self, f)
 
-		# MM
-		# 1239 occurrences
-		# size = 244..22520715 (avg = 522419.3)
-		# from 3 to 4 sections (avg = 3.9)
-		#
-		# examples: 8208A29C47736EAD (min size), 9B3473B5F2EF53D3 (max size), 800BAAC604A8B370 (4 sections)
-
-		self.version = version
-		
-		self.magic, self.size = struct.unpack("<II", f.read(8))
-		self.unk = f.read(28)
-		self._raw_dat1 = f.read()
-
-		if self.magic != self.MAGIC:
-			print("[!] Bad Soundbank magic: {} (isn't equal to expected {})".format(self.magic, self.MAGIC))
-
-		self.dat1 = dat1lib.types.dat1.DAT1(io.BytesIO(self._raw_dat1), self)
+		if self.header.magic != self.MAGIC:
+			print(f"[!] Bad Soundbank magic: {self.header.magic:08X} (isn't equal to expected {self.MAGIC:08X})")
 
 	def save(self, f):
-		self.size = self.dat1.header.size
+		of = io.BytesIO(bytes())
+		self.dat1.save(of)
+		of.seek(0)
+		dat1_data = of.read()
 
-		f.write(struct.pack("<II", self.magic, self.size))
-		f.write(self.unk)
-		self.dat1.save(f)
+		_, b = self.header.pairs[0]
+		self.header.pairs[0] = (len(dat1_data) | 0x40000000, b)
 
-	def print_info(self, config):
-		print("-------")
-		print("Soundbank {:08X}".format(self.magic))
-		if self.magic != self.MAGIC:
-			print("[!] Unknown magic, should be {}".format(self.MAGIC))
-		print("    size: {}".format(self.size))
-		print("-------")
-		print("")
+		dat1lib.types.stg.STG.save(self, f)
 
-		self.dat1.print_info(config)
-
-class SoundbankRcra(Soundbank):
-	MAGIC = 0xC2841216
-
-	# RCRA
-	# 1218 occurrences
-	# size = 208..115413669 (avg = 930100.1)
-	# from 3 to 4 sections (avg = 3.9)
 	#
-	# examples: 80401892FB7E19F8 (min size), 80E6D1589338AECF (max size), 800582AB4AE61DB1 (4 sections)
 
-class Soundbank2(Soundbank):
-	MAGIC = 0xD61E269F
+	def get_header_section(self):
+		return self.dat1.get_section(dat1lib.types.sections.soundbank.header.HeaderSection.TAG)
+
+	def get_strings_section(self):
+		return self.dat1.get_section(dat1lib.types.sections.soundbank.strings.StringsSection.TAG)
+
+	def get_info_section(self):
+		return self.dat1.get_section(dat1lib.types.sections.soundbank.info.InfoSection.TAG)
+
+	def get_wwise_bank_section(self):
+		return self.dat1.get_section(dat1lib.types.sections.soundbank.bnk.WwiseBankSection.TAG)
+
+	#
+
+	def replace_wwise_bank_section(self, new_data):
+		BNK_SECTION = dat1lib.types.sections.soundbank.bnk.WwiseBankSection.TAG
+		self.dat1.get_section(BNK_SECTION).replace_data(new_data)
+		self.dat1.refresh_section_data(BNK_SECTION)
+
+		HEADER_SECTION = dat1lib.types.sections.soundbank.header.HeaderSection.TAG
+		self.dat1.get_section(HEADER_SECTION).bnk_section_size = len(new_data)
+		self.dat1.refresh_section_data(HEADER_SECTION)

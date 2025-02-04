@@ -8,14 +8,6 @@ import inspect
 import os
 import os.path
 
-VERSION_OVERRIDE = None
-
-VERSION_SO = 201800
-VERSION_MSMR = 202200
-VERSION_RCRA = 202300
-
-TRY_SECOND_MAGIC = False
-
 #
 
 def __inspect_module(module):
@@ -93,36 +85,31 @@ for md in __import_submodules(types):
 
 #
 
-import struct
-import dat1lib.types.unknown
+import dat1lib.types.dat1
+import dat1lib.types.stg
+import traceback
 
-def read(f, try_unknown=True, version=None):
-	magic, = struct.unpack("<I", f.read(4))
-	f.seek(0)
+def _read_file(fn, method, *args):
+	try:
+		with open(fn, "rb") as f:
+			return method(f, *args)
+	except Exception as e:
+		print(f"[!] Couldn't read '{fn}'")
+		traceback.print_exc()
+		return None
 
-	if version is None and VERSION_OVERRIDE is not None:
-		version = VERSION_OVERRIDE
+def read_dat1(f):
+	if isinstance(f, str):
+		return _read_file(f, read_dat1)
 
-	if magic in types.KNOWN_TYPES:
-		return types.KNOWN_TYPES[magic](f, version=version)
+	return dat1lib.types.dat1.DAT1(f)
 
-	if TRY_SECOND_MAGIC:
-		try:
-			f.seek(36)
-			dat1_magic, magic = struct.unpack("<II", f.read(8))
-			f.seek(0)
+def read_stg(f, hint=None):
+	if isinstance(f, str):
+		return _read_file(f, read_stg, hint)
 
-			if dat1_magic == 0x44415431:
-				if magic in types.KNOWN_TYPES:
-					return types.KNOWN_TYPES[magic](f, version=version)
-		except:
-			pass
+	if hint is not None:
+		if hint in types.KNOWN_TYPES:
+			return types.KNOWN_TYPES[hint](f)
 
-	if try_unknown:
-		try:
-			obj = types.unknown.UnknownAsset(f, version=version)
-			return obj
-		except:
-			pass
-
-	return None
+	return dat1lib.types.stg.STG(f)
