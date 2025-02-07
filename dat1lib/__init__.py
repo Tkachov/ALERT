@@ -86,6 +86,7 @@ for md in __import_submodules(types):
 #
 
 import dat1lib.types.dat1
+import dat1lib.types.toc
 import dat1lib.types.stg
 import traceback
 
@@ -103,6 +104,12 @@ def read_dat1(f):
 		return _read_file(f, read_dat1)
 
 	return dat1lib.types.dat1.DAT1(f)
+
+def read_toc(f):
+	if isinstance(f, str):
+		return _read_file(f, read_toc)
+
+	return dat1lib.types.toc.TOC(f)
 
 def read_stg(f, hint=None):
 	if isinstance(f, str):
