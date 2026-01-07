@@ -333,28 +333,24 @@ class ModelInjector(object):
 			mesh.vertexCount = new_mesh[1]
 			mesh.indexStart = new_mesh[2]
 			mesh.indexCount = new_mesh[3]
-			
-			if (mesh.get_flags() & 0x10) > 0 or self.mode == dat1lib.VERSION_RCRA:
-				mesh.first_skin_batch = new_mesh[4]
-				mesh.skin_batches_count = new_mesh[6]
+			mesh.first_skin_batch = new_mesh[4]
+			mesh.skin_batches_count = new_mesh[6]
 
 			if (mesh.get_flags() & 0x100) > 0:
 				mesh.first_weight_index = new_mesh[5]
-                
-			if self.mode == dat1lib.VERSION_RCRA:
-				return
 
 			mesh.flags = mesh.get_flags() & 0x111
 
-			if i < len(overrides):
+			if i < len(overrides) and self.mode != dat1lib.VERSION_RCRA:
 				mesh.material_index = overrides[i]
-			elif i < materials_count:
+			elif i < materials_count and self.mode != dat1lib.VERSION_RCRA:
 				mesh.material_index = i
-			else:
+			elif self.mode != dat1lib.VERSION_RCRA:
 				mesh.material_index = 0
 
 		for i in range(len(meshes_updates), len(meshes)):
-			meshes[i].clear()
+			if  self.mode != dat1lib.VERSION_RCRA:
+				meshes[i].clear()
 
 		self.refresh_section(SECTION_MESHES)
 
