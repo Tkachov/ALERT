@@ -342,7 +342,7 @@ class ModelInjector(object):
 				mesh.first_weight_index = new_mesh[5]
                 
 			if self.mode == dat1lib.VERSION_RCRA:
-                return
+				return
 
 			mesh.flags = mesh.get_flags() & 0x111
 
