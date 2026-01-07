@@ -276,22 +276,43 @@ class ModelInjector(object):
 		return result
 
 	def update_lookgroups(self, ascii_data, lookgroups_overrides):
+		looks = [0]
+		lod = 0
+
+		#
+
 		looks_section = self.model.dat1.get_section(SECTION_LOOK)
-		looks_count = len(looks_section.looks)
 
-		meshes_count = len(ascii_data["meshes"])
-		overrides = [(0, meshes_count)]
-		if looks_count > 1:
-			overrides += [(0, meshes_count)]
+		s = self.model.dat1.get_section(SECTION_MESHES)
+		meshes = s.meshes
 
-		if "lookgroups" in lookgroups_overrides:
-			overrides = lookgroups_overrides["lookgroups"]
+		meshes_to_display = set()
+		for look in looks:
+			look_lod = looks_section.looks[look].lods[lod]
+			meshes_to_display |= set(range(look_lod.start, look_lod.start + look_lod.count))
 
-		for i in range(len(overrides)):
-			look = looks_section.looks[i]
-			for j in range(6):
-				look.lods[j].start = overrides[i][0]
-				look.lods[j].count = overrides[i][1]
+		meshes_indexes = []
+		for i, mesh in enumerate(meshes):
+			if i not in meshes_to_display:
+				continue
+
+			meshes_indexes += [i]
+
+		#
+
+		for look in looks:
+			look_lod = looks_section.looks[look].lods[lod]
+			for lod_i in range(len(looks_section.looks[look].lods)):
+				if lod_i == lod:
+					continue
+
+				if looks_section.looks[look].lods[lod_i].start == 0 and looks_section.looks[look].lods[lod_i].count == 0:
+					continue
+				
+				looks_section.looks[look].lods[lod_i].start = look_lod.start
+				looks_section.looks[look].lods[lod_i].count = look_lod.count
+
+		#
 
 		self.refresh_section(SECTION_LOOK)
 
@@ -313,12 +334,15 @@ class ModelInjector(object):
 			mesh.indexStart = new_mesh[2]
 			mesh.indexCount = new_mesh[3]
 			
-			if (mesh.get_flags() & 0x10) > 0:
+			if (mesh.get_flags() & 0x10) > 0 or self.mode == dat1lib.VERSION_RCRA:
 				mesh.first_skin_batch = new_mesh[4]
 				mesh.skin_batches_count = new_mesh[6]
 
 			if (mesh.get_flags() & 0x100) > 0:
 				mesh.first_weight_index = new_mesh[5]
+                
+			if self.mode == dat1lib.VERSION_RCRA:
+                return
 
 			mesh.flags = mesh.get_flags() & 0x111
 
@@ -365,7 +389,7 @@ class ModelInjector(object):
 				if has_skin:
 					w = self.get_vertex_weights(groups_data, weights_data)
 					self.write_weight(w)
-					if has_rcra_skin:
+					if self.mode == dat1lib.VERSION_RCRA:
 						self.write_rcra_weight(w)
 						
 
