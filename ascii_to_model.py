@@ -167,10 +167,6 @@ class ModelInjector(object):
 		self.sections_to_refresh = set()
 		self.model = model
 
-		self.mode = dat1lib.VERSION_RCRA
-		if not isinstance(self.model, dat1lib.types.model.ModelRcra):
-			self.mode = dat1lib.VERSION_MSMR
-
 		self.vertexes_section = None if model is None else model.dat1.get_section(SECTION_VERTEXES)
 		self.indexes_section = None if model is None else model.dat1.get_section(SECTION_INDEXES)
 		self.current_vertex_index = 0
@@ -466,21 +462,14 @@ class ModelInjector(object):
 	#
 
 	def write_vertex(self, xyz, nxyz, uv):
-		if self.mode == dat1lib.VERSION_RCRA:
-			v = dat1lib.types.sections.model.geo.Vertex_I29.empty()
-			v.x, v.y, v.z = xyz
-			v.nx, v.ny, v.nz = nxyz
-			if uv:
-				v.u, v.v = uv
-			self.vertexes_section.vertexes[self.current_vertex_index] = v
-			if uv and self.uv1_section:
-				self.uv1_section.set_uv(self.current_vertex_index, *uv)
-		else:
-			v = self.vertexes_section.vertexes[self.current_vertex_index]
-			v.x, v.y, v.z = xyz
-			v.nx, v.ny, v.nz = nxyz
-			if uv:
-				v.u, v.v = uv
+		v = dat1lib.types.sections.model.geo.Vertex_I29.empty()
+		v.x, v.y, v.z = xyz
+		v.nx, v.ny, v.nz = nxyz
+		if uv:
+			v.u, v.v = uv
+		self.vertexes_section.vertexes[self.current_vertex_index] = v
+		if uv and self.uv1_section:
+			self.uv1_section.set_uv(self.current_vertex_index, *uv)
 
 		self.current_vertex_index += 1
 
@@ -646,14 +635,7 @@ def main(argv):
 	#
 
 	model_fn = argv[2]
-	model = None
-	try:
-		with open(model_fn, "rb") as f:
-			model = dat1lib.read(f)
-	except Exception as e:
-		print("[!] Couldn't open '{}'".format(model_fn))
-		print(e)
-		return
+	model = dat1lib.read_stg(model_fn, dat1lib.types.model.Model.MAGIC)
 
 	#
 	
@@ -661,7 +643,7 @@ def main(argv):
 		print("[!] Couldn't comprehend '{}'".format(model_fn))
 		return
 
-	if not isinstance(model, (dat1lib.types.model.Model, dat1lib.types.model.Model2, dat1lib.types.model.ModelRcra)):
+	if not isinstance(model, dat1lib.types.model.Model):
 		print("[!] Not a model")
 		return
 

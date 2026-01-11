@@ -92,10 +92,6 @@ class AsciiWriter(object):
 		self.model = model
 		self.current_vertex_index = 0
 
-		self.mode = dat1lib.VERSION_RCRA
-		if not isinstance(self.model, dat1lib.types.model.ModelRcra):
-			self.mode = dat1lib.VERSION_MSMR
-
 		self.vertexes = []
 		if model is not None:
 			s = model.dat1.get_section(SECTION_VERTEXES)
@@ -112,10 +108,6 @@ class AsciiWriter(object):
 		self.has_bones = None
 
 		self.uv_scale = 1.0/16384.0
-		if self.mode != dat1lib.VERSION_RCRA: # TODO: test RCRA
-			s = None if model is None else model.dat1.get_section(SECTION_BUILT)
-			if s:
-				self.uv_scale = s.get_uv_scale()
 
 	#
 
@@ -419,7 +411,7 @@ class AsciiWriter(object):
 		groups = "0 0 0 0"
 		weights = "1 0 0 0"
 
-		if self.mode == dat1lib.VERSION_RCRA and self.uv1_section is not None:
+		if self.uv1_section is not None:
 			U, V = self.uv1_section.get_uv(vertex_index)
 			uv = f"{fmt(U)} {fmt(V)}"
 
@@ -459,22 +451,13 @@ def main(argv):
 	#
 
 	fn = argv[1]
-	model = None
-	try:
-		with open(fn, "rb") as f:
-			model = dat1lib.read(f)
-	except Exception as e:
-		print("[!] Couldn't open '{}'".format(fn))
-		print(e)
-		return
+	model = dat1lib.read_stg(fn, dat1lib.types.model.Model.MAGIC)
 
-	#
-	
 	if model is None:
 		print("[!] Couldn't comprehend '{}'".format(fn))
 		return
 
-	if not isinstance(model, (dat1lib.types.model.Model, dat1lib.types.model.Model2, dat1lib.types.model.ModelRcra)):
+	if not isinstance(model, dat1lib.types.model.Model):
 		print("[!] Not a model")
 		return
 
