@@ -54,7 +54,7 @@ class STG(object):
 	@classmethod
 	def make(cls):
 		data = struct.pack("<IIII", cls.STG_MAGIC, 0, 8, 0)
-		data += struct.pack("<IBBH", 0, 0, 0, 0)
+		data += struct.pack("<II", 0, 0) # magic and one value
 		data += struct.pack("<II", 0, 0) # padding to 16
 		data += dat1lib.types.dat1.DAT1.EMPTY_DATA
 		return cls(io.BytesIO(data))
