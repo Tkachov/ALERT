@@ -21,7 +21,14 @@ class Model(dat1lib.types.stg.STG):
 		of.seek(0)
 		dat1_data = of.read()
 
-		_, b = self.header.pairs[0]
-		self.header.pairs[0] = (len(dat1_data) | 0x40000000, b)
+		# Update first value after magic to be offset to section 0x0859863D
+		offset_to_indexbuf = 0
+		for s in self.dat1.header.sections:
+			if s.tag == 0x0859863D:
+				offset_to_indexbuf = s.offset
+				break
+		
+		if len(self.header.values) > 0:
+			self.header.values[0] = offset_to_indexbuf
 
 		dat1lib.types.stg.STG.save(self, f)
