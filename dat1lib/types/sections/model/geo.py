@@ -64,7 +64,6 @@ class IndexesSection(dat1lib.types.sections.Section):
 	def save(self):
 		if self.version == dat1lib.VERSION_SO:
 			return self._raw
-			return None # TODO
 
 		if self.version == dat1lib.VERSION_RCRA:
 			of = io.BytesIO(bytes())
