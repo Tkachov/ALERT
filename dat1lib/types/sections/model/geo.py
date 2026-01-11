@@ -556,7 +556,7 @@ class x6B855EED_Section(dat1lib.types.sections.Section):
 		print("")
 
 	def web_repr(self):
-		return {"name": "Vertex UV1", "type": "text", "readonly": True, "content": "{} UVs".format(len(self.values))}
+		return {"name": "Vertex UV1", "type": "text", "readonly": True, "content": "{} UVs".format(len(self.uvs))}
 
 class ColorsSection(dat1lib.types.sections.Section):
 	TAG = 0x5CBA9DE9 # Model Col Vert

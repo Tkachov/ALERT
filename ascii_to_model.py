@@ -622,10 +622,6 @@ class ModelInjector(object):
 
 import sys
 
-import dat1lib
-import dat1lib.types.dat1
-import dat1lib.types.model
-
 ###
 
 def main(argv):
