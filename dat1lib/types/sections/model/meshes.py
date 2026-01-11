@@ -8,39 +8,30 @@ import io
 import struct
 
 class MeshDefinition(object):
-	def __init__(self, data, version):
-		self.version = version
-		if self.version == dat1lib.VERSION_SO:
-			self.unknowns = struct.unpack("<IIHHHH", data[:16])
-			# ?, mesh_id, ?, ?, ?, ?
-			self.vertexStart, self.indexStart,  self.indexCount, self.vertexCount = struct.unpack("<IIIH", data[16:30])
-			_, self.flags, self.material_index, self.first_skin_batch, self.skin_batches_count = struct.unpack("<HHHHH", data[30:40])
-			self.unknowns2 = struct.unpack("<HHff", data[44:56]) # ?, ? | ?, ?
-			self.first_weight_index, self.unknown3 = struct.unpack("<II", data[56:]) # first weight index in CCBAFF15 (at least in RCRA) -- basically equal to vertexStart, ?
+	def __init__(self, data):
+		# RCRA branch: assume RCRA version (not SO)
+		self.unknowns = struct.unpack("<IQHHHH", data[:20])
+		# ?, mesh_id, ?, ?, ?, ?
+		# daemon: <fff center
+		# daemon: <h radius
+		# daemon: <hhh xyz size
 
-		else:
-			self.unknowns = struct.unpack("<IQHHHH", data[:20])
-			# ?, mesh_id, ?, ?, ?, ?
-			# daemon: <fff center
-			# daemon: <h radius
-			# daemon: <hhh xyz size
+		self.vertexStart, self.indexStart, self.indexCount, self.vertexCount = struct.unpack("<IIII", data[20:36])
+		self.flags, self.material_index, self.first_skin_batch, self.skin_batches_count = struct.unpack("<HHHH", data[36:44])
+		self.unknowns2 = struct.unpack("<HHff", data[44:56]) # ?, ? | ?, ?
+		self.first_weight_index, self.unknown3 = struct.unpack("<II", data[56:]) # first weight index in CCBAFF15 (at least in RCRA) -- basically equal to vertexStart, ?
 
-			self.vertexStart, self.indexStart, self.indexCount, self.vertexCount = struct.unpack("<IIII", data[20:36])
-			self.flags, self.material_index, self.first_skin_batch, self.skin_batches_count = struct.unpack("<HHHH", data[36:44])
-			self.unknowns2 = struct.unpack("<HHff", data[44:56]) # ?, ? | ?, ?
-			self.first_weight_index, self.unknown3 = struct.unpack("<II", data[56:]) # first weight index in CCBAFF15 (at least in RCRA) -- basically equal to vertexStart, ?
-
-			# daemon: indexCount has to be multiple of 16
-			# daemon: flags 0x1 means "skinned"
-			# daemon: skin_batches_count actually is <BB, both equal to (<mesh vertex count> + 0x9FF) / 0xA00 -- strange
+		# daemon: indexCount has to be multiple of 16
+		# daemon: flags 0x1 means "skinned"
+		# daemon: skin_batches_count actually is <BB, both equal to (<mesh vertex count> + 0x9FF) / 0xA00 -- strange
 
 	def clear(self):
-		if self.version != dat1lib.VERSION_SO:
-			self.unknowns = (0, 0, 0, 0, 0, 0)
-			self.vertexStart, self.indexStart, self.indexCount, self.vertexCount = (0, 0, 0, 0)
-			self.flags, self.material_index, self.first_skin_batch, self.skin_batches_count = (0, 0, 0, 0)
-			self.unknowns2 = (0, 0, 0, 0)
-			self.first_weight_index, self.unknown3 = (0, 0)
+		# RCRA branch
+		self.unknowns = (0, 0, 0, 0, 0, 0)
+		self.vertexStart, self.indexStart, self.indexCount, self.vertexCount = (0, 0, 0, 0)
+		self.flags, self.material_index, self.first_skin_batch, self.skin_batches_count = (0, 0, 0, 0)
+		self.unknowns2 = (0, 0, 0, 0)
+		self.first_weight_index, self.unknown3 = (0, 0)
 
 	def get_id(self):
 		return self.unknowns[1]
@@ -82,11 +73,10 @@ class MeshesSection(dat1lib.types.sections.Section):
 		#
 		# examples: 800653F4B380A1B1 (min size), 90A86BB170C341AA (max size)
 
-		self.version = self._dat1.version
-
+		# RCRA branch: assume RCRA version
 		ENTRY_SIZE = 64
 		count = len(data)//ENTRY_SIZE
-		self.meshes = [MeshDefinition(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE], self.version) for i in range(count)]
+		self.meshes = [MeshDefinition(data[i*ENTRY_SIZE:(i+1)*ENTRY_SIZE]) for i in range(count)]
 
 	def save(self):
 		of = io.BytesIO(bytes())
