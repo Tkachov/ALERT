@@ -47,7 +47,12 @@ class DAT1(object):
 	MAGIC = 0x44415431
 	EMPTY_DATA = struct.pack("<IIII", 0x44415431, 0, 16, 0)
 
-	def __init__(self, f):
+	def __init__(self, f, outer_obj=None, ignore_sections_exceptions=False, version=None):
+		self._outer = outer_obj
+		self.version = version
+		if self.version is None and self._outer is not None:
+			self.version = self._outer.version
+		
 		self.header = DAT1Header(f)
 		self.sections = []
 		self._sections_data = []
@@ -81,7 +86,11 @@ class DAT1(object):
 				try:
 					built_section = KNOWN_SECTIONS[s.tag](self._sections_data[-1], self)
 				except:
-					built_section = Section(self._sections_data[-1], self)
+					if ignore_sections_exceptions:
+						print("DAT1 construction failure: failed building {:08X} section from {} bytes".format(s.tag, len(self._sections_data[-1])))
+						print(traceback.format_exc())
+					else:
+						built_section = dat1lib.types.sections.Section(self._sections_data[-1], self)
 			
 			self.sections += [built_section]
 
