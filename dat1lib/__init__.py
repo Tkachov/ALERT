@@ -8,8 +8,6 @@ import inspect
 import os
 import os.path
 
-VERSION_RCRA = 202300
-
 #
 
 def __inspect_module(module):
