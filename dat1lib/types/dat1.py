@@ -81,7 +81,7 @@ class DAT1(object):
 				try:
 					built_section = KNOWN_SECTIONS[s.tag](self._sections_data[-1], self)
 				except:
-					built_section = Section(self._sections_data[-1], self)
+					built_section = dat1lib.types.sections.Section(self._sections_data[-1], self)
 			
 			self.sections += [built_section]
 

@@ -20,14 +20,6 @@ class Soundbank(dat1lib.types.stg.STG):
 			print(f"[!] Bad Soundbank magic: {self.header.magic:08X} (isn't equal to expected {self.MAGIC:08X})")
 
 	def save(self, f):
-		of = io.BytesIO(bytes())
-		self.dat1.save(of)
-		of.seek(0)
-		dat1_data = of.read()
-
-		_, b = self.header.pairs[0]
-		self.header.pairs[0] = (len(dat1_data) | 0x40000000, b)
-
 		dat1lib.types.stg.STG.save(self, f)
 
 	#

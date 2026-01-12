@@ -10,16 +10,17 @@ import io
 import struct
 
 class AssetHeader(object):
-	def __init__(self, f):
-		self.magic, self.unk1, pairs_count, extra_size = utils.read_struct(f, "<IBBH")
-		self.pairs = [struct.unpack("<II", f.read(8)) for i in range(pairs_count)]
-		self.extra = f.read(extra_size)
+	def __init__(self, f, header_size):
+		data = f.read(header_size)
+		count = len(data) // 4
+		values = struct.unpack("<" + "I" * count, data)
+		self.magic = values[0] if count > 0 else 0
+		self.values = list(values[1:]) if count > 1 else []
 
-	def save(self, f):		
-		f.write(struct.pack("<IBBH", self.magic, self.unk1, len(self.pairs), len(self.extra)))
-		for pair in self.pairs:
-			f.write(struct.pack("<II", *pair))
-		f.write(self.extra)
+	def save(self, f):
+		f.write(struct.pack("<I", self.magic))
+		for value in self.values:
+			f.write(struct.pack("<I", value))
 
 #
 
@@ -41,7 +42,7 @@ class STG(object):
 		if self.version != 0:
 			print(f"[!] Unknown STG version: {self.version}")
 
-		self.header = AssetHeader(f)
+		self.header = AssetHeader(f, header_size)
 		utils.read_to_align(f, 16)
 
 		self.texture_meta = f.read(texture_meta_size)
@@ -53,7 +54,7 @@ class STG(object):
 	@classmethod
 	def make(cls):
 		data = struct.pack("<IIII", cls.STG_MAGIC, 0, 8, 0)
-		data += struct.pack("<IBBH", 0, 0, 0, 0)
+		data += struct.pack("<II", 0, 0) # header: magic=0, one value=0
 		data += struct.pack("<II", 0, 0) # padding to 16
 		data += dat1lib.types.dat1.DAT1.EMPTY_DATA
 		return cls(io.BytesIO(data))
